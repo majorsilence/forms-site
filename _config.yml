@@ -1,0 +1,51 @@
+title: Majorsilence.Forms
+tagline: WinForms in. Cross-platform out.
+description: >-
+  A WinForms-style UI framework that moves legacy and modern WinForms
+  applications onto a modern, cross-platform stack — Windows, macOS, Linux,
+  and beyond — without a rewrite.
+url: "https://majorsilence.github.io"
+baseurl: ""
+repository: majorsilence/Majorsilence.Forms
+github_url: "https://github.com/majorsilence/Majorsilence.Forms"
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    disable: true
+
+permalink: /blog/:year/:month/:day/:title/
+
+collections:
+  posts:
+    output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+nav_links:
+  - label: home
+    url: /
+  - label: getting started
+    url: /getting-started/
+  - label: samples
+    url: /samples/
+  - label: backends
+    url: /backends/
+  - label: blog
+    url: /blog/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor

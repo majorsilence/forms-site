@@ -1,0 +1,19 @@
+---
+layout: default
+title: Blog
+---
+<div class="msf-prose" style="max-width: 720px;">
+  <a class="msf-back-link" href="{{ '/' | relative_url }}">&larr; home</a>
+  <h1>Blog</h1>
+  <p class="msf-prose__meta">Updates, migration notes, and architecture write-ups.</p>
+</div>
+<div class="msf-container" style="max-width: 720px; padding-bottom: 96px;">
+  {% for post in site.posts %}
+  <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+    <div class="msf-blog-card__meta">{{ post.date | date: "%B %-d, %Y" }}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+    <h2 class="msf-blog-card__title">{{ post.title }}</h2>
+    <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 220 }}</p>
+    <span class="msf-blog-card__link">Read post &rarr;</span>
+  </a>
+  {% endfor %}
+</div>

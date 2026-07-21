@@ -1,0 +1,11 @@
+---
+layout: default
+---
+<article class="msf-prose">
+  <a class="msf-back-link" href="{{ '/blog/' | relative_url }}">&larr; blog</a>
+  <p class="msf-prose__meta">
+    {{ page.date | date: "%B %-d, %Y" }}{% if page.read_time %} &middot; {{ page.read_time }}{% endif %}
+  </p>
+  <h1 style="font-family: 'Newsreader', serif; font-weight: 500;">{{ page.title }}</h1>
+  {{ content }}
+</article>

@@ -1,0 +1,159 @@
+---
+layout: default
+title: null
+---
+<section class="msf-hero">
+  <div class="msf-hero__inner">
+    <div class="msf-hero__eyebrow">majorsilence.forms &middot; early stage, stabilizing</div>
+    <h1 class="msf-hero__title">WinForms in. <span class="accent">Cross-platform out.</span></h1>
+    <p class="msf-hero__lede">
+      A WinForms-style UI framework that moves legacy <em>and</em> modern WinForms applications onto
+      a modern, cross-platform stack. Keep the <code class="msf-inline-code">Form</code>s, controls,
+      event handlers, and <code class="msf-inline-code">*.Designer.cs</code> files you already have —
+      gain Windows, macOS, and Linux out of the box, with mobile and web within reach through
+      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary msf-btn--lg" href="{{ '/getting-started/' | relative_url }}">Get started</a>
+      <a class="msf-btn msf-btn--secondary msf-btn--lg" href="{{ site.github_url }}" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+    <div class="msf-hero__chips">
+      <span class="msf-chip msf-chip--accent">Avalonia</span>
+      <span class="msf-chip msf-chip--neutral">Uno Platform</span>
+      <span class="msf-chip msf-chip--neutral">Headless</span>
+      <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
+      <span class="msf-chip msf-chip--neutral">.NET 6+</span>
+    </div>
+  </div>
+</section>
+
+<div class="msf-stats">
+  <div class="msf-stats__inner">
+    <div class="msf-stat">
+      <div class="msf-stat__value">3</div>
+      <div class="msf-stat__label">Platform backends</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value">Win &middot; macOS &middot; Linux</div>
+      <div class="msf-stat__label">Desktop, out of the box</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">iOS &middot; Android &middot; Wasm</div>
+      <div class="msf-stat__label">Reachable via Uno</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">MIT</div>
+      <div class="msf-stat__label">Open source</div>
+    </div>
+  </div>
+</div>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">why majorsilence.forms</div>
+    <h2 class="msf-section__title">Collapse the migration, not your codebase.</h2>
+    <p class="msf-section__lede">
+      Migrating a WinForms app usually means a ground-up rewrite in a new UI paradigm — XAML, MVVM,
+      the web. That's expensive, risky, and throws away years of working business logic and UX.
+      Majorsilence.Forms mirrors the WinForms API surface and ships a compatibility layer so your
+      existing forms, controls, and code move over with far less churn.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title">Reuse, don't rewrite</h3>
+        <p class="msf-card__body">The same control model and event-driven code you wrote in WinForms. No XAML, no forced MVVM rewrite, no relearning the framework.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Cross-platform by construction</h3>
+        <p class="msf-card__body">Everything is drawn with SkiaSharp and runs on a swappable host backend — Avalonia by default, Uno Platform for the broadest reach.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Bring your skills, your team, your code</h3>
+        <p class="msf-card__body">WinForms muscle memory transfers directly, so the ramp-up cost for an existing .NET shop is close to zero.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Modern under the hood</h3>
+        <p class="msf-card__body">GPU-accelerated Skia rendering, HiDPI, current .NET — a clean foundation, not a museum piece.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">how it works</div>
+    <h2 class="msf-section__title">One control model, a swappable host underneath.</h2>
+    <p class="msf-section__lede">
+      Majorsilence.Forms owns the controls and rendering; the backend only puts pixels on screen and
+      delivers input. That seam is what lets the same app target Avalonia today and Uno tomorrow.
+    </p>
+    <div class="msf-diagram">        Your app  (Forms, controls, Designer files — the WinForms model you know)
+            │
+       Majorsilence.Forms  (controls + WinForms-compatible API, drawn with SkiaSharp)
+            │
+   Swappable host backend
+   ├─ Avalonia   → Windows · macOS · Linux            (default)
+   ├─ Uno         → desktop · iOS · Android · WebAssembly
+   └─ Headless    → offscreen rendering for tests / CI</div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">a form looks exactly like you'd expect</div>
+    <h2 class="msf-section__title">Program.cs, unchanged.</h2>
+    <div class="msf-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>MainForm.cs</span>
+        </div>
+        <pre>using Majorsilence.Forms;
+
+public class MainForm : Form
+{
+}</pre>
+      </div>
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>Program.cs</span>
+          <span class="msf-code-block__label">run</span>
+        </div>
+        <pre>static void Main (string [] args)
+{
+    Application.Run (new MainForm ());
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">samples</div>
+    <h2 class="msf-section__title">Real apps, not toy demos.</h2>
+    <p class="msf-section__lede">
+      Explore <a href="{{ '/samples/' | relative_url }}">every sample</a> in the repository — a
+      Windows Explorer clone, an Outlook clone, a full control gallery on two backends, and
+      bi-directional WinForms interop.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary" href="{{ '/samples/' | relative_url }}">Browse samples</a>
+      <a class="msf-btn msf-btn--secondary" href="{{ '/backends/' | relative_url }}">Platform backends</a>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">from the blog</div>
+    <h2 class="msf-section__title">Latest updates</h2>
+    {% for post in site.posts limit: 3 %}
+    <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+      <div class="msf-blog-card__meta">{{ post.date | date: "%B %-d, %Y" }}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+      <h3 class="msf-blog-card__title">{{ post.title }}</h3>
+      <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+      <span class="msf-blog-card__link">Read post &rarr;</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

@@ -1,0 +1,21 @@
+<nav class="msf-navbar">
+  <a class="msf-navbar__brand" href="{{ '/' | relative_url }}">
+    <span class="msf-logo-badge msf-logo-badge--md">MF</span>
+    <span class="msf-navbar__name">Majorsilence.Forms</span>
+  </a>
+  <div class="msf-navbar__right">
+    <div class="msf-navbar__links">
+      {% for item in site.nav_links %}
+      {% assign current = page.url | remove: 'index.html' %}
+      {% assign target = item.url | remove: 'index.html' %}
+      <a class="msf-navbar__link{% if current == target %} is-active{% endif %}" href="{{ item.url | relative_url }}">{{ item.label }}</a>
+      {% endfor %}
+    </div>
+    <a class="msf-navbar__cta" href="{{ site.github_url }}" target="_blank" rel="noopener">github &#8599;</a>
+    <div class="msf-theme-toggle" role="group" aria-label="Theme">
+      <button type="button" class="msf-theme-toggle__option" data-theme-option="light">light</button>
+      <button type="button" class="msf-theme-toggle__option" data-theme-option="dark">dark</button>
+      <button type="button" class="msf-theme-toggle__option" data-theme-option="system">auto</button>
+    </div>
+  </div>
+</nav>
