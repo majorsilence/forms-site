@@ -12,7 +12,7 @@ That host is abstracted behind a small seam so Majorsilence.Forms can run on mor
 
 | Assembly | Backend | Notes |
 |---|---|---|
-| `Majorsilence.Forms.Avalonia` | Avalonia 12 | Default desktop backend — Windows, macOS, Linux. |
+| `Majorsilence.Forms.Avalonia` | Avalonia 12 | Default desktop backend — Windows, macOS, Linux. Avalonia also ships its own Android, iOS, and Browser (WASM) targets, making this backend a second path to mobile and web alongside Uno. |
 | `Majorsilence.Forms.Headless` | Dependency-free SkiaSharp | Offscreen rendering for tests/servers; the reference second backend. |
 | `Majorsilence.Forms.Uno` | Uno Platform / Skia | Desktop, iOS, Android, WebAssembly. Presents via `SKXamlCanvas` through a Uno app head. |
 
@@ -41,6 +41,14 @@ with zero configuration. To use a different backend, set it before the first win
 ```csharp
 Majorsilence.Forms.Backends.Platform.Backend = new Majorsilence.Forms.Headless.HeadlessPlatformBackend ();
 ```
+
+## The Avalonia backend
+
+The default backend, and the one a new desktop app gets with zero configuration. It targets
+Windows, macOS, and Linux desktop out of the box. Avalonia itself isn't desktop-only, though — it
+ships its own Android, iOS, and Browser (WebAssembly) targets, so wiring `Majorsilence.Forms.Avalonia`
+up to one of those is a second path to mobile and web, alongside the dedicated Uno backend below —
+worth reaching for if your app (or team) is already invested in Avalonia's mobile/browser tooling.
 
 ## The Headless backend
 
