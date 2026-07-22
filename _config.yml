@@ -4,9 +4,9 @@ description: >-
   A WinForms-style UI framework that moves legacy and modern WinForms
   applications onto a modern, cross-platform stack — Windows, macOS, Linux,
   and beyond — without a rewrite.
-url: "https://majorsilence.github.io"
+url: "https://forms.majorsilence.com"
 baseurl: ""
-repository: majorsilence/Majorsilence.Forms
+repository: majorsilence/forms-site
 github_url: "https://github.com/majorsilence/Majorsilence.Forms"
 
 markdown: kramdown
