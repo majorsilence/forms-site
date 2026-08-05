@@ -84,6 +84,11 @@ jobs:
       # (Jekyll ignores underscore-prefixed paths) and the app would 404 its runtime.
       - name: Add the gallery to the built site
         run: |
+          # actions/jekyll-build-pages is a Docker container action running as root, so the
+          # _site it produces is owned by root while every `run:` step here executes as the
+          # unprivileged `runner` user. Without this chown, writing into _site fails with
+          # "mkdir: cannot create directory '_site/gallery': Permission denied".
+          sudo chown -R "$(id -u):$(id -g)" _site
           mkdir -p _site/gallery
           cp -r wasm-publish/wwwroot/. _site/gallery/
           touch _site/.nojekyll
