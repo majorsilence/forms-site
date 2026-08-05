@@ -41,6 +41,10 @@ nav_links:
     url: /samples/
   - label: backends
     url: /backends/
+  - label: automation
+    url: /automation/
+  - label: native interop
+    url: /native-interop/
   - label: blog
     url: /blog/
 

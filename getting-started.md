@@ -22,6 +22,8 @@ Windows Forms experience. The best reference is the source of the sample applica
 - [`ControlGallery`]({{ site.github_url }}/tree/main/samples/ControlGallery) — every built-in control, live.
 - [`Explorer`]({{ site.github_url }}/tree/main/samples/Explorer) — a Windows Explorer clone.
 
+See [Samples]({{ '/samples/' | relative_url }}) for the full list and how to run each one.
+
 ## From scratch
 
 To turn a regular .NET console application into a Majorsilence.Forms application, make the
@@ -32,7 +34,7 @@ following changes.
 ```xml
 <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
 </PropertyGroup>
 ```
@@ -41,7 +43,7 @@ Add a reference to `Majorsilence.Forms`:
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="Majorsilence.Forms" Version="0.2.0" />
+    <PackageReference Include="Majorsilence.Forms" Version="26.0.26" />
 </ItemGroup>
 ```
 
@@ -68,7 +70,16 @@ static void Main (string [] args)
 
 Your application is now ready to run — on the default Avalonia backend, that's Windows, macOS, and
 Linux with no further configuration. See [Platform backends]({{ '/backends/' | relative_url }}) to
-target Uno Platform instead.
+target Uno Platform, the browser, or offscreen rendering instead.
+
+## Where to go next
+
+- **[Platform backends]({{ '/backends/' | relative_url }})** — the host seam, running in the browser,
+  embedding Majorsilence.Forms inside an existing Avalonia or Uno app, and touch gestures.
+- **[Accessibility & automation]({{ '/automation/' | relative_url }})** — write UI tests in-process or
+  over Selenium/WebDriver, and light up screen readers on Windows.
+- **[Native interop]({{ '/native-interop/' | relative_url }})** — hosting native content (video, maps,
+  browser engines) and why `Control.Handle` isn't an `HWND`.
 
 ## Migrating an existing WinForms app
 

@@ -24,7 +24,7 @@ title: null
       <span class="msf-chip msf-chip--neutral">Uno Platform</span>
       <span class="msf-chip msf-chip--neutral">Headless</span>
       <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
-      <span class="msf-chip msf-chip--neutral">.NET 8+</span>
+      <span class="msf-chip msf-chip--neutral">.NET 10</span>
     </div>
   </div>
 </section>
@@ -75,7 +75,15 @@ title: null
       </div>
       <div class="msf-card">
         <h3 class="msf-card__title">Modern under the hood</h3>
-        <p class="msf-card__body">GPU-accelerated Skia rendering, HiDPI, current .NET — a clean foundation, not a museum piece.</p>
+        <p class="msf-card__body">GPU-accelerated Skia rendering, HiDPI, touch gestures, current .NET — a clean foundation, not a museum piece.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Testable and accessible</h3>
+        <p class="msf-card__body">One <a href="{{ '/automation/' | relative_url }}">automation tree</a> drives in-process UI tests, a W3C WebDriver server for Selenium, and Windows screen readers.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Migrate incrementally</h3>
+        <p class="msf-card__body">Run alongside real WinForms in one process on Windows, or embed Majorsilence.Forms controls and windows inside an existing Avalonia or Uno app.</p>
       </div>
     </div>
   </div>
@@ -135,8 +143,9 @@ public class MainForm : Form
     <h2 class="msf-section__title">Real apps, not toy demos.</h2>
     <p class="msf-section__lede">
       Explore <a href="{{ '/samples/' | relative_url }}">every sample</a> in the repository — a
-      Windows Explorer clone, an Outlook clone, a full control gallery on two backends, and
-      bi-directional WinForms interop.
+      Windows Explorer clone, an Outlook clone, the same full control gallery running on desktop,
+      Uno, the browser, Android and iOS, bi-directional WinForms interop, and Majorsilence.Forms
+      embedded inside host Avalonia and Uno apps.
     </p>
     <div class="msf-hero__actions">
       <a class="msf-btn msf-btn--primary" href="{{ '/samples/' | relative_url }}">Browse samples</a>
