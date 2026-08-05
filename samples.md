@@ -34,7 +34,10 @@ nuget.org via the sample's own `nuget.config`.
 ## Gallery.Wasm
 
 The same control gallery again, this time running in the browser on the Avalonia backend's
-`net10.0-browser` target. Needs the wasm-tools workload once:
+`net10.0-browser` target — **[try it live]({{ '/gallery/' | relative_url }})**, no install required.
+It's the real framework compiled to WebAssembly, so first load pulls down the .NET runtime.
+
+To build it yourself, you need the wasm-tools workload once:
 
 ```
 dotnet workload install wasm-tools

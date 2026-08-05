@@ -33,6 +33,62 @@ jobs:
           source: ./
           destination: ./_site
 
+      # ── The live browser gallery, served at /gallery/ ────────────────────────────────
+      #
+      # samples/Gallery.Wasm lives in the Majorsilence.Forms repo, not this one, so it is
+      # built here from a second checkout rather than pulled in as a cross-repo artifact:
+      # the repo is public, so `actions/checkout` needs no token, whereas downloading an
+      # artifact from another repo's run does. The cost is ~5 minutes added to each site
+      # deploy (workload install + the emcc/wasm-opt native link).
+      #
+      # Every step below runs AFTER the Jekyll build above, and that ordering is load-
+      # bearing: `forms/` and `wasm-publish/` land inside the Jekyll source directory, so
+      # building first is what keeps Jekyll from walking them. The copy then lands in the
+      # already-built _site, which Jekyll never looks at again.
+      - name: Checkout Majorsilence.Forms
+        uses: actions/checkout@v4
+        with:
+          repository: majorsilence/Majorsilence.Forms
+          # Tracks main, so the published gallery follows the framework. Pin to a tag
+          # (e.g. v26.0.26) if you'd rather the demo move only on releases.
+          ref: main
+          path: forms
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # Not preinstalled on GitHub-hosted runners, and required for `dotnet publish` to
+      # run the wasm-tools pipeline at all.
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools
+
+      # CompressionEnabled=false drops the .br/.gz copies of every _framework asset.
+      # GitHub Pages does its own compression at the edge and will not content-negotiate
+      # pre-compressed files, so those copies are pure artifact weight (~40% of the
+      # published output).
+      - name: Publish Gallery.Wasm
+        run: >-
+          dotnet publish forms/samples/Gallery.Wasm/Gallery.Wasm.csproj
+          --configuration Release
+          -p:CompressionEnabled=false
+          -o wasm-publish
+
+      # index.html/main.js reference everything relatively (./app.css, ./_framework/...),
+      # so the bundle works from a subpath with no <base href> rewriting.
+      #
+      # .nojekyll is belt-and-braces: actions/deploy-pages serves the uploaded artifact
+      # as-is and never runs Jekyll over it, but if this ever moves to a branch-based
+      # Pages source, its absence would silently drop the whole _framework/ directory
+      # (Jekyll ignores underscore-prefixed paths) and the app would 404 its runtime.
+      - name: Add the gallery to the built site
+        run: |
+          mkdir -p _site/gallery
+          cp -r wasm-publish/wwwroot/. _site/gallery/
+          touch _site/.nojekyll
+          du -sh _site/gallery
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
 

@@ -109,9 +109,13 @@ dotnet publish samples/Gallery.Wasm/Gallery.Wasm.csproj -c Release -o out
 ```
 
 Serve `out/wwwroot` with any static file server and open `index.html` — `dotnet run` doesn't serve a
-WebAssembly SDK project directly. There's no real filesystem in the browser, so assets an app reads
-from disk (images, etc.) need `WasmFilesToIncludeInFileSystem` in the csproj to preload them into the
-in-memory filesystem, as the sample does for its image folder.
+WebAssembly SDK project directly.
+
+There's no real filesystem in the browser, so anything an app reads from disk needs preloading into
+the in-memory one. Note that `WasmFilesToIncludeInFileSystem`, the usual item for that, is only
+honoured by the `WasmAppBuilder`/AppBundle pipeline — under `Microsoft.NET.Sdk.WebAssembly` it is
+silently ignored, which is why the gallery's own icons are currently missing in the browser build.
+Shipping such assets as `EmbeddedResource`s avoids the filesystem question entirely.
 
 Startup is async and host-driven instead of the blocking desktop loop:
 

@@ -53,3 +53,8 @@ exclude:
   - Gemfile.lock
   - README.md
   - vendor
+  # Working directories the Pages workflow creates in-tree when it builds the browser
+  # gallery. It already sequences those steps after the Jekyll build so Jekyll never
+  # sees them; this is the safety net if that order is ever changed.
+  - forms
+  - wasm-publish
