@@ -50,7 +50,7 @@ jobs:
         with:
           repository: majorsilence/Majorsilence.Forms
           # Tracks main, so the published gallery follows the framework. Pin to a tag
-          # (e.g. v26.0.26) if you'd rather the demo move only on releases.
+          # (e.g. v26.0.30) if you'd rather the demo move only on releases.
           ref: main
           path: forms
 

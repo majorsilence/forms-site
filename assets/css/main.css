@@ -817,6 +817,24 @@ img {
   color: var(--ink);
 }
 
+.msf-prose img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  margin: 28px 0 10px;
+}
+
+/* A paragraph that is nothing but italics directly under a screenshot reads as its caption. */
+.msf-prose p > em:only-child {
+  display: block;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
 .msf-prose hr {
   border: none;
   border-top: 1px solid var(--line);

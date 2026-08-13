@@ -5,3 +5,6 @@ _site/
 vendor/
 .bundle/
 Gemfile.lock
+
+# Promo/marketing drafts — not part of the published site
+promo/

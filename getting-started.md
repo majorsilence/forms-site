@@ -39,11 +39,13 @@ following changes.
 </PropertyGroup>
 ```
 
-Add a reference to `Majorsilence.Forms`:
+Add a reference to `Majorsilence.Forms` and to a backend — the core package references no windowing
+toolkit, so the backend is what actually puts a window on screen:
 
 ```xml
 <ItemGroup>
-    <PackageReference Include="Majorsilence.Forms" Version="26.0.26" />
+    <PackageReference Include="Majorsilence.Forms" Version="26.0.30" />
+    <PackageReference Include="Majorsilence.Forms.Avalonia" Version="26.0.30" />
 </ItemGroup>
 ```
 
@@ -74,6 +76,9 @@ target Uno Platform, the browser, or offscreen rendering instead.
 
 ## Where to go next
 
+- **[Training guide]({{ '/training/' | relative_url }})** — the structured curriculum for a whole team:
+  the mental model, the compatibility contract, migration, backends, testing, and the CI gates and
+  rollout plan that go with them.
 - **[Platform backends]({{ '/backends/' | relative_url }})** — the host seam, running in the browser,
   embedding Majorsilence.Forms inside an existing Avalonia or Uno app, and touch gestures.
 - **[Accessibility & automation]({{ '/automation/' | relative_url }})** — write UI tests in-process or

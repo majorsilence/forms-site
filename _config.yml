@@ -37,6 +37,8 @@ nav_links:
     url: /
   - label: getting started
     url: /getting-started/
+  - label: training
+    url: /training/
   - label: samples
     url: /samples/
   - label: backends
