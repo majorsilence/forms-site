@@ -81,8 +81,8 @@ target Uno Platform, the browser, or offscreen rendering instead.
   rollout plan that go with them.
 - **[Platform backends]({{ '/backends/' | relative_url }})** — the host seam, running in the browser,
   embedding Majorsilence.Forms inside an existing Avalonia or Uno app, and touch gestures.
-- **[Accessibility & automation]({{ '/automation/' | relative_url }})** — write UI tests in-process or
-  over Selenium/WebDriver, and light up screen readers on Windows.
+- **[Automation & UI testing]({{ '/automation/' | relative_url }})** — write UI tests that run headlessly
+  in CI, drive the app from Selenium or FlaUI, and light up screen readers on Windows.
 - **[Native interop]({{ '/native-interop/' | relative_url }})** — hosting native content (video, maps,
   browser engines) and why `Control.Handle` isn't an `HWND`.
 

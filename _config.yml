@@ -43,7 +43,7 @@ nav_links:
     url: /samples/
   - label: backends
     url: /backends/
-  - label: automation
+  - label: automation & testing
     url: /automation/
   - label: native interop
     url: /native-interop/

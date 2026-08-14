@@ -1762,6 +1762,11 @@ stakeholders, because it changes nothing about what you already ship.
 **Outcome:** your team writes UI tests that run in CI with no display, using locators that don't break —
 and knows what accessibility comes free.
 
+> This module is the overview. [**Automation & UI testing**]({{ '/automation/' | relative_url }}) is the
+> practitioner's version: page objects, a wait helper (there are no implicit waits), driving the app from
+> real Selenium, FlaUI/WinAppDriver on Windows, golden-image regression, CI recipes for GitHub Actions,
+> Azure DevOps and Jenkins, and how AI agents hook into the same surface.
+
 ### One automation tree, three consumers
 {:#module-8-tree}
 
@@ -2373,7 +2378,7 @@ native content or reads window handles.
 
 **Site pages:** [Getting started]({{ '/getting-started/' | relative_url }}) ·
 [Samples]({{ '/samples/' | relative_url }}) · [Platform backends]({{ '/backends/' | relative_url }}) ·
-[Accessibility & automation]({{ '/automation/' | relative_url }}) ·
+[Automation & UI testing]({{ '/automation/' | relative_url }}) ·
 [Native interop]({{ '/native-interop/' | relative_url }}) · [Blog]({{ '/blog/' | relative_url }}) ·
 [Live browser gallery]({{ '/gallery/' | relative_url }})
 
