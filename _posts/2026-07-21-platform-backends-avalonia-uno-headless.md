@@ -3,6 +3,9 @@ title: "Platform backends: Avalonia, Uno, and Headless"
 date: 2026-07-21 11:00:00 -0000
 read_time: "5 min read"
 excerpt: "Majorsilence.Forms draws every control itself with SkiaSharp — the windowing toolkit underneath is just a host. Here's how the seam works."
+description: >-
+  How cross-platform WinForms runs on Avalonia, Uno Platform and a headless Skia surface: every
+  control is drawn with SkiaSharp and the windowing toolkit underneath is only a swappable host.
 ---
 
 Majorsilence.Forms does **all of its own drawing** with SkiaSharp. Every control paints into an

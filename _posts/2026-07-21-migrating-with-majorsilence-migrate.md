@@ -3,6 +3,10 @@ title: "Migrating a WinForms app with majorsilence-migrate"
 date: 2026-07-21 08:00:00 -0000
 read_time: "6 min read"
 excerpt: "A deliberately textual rewriter — not a Roslyn transform — so it can run over thousands of files in seconds, even ones that don't currently compile."
+description: >-
+  How majorsilence-migrate automates migrating a WinForms solution to cross-platform .NET — a
+  deliberately textual rewriter that runs over thousands of files in seconds, even ones that do not
+  currently compile.
 ---
 
 `majorsilence-migrate` is the CLI tool that automates moving a WinForms solution onto

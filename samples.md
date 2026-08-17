@@ -2,6 +2,16 @@
 layout: docs
 title: Samples
 subtitle: Real applications built with Majorsilence.Forms, in the repository today.
+seo_title: "Cross-Platform WinForms Samples & Demo Apps"
+description: >-
+  Real cross-platform WinForms apps you can run: a Windows Explorer clone, an Outlook clone, and
+  the full control gallery on desktop, browser and mobile.
+keywords:
+  - winforms sample apps
+  - cross platform winforms examples
+  - c# winforms demo linux macos
+  - winforms control gallery
+priority: "0.8"
 ---
 
 ## ControlGallery

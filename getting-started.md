@@ -2,6 +2,16 @@
 layout: docs
 title: Getting Started
 subtitle: Scaffold your first Majorsilence.Forms app in a few minutes.
+seo_title: "Getting Started — Build a Cross-Platform WinForms App"
+description: >-
+  Scaffold a cross-platform WinForms app in minutes with the dotnet template, or add
+  Majorsilence.Forms to a plain .NET project. Windows, macOS and Linux.
+keywords:
+  - winforms cross platform tutorial
+  - majorsilence.forms getting started
+  - dotnet new winforms cross platform
+  - cross platform winforms hello world
+priority: "0.8"
 ---
 
 ## From a template

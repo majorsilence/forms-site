@@ -1,16 +1,35 @@
 ---
 layout: default
 title: null
+seo_title: "Majorsilence.Forms — Cross-Platform WinForms for .NET"
+description: >-
+  Open-source cross-platform WinForms library for .NET. Run your existing Windows Forms apps on
+  Windows, macOS, Linux and the browser — without a rewrite.
+keywords:
+  - cross platform winforms
+  - winforms compatibility library
+  - winforms compat layer
+  - winforms alternative
+  - winforms on linux
+  - winforms on mac
+  - cross platform .net gui framework
+  - windows forms cross platform
+  - migrate winforms
+priority: "1.0"
+changefreq: weekly
 ---
 <section class="msf-hero">
   <div class="msf-hero__inner">
-    <div class="msf-hero__eyebrow">majorsilence.forms &middot; early stage, stabilizing</div>
+    <div class="msf-hero__eyebrow">cross-platform winforms for .net &middot; open source &middot; beta</div>
     <h1 class="msf-hero__title">WinForms in. <span class="accent">Cross-platform out.</span></h1>
     <p class="msf-hero__lede">
-      A WinForms-style UI framework that moves legacy <em>and</em> modern WinForms applications onto
-      a modern, cross-platform stack. Keep the <code class="msf-inline-code">Form</code>s, controls,
-      event handlers, and <code class="msf-inline-code">*.Designer.cs</code> files you already have —
-      gain Windows, macOS, and Linux out of the box, with mobile and web within reach through
+      <strong>Majorsilence.Forms is a cross-platform WinForms library for .NET</strong> — a Windows
+      Forms compatibility layer that moves legacy <em>and</em> modern WinForms applications onto a
+      modern stack. Keep the <code class="msf-inline-code">Form</code>s, controls, event handlers,
+      and <code class="msf-inline-code">*.Designer.cs</code> files you already have —
+      <a href="{{ '/winforms-on-linux/' | relative_url }}">run on Linux</a>,
+      <a href="{{ '/winforms-on-macos/' | relative_url }}">run on macOS</a>, and run on Windows from
+      one build, with mobile and web within reach through
       <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a>'s own
       Android, iOS, and Browser targets or through
       <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>.
@@ -150,6 +169,44 @@ public class MainForm : Form
     <div class="msf-hero__actions">
       <a class="msf-btn msf-btn--primary" href="{{ '/samples/' | relative_url }}">Browse samples</a>
       <a class="msf-btn msf-btn--secondary" href="{{ '/backends/' | relative_url }}">Platform backends</a>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">start here</div>
+    <h2 class="msf-section__title">Answering the question that brought you here.</h2>
+    <p class="msf-section__lede">
+      Most people arrive looking for one specific thing — whether Windows Forms can run on Linux,
+      what a WinForms compatibility layer really costs, or how this compares to a rewrite in MAUI or
+      Avalonia. Each of those has its own page.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/cross-platform-winforms/' | relative_url }}">Cross-platform WinForms, explained</a></h3>
+        <p class="msf-card__body">Why <code class="msf-inline-code">System.Windows.Forms</code> is Windows-only, the three ways around it, and what an API-compatible reimplementation gives up.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/winforms-on-linux/' | relative_url }}">Can WinForms run on Linux?</a></h3>
+        <p class="msf-card__body">Not as-is — Mono's port is long gone and GDI+ isn't there. What works instead on Ubuntu, Fedora and Debian, and how to ship it.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/winforms-on-macos/' | relative_url }}">Can WinForms run on macOS?</a></h3>
+        <p class="msf-card__body">Native <code class="msf-inline-code">NSWindow</code> on Apple Silicon and Intel, what feels un-Mac-like about it, and packaging a <code class="msf-inline-code">.app</code>.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/migration/' | relative_url }}">Migrating an existing app</a></h3>
+        <p class="msf-card__body">The <code class="msf-inline-code">majorsilence-migrate</code> CLI does the mechanical rewrite — namespaces, project files, resources — as a readable git diff.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/winforms-alternatives/' | relative_url }}">WinForms alternatives compared</a></h3>
+        <p class="msf-card__body">MAUI, Avalonia, Uno Platform, Eto.Forms, WPF and Wine — measured by how much of your existing code each one keeps.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/faq/' | relative_url }}">FAQ</a></h3>
+        <p class="msf-card__body">Do Designer files still work? Is there a visual designer? What about VB.NET, DataGridView, <code class="msf-inline-code">System.Drawing</code>, and production readiness?</p>
+      </div>
     </div>
   </div>
 </section>

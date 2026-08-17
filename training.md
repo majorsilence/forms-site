@@ -2,6 +2,17 @@
 layout: docs
 title: Training guide
 subtitle: A structured curriculum for application teams building and shipping on Majorsilence.Forms — every example in both C# and VB.NET.
+seo_title: "Cross-Platform WinForms Training Guide (C# and VB.NET)"
+description: >-
+  A structured curriculum for teams building or migrating a WinForms app onto a cross-platform
+  stack — mental model, migration, testing, CI. C# and VB.NET.
+keywords:
+  - winforms training
+  - cross platform winforms tutorial
+  - winforms migration guide
+  - vb.net cross platform ui
+  - winforms team curriculum
+priority: "0.8"
 ---
 
 This is the guide to hand a development team that is about to build — or migrate — **an application**

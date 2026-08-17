@@ -3,6 +3,10 @@ title: "Introducing Majorsilence.Forms"
 date: 2026-07-21 15:00:00 -0000
 read_time: "4 min read"
 excerpt: "A WinForms-style UI framework for moving legacy and modern WinForms apps onto a cross-platform stack — without a rewrite."
+description: >-
+  Introducing Majorsilence.Forms, an open-source cross-platform WinForms library for .NET: keep your
+  Forms, controls and Designer files, and run the same app on Windows, macOS and Linux without a
+  rewrite.
 ---
 
 Moving a WinForms application off Windows-only desktop has traditionally meant a ground-up rewrite:

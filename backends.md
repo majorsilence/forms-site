@@ -2,6 +2,17 @@
 layout: docs
 title: Platform backends
 subtitle: One rendering core, three swappable hosts.
+seo_title: "Platform Backends — WinForms on Avalonia, Uno or Headless"
+description: >-
+  How a cross-platform WinForms app is hosted on Avalonia, Uno Platform or a headless Skia surface
+  — the backend seam, WebAssembly, and embedding.
+keywords:
+  - winforms on avalonia
+  - winforms on uno platform
+  - winforms webassembly
+  - headless winforms rendering
+  - skiasharp ui backend
+priority: "0.8"
 ---
 
 Majorsilence.Forms does **all of its own drawing** with SkiaSharp. Every control paints into an

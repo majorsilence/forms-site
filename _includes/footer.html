@@ -1,13 +1,33 @@
 <footer class="msf-footer">
-  <div class="msf-footer__brand">
-    <span class="msf-logo-badge msf-logo-badge--sm">MF</span>
-    <span class="msf-footer__copyright">MIT licensed &middot; &copy; {{ site.time | date: '%Y' }} Majorsilence.Forms contributors</span>
+  <div class="msf-footer__sitemap">
+    <div class="msf-footer__col msf-footer__col--brand">
+      <div class="msf-footer__brand">
+        <span class="msf-logo-badge msf-logo-badge--sm">MF</span>
+        <span class="msf-navbar__name">Majorsilence.Forms</span>
+      </div>
+      <p class="msf-footer__blurb">
+        Cross-platform WinForms for .NET. Run your Windows Forms apps on Windows, macOS, Linux,
+        mobile and the browser — without a rewrite.
+      </p>
+      <div class="msf-footer__links">
+        <a href="{{ site.github_url }}" target="_blank" rel="noopener">GitHub</a>
+        <a href="{{ site.nuget_url }}" target="_blank" rel="noopener">NuGet</a>
+        <a href="{{ site.github_url }}/blob/main/license.md" target="_blank" rel="noopener">MIT license</a>
+      </div>
+    </div>
+    {% for group in site.footer_links %}
+    <div class="msf-footer__col">
+      <div class="msf-footer__heading">{{ group.heading }}</div>
+      <ul class="msf-footer__list">
+        {% for item in group.items %}
+        <li><a href="{{ item.url | relative_url }}">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
   </div>
-  <div class="msf-footer__links">
-    <a href="{{ site.github_url }}" target="_blank" rel="noopener">github</a>
-    <a href="{{ '/getting-started/' | relative_url }}">getting started</a>
-    <a href="{{ '/samples/' | relative_url }}">samples</a>
-    <a href="{{ '/blog/' | relative_url }}">blog</a>
-    <a href="{{ site.github_url }}/blob/main/license.md" target="_blank" rel="noopener">license</a>
+  <div class="msf-footer__bar">
+    <span class="msf-footer__copyright">MIT licensed &middot; &copy; {{ site.time | date: '%Y' }} Majorsilence.Forms contributors</span>
+    <span class="msf-footer__copyright">An AI-enhanced fork of <a href="https://github.com/modern-forms/Modern.Forms" target="_blank" rel="noopener">Modern.Forms</a></span>
   </div>
 </footer>

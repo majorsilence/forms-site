@@ -1,0 +1,183 @@
+{%- comment -%}
+  All of the <head> metadata that search engines, social cards and AI crawlers read.
+
+  This is hand-rolled rather than jekyll-seo-tag on purpose. The site is built by
+  actions/jekyll-build-pages, which runs Jekyll in safe mode against its own gem bundle — only
+  plugins that are both in that bundle *and* listed under `plugins:` in _config.yml load at all.
+  Rather than depend on that, everything here is plain Liquid, so what renders in CI is exactly
+  what renders under a local `jekyll serve`.
+
+  Per-page front matter this reads:
+    seo_title    full <title> override (otherwise "<title> · Majorsilence.Forms")
+    description  the meta description / og:description. Always set one on a real page — the
+                 auto-excerpt fallback produces a snippet from the first paragraph, which is
+                 rarely what you'd want shown in a search result.
+    keywords     list of phrases, for the meta keywords tag
+    og_image     page-specific social card image (site.og_image otherwise)
+    faq          list of {question, answer} — emits FAQPage structured data, which is what
+                 makes a page eligible for the question-and-answer result treatment
+    noindex      true to keep a page out of the index and out of sitemap.xml
+{%- endcomment -%}
+
+{%- if page.seo_title -%}
+  {%- assign seo_title = page.seo_title -%}
+{%- elsif page.title -%}
+  {%- assign seo_title = page.title | append: " · " | append: site.title -%}
+{%- else -%}
+  {%- assign seo_title = site.title | append: " — " | append: site.tagline -%}
+{%- endif -%}
+
+{%- if page.description -%}
+  {%- assign seo_description = page.description -%}
+{%- elsif page.excerpt and page.excerpt != "" -%}
+  {%- assign seo_description = page.excerpt | strip_html | strip_newlines | truncate: 160 -%}
+{%- else -%}
+  {%- assign seo_description = site.description -%}
+{%- endif -%}
+{%- assign seo_description = seo_description | strip_html | strip_newlines | strip -%}
+
+{%- assign canonical = page.url | replace: 'index.html', '' | absolute_url -%}
+{%- assign seo_image = page.og_image | default: site.og_image | absolute_url -%}
+
+<title>{{ seo_title }}</title>
+<meta name="description" content="{{ seo_description | escape }}">
+{%- if page.keywords %}
+<meta name="keywords" content="{{ page.keywords | join: ', ' | escape }}">
+{%- endif %}
+<meta name="author" content="{{ site.author }}">
+<link rel="canonical" href="{{ canonical }}">
+{%- if page.noindex %}
+<meta name="robots" content="noindex, follow">
+{%- else %}
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+{%- endif %}
+
+<meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:title" content="{{ seo_title | escape }}">
+<meta property="og:description" content="{{ seo_description | escape }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:locale" content="{{ site.locale }}">
+<meta property="og:image" content="{{ seo_image }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ page.og_image_alt | default: site.og_image_alt | strip_newlines | strip | escape }}">
+{%- if page.layout == 'post' %}
+<meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+<meta property="article:author" content="{{ site.author }}">
+{%- endif %}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ seo_title | escape }}">
+<meta name="twitter:description" content="{{ seo_description | escape }}">
+<meta name="twitter:image" content="{{ seo_image }}">
+
+{%- comment -%}
+  Structured data. One @graph rather than several disconnected blocks so the nodes can reference
+  each other by @id — that is what tells a consumer the article and the software are the same
+  project rather than three unrelated things that happen to share a page.
+{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": {{ site.url | append: '/#website' | jsonify }},
+      "url": {{ site.url | append: '/' | jsonify }},
+      "name": {{ site.title | jsonify }},
+      "description": {{ site.description | strip_newlines | strip | jsonify }},
+      "inLanguage": {{ site.lang | jsonify }},
+      "publisher": { "@id": {{ site.url | append: '/#organization' | jsonify }} }
+    },
+    {
+      "@type": "Organization",
+      "@id": {{ site.url | append: '/#organization' | jsonify }},
+      "name": "Majorsilence",
+      "url": {{ site.url | append: '/' | jsonify }},
+      "sameAs": [
+        {{ site.github_url | jsonify }},
+        "https://www.nuget.org/profiles/Majorsilence"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": {{ site.url | append: '/#software' | jsonify }},
+      "name": "Majorsilence.Forms",
+      "alternateName": [
+        "Majorsilence Forms",
+        "Cross-platform WinForms",
+        "WinForms compatibility layer for .NET"
+      ],
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "UI framework",
+      "operatingSystem": "Windows, macOS, Linux, Android, iOS, WebAssembly",
+      "url": {{ site.url | append: '/' | jsonify }},
+      "downloadUrl": {{ site.nuget_url | jsonify }},
+      "codeRepository": {{ site.github_url | jsonify }},
+      "programmingLanguage": ["C#", "Visual Basic .NET"],
+      "runtimePlatform": ".NET 8, .NET 10",
+      "license": "https://opensource.org/licenses/MIT",
+      "isAccessibleForFree": true,
+      "description": {{ site.description | strip_newlines | strip | jsonify }},
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@id": {{ site.url | append: '/#organization' | jsonify }} }
+    }
+    {%- if page.url != '/' %},
+    {
+      "@type": "{% if page.layout == 'post' %}BlogPosting{% else %}TechArticle{% endif %}",
+      "@id": {{ canonical | append: '#article' | jsonify }},
+      "headline": {{ page.title | default: site.title | jsonify }},
+      "description": {{ seo_description | jsonify }},
+      "url": {{ canonical | jsonify }},
+      "inLanguage": {{ site.lang | jsonify }},
+      "image": {{ seo_image | jsonify }},
+      {%- if page.layout == 'post' %}
+      "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
+      "dateModified": {{ page.date | date_to_xmlschema | jsonify }},
+      {%- endif %}
+      "author": { "@id": {{ site.url | append: '/#organization' | jsonify }} },
+      "publisher": { "@id": {{ site.url | append: '/#organization' | jsonify }} },
+      "isPartOf": { "@id": {{ site.url | append: '/#website' | jsonify }} },
+      "about": { "@id": {{ site.url | append: '/#software' | jsonify }} }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": {{ canonical | append: '#breadcrumb' | jsonify }},
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": {{ site.url | append: '/' | jsonify }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ page.title | default: site.title | jsonify }},
+          "item": {{ canonical | jsonify }}
+        }
+      ]
+    }
+    {%- endif -%}
+    {%- if page.faq %},
+    {
+      "@type": "FAQPage",
+      "@id": {{ canonical | append: '#faq' | jsonify }},
+      "mainEntity": [
+        {%- for entry in page.faq %}
+        {
+          "@type": "Question",
+          "name": {{ entry.question | jsonify }},
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": {{ entry.answer | strip_newlines | strip | jsonify }}
+          }
+        }{% unless forloop.last %},{% endunless %}
+        {%- endfor %}
+      ]
+    }
+    {%- endif %}
+  ]
+}
+</script>

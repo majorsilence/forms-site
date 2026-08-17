@@ -2,6 +2,16 @@
 layout: docs
 title: Native interop
 subtitle: Hosted native content, video, and why there is no HWND behind a Button.
+seo_title: "Native Interop — Why Control.Handle Isn't an HWND"
+description: >-
+  Host native content — video, maps, browser engines — inside a cross-platform WinForms control,
+  and why Control.Handle is IntPtr.Zero here.
+keywords:
+  - winforms control handle hwnd
+  - host native control winforms cross platform
+  - winforms video playback cross platform
+  - nativecontrolhost skiasharp
+priority: "0.7"
 ---
 
 Two questions turn out to be the same question:

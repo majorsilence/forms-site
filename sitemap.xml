@@ -1,0 +1,53 @@
+---
+# Not an HTML page: opt out of the site-wide `layout: default` default.
+layout: null
+sitemap: false
+permalink: /sitemap.xml
+---
+{%- comment -%}
+  Hand-rolled rather than jekyll-sitemap, for the same reason _includes/seo.html is hand-rolled:
+  actions/jekyll-build-pages runs Jekyll in safe mode against its own gem bundle, so a plugin
+  listed only in the Gemfile never loads and the site silently ships without a sitemap — which
+  is exactly what was happening before this file existed.
+
+  Opt a page out with `sitemap: false` in its front matter (see robots.txt, feed.xml, 404.html).
+
+  No <lastmod> on regular pages on purpose: the only date available at build time is the build
+  itself, and stamping "modified today" on all thirteen pages every deploy trains crawlers to
+  ignore the field. Pages can opt in with a real `last_modified:` date; posts use their own.
+{%- endcomment -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {%- for p in site.pages -%}
+    {%- comment -%} p.url has no extension for permalinked pages ("/faq/"), so `last` is the
+    whole path there and only genuine non-HTML outputs match the exclusion list. {%- endcomment -%}
+    {%- assign ext = p.url | split: '.' | last -%}
+    {%- unless p.sitemap == false or p.noindex or ext == 'xml' or ext == 'txt' or ext == 'json' -%}
+  <url>
+    <loc>{{ p.url | replace: 'index.html', '' | absolute_url | xml_escape }}</loc>
+      {%- if p.last_modified %}
+    <lastmod>{{ p.last_modified | date_to_xmlschema }}</lastmod>
+      {%- endif %}
+    <changefreq>{{ p.changefreq | default: 'weekly' }}</changefreq>
+    <priority>{{ p.priority | default: '0.7' }}</priority>
+  </url>
+    {%- endunless -%}
+  {%- endfor %}
+  {%- for post in site.posts %}
+  <url>
+    <loc>{{ post.url | absolute_url | xml_escape }}</loc>
+    <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  {%- endfor %}
+  {%- comment -%}
+    /gallery/ is the published Gallery.Wasm build. The Pages workflow copies it into _site
+    *after* Jekyll runs, so Jekyll never sees it and it has to be listed by hand.
+  {%- endcomment %}
+  <url>
+    <loc>{{ '/gallery/' | absolute_url }}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

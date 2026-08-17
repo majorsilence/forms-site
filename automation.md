@@ -2,6 +2,17 @@
 layout: docs
 title: Automation & UI testing
 subtitle: One automation tree — in-process tests, Selenium, and screen readers — and how to build a real test suite on it. Every example in C# and VB.NET.
+seo_title: "WinForms UI Testing & Automation — Headless CI and Selenium"
+description: >-
+  Automate and test a cross-platform WinForms app from one automation tree: in-process UI tests,
+  headless CI, a W3C WebDriver server, and screen readers.
+keywords:
+  - winforms ui testing
+  - automate winforms app
+  - winforms selenium webdriver
+  - headless winforms ci
+  - winforms accessibility screen reader
+priority: "0.8"
 ---
 
 Majorsilence.Forms exposes a backend-neutral **automation tree**: a snapshot of the live control

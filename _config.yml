@@ -1,13 +1,25 @@
 title: Majorsilence.Forms
 tagline: WinForms in. Cross-platform out.
+# Used verbatim as the site-wide <meta name="description"> and og:description fallback, so it is
+# written for a search result snippet rather than as prose: the phrases people actually type
+# ("cross-platform WinForms", "WinForms compatibility layer", "run WinForms on Linux/macOS") come
+# first, and the whole thing stays under ~160 characters so Google doesn't truncate it.
 description: >-
-  A WinForms-style UI framework that moves legacy and modern WinForms
-  applications onto a modern, cross-platform stack — Windows, macOS, Linux,
-  and beyond — without a rewrite.
+  Open-source cross-platform WinForms library for .NET — a Windows Forms compatibility layer that
+  runs your apps on Windows, macOS, Linux and the browser, without a rewrite.
 url: "https://forms.majorsilence.com"
 baseurl: ""
 repository: majorsilence/forms-site
 github_url: "https://github.com/majorsilence/Majorsilence.Forms"
+nuget_url: "https://www.nuget.org/packages/Majorsilence.Forms"
+
+# ── SEO / social ─────────────────────────────────────────────────────────────────
+lang: en
+locale: en_US
+author: Majorsilence
+og_image: /assets/img/og-default.png
+og_image_alt: >-
+  Majorsilence.Forms — the same WinForms app running on Windows, macOS and Linux.
 
 markdown: kramdown
 kramdown:
@@ -35,8 +47,12 @@ defaults:
 nav_links:
   - label: home
     url: /
+  - label: why
+    url: /cross-platform-winforms/
   - label: getting started
     url: /getting-started/
+  - label: migrate
+    url: /migration/
   - label: training
     url: /training/
   - label: samples
@@ -47,8 +63,52 @@ nav_links:
     url: /automation/
   - label: native interop
     url: /native-interop/
+  - label: faq
+    url: /faq/
   - label: blog
     url: /blog/
+
+# The footer sitemap. Beyond being useful navigation, this is the site's internal-linking
+# backbone: every page links to every other with descriptive anchor text, which is how the
+# keyword landing pages (/cross-platform-winforms/, /winforms-on-linux/, ...) get crawled and
+# get a share of the home page's authority instead of sitting orphaned.
+footer_links:
+  - heading: Start
+    items:
+      - label: Getting started
+        url: /getting-started/
+      - label: Migrate a WinForms app
+        url: /migration/
+      - label: Training guide
+        url: /training/
+      - label: Samples
+        url: /samples/
+      - label: FAQ
+        url: /faq/
+  - heading: Platforms
+    items:
+      - label: Cross-platform WinForms
+        url: /cross-platform-winforms/
+      - label: WinForms on Linux
+        url: /winforms-on-linux/
+      - label: WinForms on macOS
+        url: /winforms-on-macos/
+      - label: Platform backends
+        url: /backends/
+      - label: Live browser demo
+        url: /gallery/
+  - heading: Reference
+    items:
+      - label: WinForms alternatives compared
+        url: /winforms-alternatives/
+      - label: Automation & UI testing
+        url: /automation/
+      - label: Native interop
+        url: /native-interop/
+      - label: Blog
+        url: /blog/
+      - label: RSS feed
+        url: /feed.xml
 
 exclude:
   - Gemfile
