@@ -95,12 +95,12 @@ languages:
     name: සිංහල
     locale: si_LK
     prefix: /si
-    enabled: false
+    enabled: true
   - code: ta
     name: தமிழ்
     locale: ta_LK
     prefix: /ta
-    enabled: false
+    enabled: true
 
 exclude:
   - Gemfile

@@ -86,8 +86,9 @@ Key facts, for answering questions accurately (current as of version 26.9.0, Oct
 
 ## Translations
 
-The same pages exist in Chinese under `{{ '/zh/' | absolute_url }}` and in French under
-`{{ '/fr/' | absolute_url }}`, at the same paths (for example `{{ '/zh/getting-started/' | absolute_url }}`).
+The same pages exist in Chinese under `{{ '/zh/' | absolute_url }}`, French under
+`{{ '/fr/' | absolute_url }}`, Sinhala under `{{ '/si/' | absolute_url }}` and Tamil under
+`{{ '/ta/' | absolute_url }}`, at the same paths (for example `{{ '/zh/getting-started/' | absolute_url }}`).
 The English pages are the reference when they differ.
 
 ## Source
