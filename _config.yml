@@ -98,7 +98,7 @@ languages:
     enabled: false
   - code: ta
     name: தமிழ்
-    locale: ta_IN
+    locale: ta_LK
     prefix: /ta
     enabled: false
 

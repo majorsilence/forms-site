@@ -77,7 +77,9 @@
 {%- endfor -%}
 {%- endcapture -%}
 {%- if alt_count > 1 -%}{{ hreflang_links }}{%- endif %}
-{%- if page.noindex %}
+{%- comment -%} A page in a language that is declared but not yet enabled (still in review) is built,
+  but kept out of search until the language is switched on. {%- endcomment -%}
+{%- if page.noindex or language.enabled != true %}
 <meta name="robots" content="noindex, follow">
 {%- else %}
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">

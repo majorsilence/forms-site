@@ -1,0 +1,27 @@
+---
+layout: default
+lang: si
+title: බ්ලොග්
+seo_title: "බ්ලොග් — බහු-වේදිකා WinForms යාවත්කාලීන සහ සංක්‍රමණ සටහන්"
+description: >-
+  Majorsilence.Forms ව්‍යාපෘතියේ නිකුතු සටහන්, WinForms සංක්‍රමණ ලිපි සහ ගෘහනිර්මාණ (architecture)
+  පිළිබඳ ගැඹුරු විග්‍රහ — .NET සඳහා බහු-වේදිකා WinForms.
+priority: "0.7"
+---
+{%- include lang-vars.html -%}
+<div class="msf-prose" style="max-width: 720px;">
+  <a class="msf-back-link" href="{{ prefix | append: '/' | relative_url }}">&larr; {{ t.ui.back_home }}</a>
+  <h1>බ්ලොග්</h1>
+  <p class="msf-prose__meta">යාවත්කාලීන, සංක්‍රමණ සටහන් සහ ගෘහනිර්මාණ ලිපි.</p>
+</div>
+<div class="msf-container" style="max-width: 720px; padding-bottom: 96px;">
+  {% assign lang_posts = site.posts | where: "lang", lang %}
+  {% for post in lang_posts %}
+  <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+    <div class="msf-blog-card__meta">{% include date.html date=post.date %}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+    <h2 class="msf-blog-card__title">{{ post.title }}</h2>
+    <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 220 }}</p>
+    <span class="msf-blog-card__link">{{ t.ui.read_post }} &rarr;</span>
+  </a>
+  {% endfor %}
+</div>

@@ -2980,7 +2980,7 @@ A sequence that has the evidence arriving before the commitment does.
 2. **Pilot migration (2–5 days).** Pick a small, real, low-stakes internal app. Run the migrator on a
    branch, get it building, work the [manual-fix checklist](#module-5-checklist). Deliverable: a
    calibrated per-KLOC estimate and a list of gaps that actually block *you*.
-3. **Decide the adoption shape.** Three options, not mutually exclusive:
+3. **Decide the adoption shape.** Four options, not mutually exclusive:
    - **New app** — start on Majorsilence.Forms directly ([module 2](#module-2)).
    - **New screens in an old app** — Direction B interop on Windows, changing nothing you ship
      ([module 7](#module-7-b)).

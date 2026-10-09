@@ -1,0 +1,41 @@
+---
+# Not an HTML page: opt out of the site-wide `layout: default` default.
+layout: null
+sitemap: false
+permalink: /si/feed.xml
+lang: si
+---
+{%- comment -%}
+  The Atom feed the <link rel="alternate"> in _layouts/default.html has always pointed at.
+  Hand-rolled for the same reason as sitemap.xml — jekyll-feed is in the Gemfile but never
+  loads under actions/jekyll-build-pages, so /feed.xml returned a 404 page.
+
+  One feed per language: this file is the English one, and each /<lang>/feed.xml is a copy with
+  its own `lang` and `permalink`. Posts are filtered on `post.lang`, so a translation of a post
+  appears only in its language's feed.
+{%- endcomment -%}
+{%- include lang-vars.html -%}
+{%- assign feed_posts = site.posts | where: "lang", lang -%}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ site.title | xml_escape }}</title>
+  <subtitle>{{ t.site.description | default: site.description | strip_newlines | strip | xml_escape }}</subtitle>
+  <id>{{ prefix | append: '/feed.xml' | absolute_url }}</id>
+  <link href="{{ prefix | append: '/feed.xml' | absolute_url }}" rel="self" type="application/atom+xml"/>
+  <link href="{{ prefix | append: '/' | absolute_url }}" rel="alternate" type="text/html"/>
+  <updated>{% if feed_posts.first %}{{ feed_posts.first.date | date_to_xmlschema }}{% else %}{{ site.time | date_to_xmlschema }}{% endif %}</updated>
+  <author><name>{{ site.author | xml_escape }}</name></author>
+  <rights>MIT</rights>
+  {%- for post in feed_posts limit: 20 %}
+  <entry>
+    <title>{{ post.title | xml_escape }}</title>
+    <id>{{ post.url | absolute_url }}</id>
+    <link href="{{ post.url | absolute_url }}" rel="alternate" type="text/html"/>
+    <published>{{ post.date | date_to_xmlschema }}</published>
+    <updated>{{ post.date | date_to_xmlschema }}</updated>
+    <summary type="text">{{ post.description | default: post.excerpt | strip_html | strip_newlines | truncate: 300 | xml_escape }}</summary>
+    <content type="html">{{ post.content | strip_newlines | xml_escape }}</content>
+    <author><name>{{ site.author | xml_escape }}</name></author>
+  </entry>
+  {%- endfor %}
+</feed>

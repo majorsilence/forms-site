@@ -1,0 +1,114 @@
+# தமிழ் இடைமுக உரைகள். _data/i18n/en.yml-இல் உள்ள அதே விசைகள் (keys).
+
+site:
+  tagline: WinForms உள்ளே. பல்தளமாக வெளியே.
+  description: >-
+    .NET-க்கான திறந்த மூல பல்தள WinForms நூலகம் — உங்கள் பயன்பாடுகளை மீண்டும் எழுதாமல்
+    Windows, macOS, Linux மற்றும் உலாவியில் இயக்கும் Windows Forms இணக்க அடுக்கு.
+  og_image_alt: >-
+    Majorsilence.Forms — ஒரே WinForms பயன்பாடு Windows, macOS மற்றும் Linux-இல் இயங்குகிறது.
+  footer_blurb: >-
+    .NET-க்கான பல்தள WinForms. உங்கள் Windows Forms பயன்பாடுகளை Windows, macOS, Linux,
+    மொபைல் மற்றும் உலாவியில் இயக்குங்கள் — மீண்டும் எழுதாமல்.
+
+ui:
+  home: முகப்பு
+  back_home: முகப்பு
+  back_blog: வலைப்பதிவு
+  blog: வலைப்பதிவு
+  read_post: பதிவைப் படிக்கவும்
+  github: github
+  nuget: NuGet
+  license: MIT உரிமம்
+  theme: தீம்
+  theme_light: வெளிர்
+  theme_dark: இருள்
+  theme_system: தானியங்கி
+  language: மொழி
+  copyright: MIT உரிமம் · © %YEAR% Majorsilence.Forms பங்களிப்பாளர்கள்
+  fork_of: AI மூலம் மேம்படுத்தப்பட்ட fork — மூலம்
+  not_found_title: பக்கம் கிடைக்கவில்லை
+  not_found_body: அந்தப் பக்கம் இல்லை — அது வேறு இடத்துக்கு மாற்றப்பட்டிருக்கலாம், அல்லது ஒருபோதும் இருந்திருக்காமல் இருக்கலாம்.
+  not_found_back: முகப்புக்குத் திரும்பு
+  latest_posts: சமீபத்திய புதுப்பிப்புகள்
+  from_the_blog: வலைப்பதிவிலிருந்து
+  translation_note: >-
+    இந்தப் பக்கம் ஒரு மொழிபெயர்ப்பு. ஆங்கிலப் பதிப்புடன் வேறுபாடு இருந்தால், ஆங்கிலப் பதிப்பே சரியானது.
+
+months:
+  - ஜனவரி
+  - பிப்ரவரி
+  - மார்ச்
+  - ஏப்ரல்
+  - மே
+  - ஜூன்
+  - ஜூலை
+  - ஆகஸ்ட்
+  - செப்டம்பர்
+  - அக்டோபர்
+  - நவம்பர்
+  - டிசம்பர்
+date_format: "%M %D, %Y"
+
+nav_links:
+  - label: முகப்பு
+    url: /
+  - label: ஏன்
+    url: /cross-platform-winforms/
+  - label: தொடங்குதல்
+    url: /getting-started/
+  - label: இடம்பெயர்த்தல்
+    url: /migration/
+  - label: பயிற்சி
+    url: /training/
+  - label: மாதிரிகள்
+    url: /samples/
+  - label: பின்தளங்கள்
+    url: /backends/
+  - label: தானியக்கம் & சோதனை
+    url: /automation/
+  - label: நேட்டிவ் இடைச்செயல்
+    url: /native-interop/
+  - label: கேள்விகள்
+    url: /faq/
+  - label: வலைப்பதிவு
+    url: /blog/
+
+footer_links:
+  - heading: தொடக்கம்
+    items:
+      - label: தொடங்குதல்
+        url: /getting-started/
+      - label: WinForms பயன்பாட்டை இடம்பெயர்த்தல்
+        url: /migration/
+      - label: பயிற்சி வழிகாட்டி
+        url: /training/
+      - label: மாதிரிகள்
+        url: /samples/
+      - label: அடிக்கடி கேட்கப்படும் கேள்விகள்
+        url: /faq/
+  - heading: தளங்கள்
+    items:
+      - label: பல்தள WinForms
+        url: /cross-platform-winforms/
+      - label: Linux-இல் WinForms
+        url: /winforms-on-linux/
+      - label: macOS-இல் WinForms
+        url: /winforms-on-macos/
+      - label: தளப் பின்தளங்கள்
+        url: /backends/
+      - label: நேரடி உலாவி டெமோ
+        url: /gallery/
+        shared: true
+  - heading: குறிப்பு
+    items:
+      - label: WinForms மாற்றுகள் ஒப்பீடு
+        url: /winforms-alternatives/
+      - label: தானியக்கம் & UI சோதனை
+        url: /automation/
+      - label: நேட்டிவ் இடைச்செயல்
+        url: /native-interop/
+      - label: வலைப்பதிவு
+        url: /blog/
+      - label: RSS ஊட்டம்
+        url: /feed.xml

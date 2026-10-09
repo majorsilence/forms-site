@@ -1,0 +1,253 @@
+---
+layout: default
+lang: si
+title: null
+seo_title: "Majorsilence.Forms — .NET සඳහා බහු-වේදිකා WinForms"
+description: >-
+  .NET සඳහා විවෘත-මූලාශ්‍ර බහු-වේදිකා WinForms පුස්තකාලය. ඔබ සතු Windows Forms යෙදුම් Windows,
+  macOS, Linux සහ බ්‍රවුසරය මත ධාවනය කරන්න — නැවත ලිවීමකින් තොරව.
+keywords:
+  - cross platform winforms
+  - winforms linux
+  - winforms mac
+  - winforms විකල්ප
+  - winforms ගැළපුම් ස්තරය
+  - winforms සංක්‍රමණය
+  - බහු-වේදිකා .net gui
+  - windows forms cross platform
+  - winforms බහු-වේදිකා
+priority: "1.0"
+changefreq: weekly
+---
+{%- include lang-vars.html -%}
+<section class="msf-hero">
+  <div class="msf-hero__inner">
+    <div class="msf-hero__eyebrow">.net සඳහා බහු-වේදිකා winforms &middot; විවෘත මූලාශ්‍ර &middot; බීටා</div>
+    <h1 class="msf-hero__title">WinForms ඇතුළට. <span class="accent">බහු-වේදිකා ලෙස පිටතට.</span></h1>
+    <p class="msf-hero__lede">
+      <strong>Majorsilence.Forms යනු .NET සඳහා වූ බහු-වේදිකා WinForms පුස්තකාලයකි</strong> — පැරණි
+      <em>සහ</em> නවීන WinForms යෙදුම් නවීන තාක්ෂණ තොගයකට (stack) ගෙන යන Windows Forms ගැළපුම්
+      ස්තරයකි. ඔබ දැනටමත් සතු <code class="msf-inline-code">Form</code>, පාලක (controls), සිදුවීම්
+      හසුරුවන (event handlers) සහ <code class="msf-inline-code">*.Designer.cs</code> ගොනු එලෙසම තබාගන්න —
+      එකම build එකකින් <a href="{{ '/si/winforms-on-linux/' | relative_url }}">Linux මත ධාවනය කරන්න</a>,
+      <a href="{{ '/si/winforms-on-macos/' | relative_url }}">macOS මත ධාවනය කරන්න</a>, සහ Windows මත
+      ධාවනය කරන්න. <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a> සතු
+      Android, iOS සහ Browser ඉලක්ක හරහා හෝ
+      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a> හරහා ජංගම සහ වෙබ්
+      ද ළඟා විය හැක. ධාරක (host) backend හතක් එකම පාලක ආකෘතියක් බෙදා ගනී — Linux මත GTK 4 කවුළුවක්,
+      ටර්මිනලයක්, සහ Windows යෙදුමකට වරකට එක් පාලකයක් බැගින් සංක්‍රමණය වීමට ඉඩ දෙන WinForms සහ WPF
+      පාලම් ද ඇතුළුව.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary msf-btn--lg" href="{{ '/si/getting-started/' | relative_url }}">ආරම්භ කරන්න</a>
+      <a class="msf-btn msf-btn--secondary msf-btn--lg" href="{{ site.github_url }}" target="_blank" rel="noopener">GitHub මත බලන්න</a>
+    </div>
+    <div class="msf-hero__chips">
+      <span class="msf-chip msf-chip--accent">Avalonia</span>
+      <span class="msf-chip msf-chip--neutral">Uno Platform</span>
+      <span class="msf-chip msf-chip--neutral">GTK 4</span>
+      <span class="msf-chip msf-chip--neutral">Terminal</span>
+      <span class="msf-chip msf-chip--neutral">WinForms &middot; WPF</span>
+      <span class="msf-chip msf-chip--neutral">Headless</span>
+      <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
+      <span class="msf-chip msf-chip--neutral">.NET 10</span>
+    </div>
+  </div>
+</section>
+
+<div class="msf-stats">
+  <div class="msf-stats__inner">
+    <div class="msf-stat">
+      <div class="msf-stat__value">7</div>
+      <div class="msf-stat__label">වේදිකා backend</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value">Win &middot; macOS &middot; Linux</div>
+      <div class="msf-stat__label">ඩෙස්ක්ටොප්, කිසිදු සැකසීමකින් තොරව</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">iOS &middot; Android &middot; Wasm</div>
+      <div class="msf-stat__label">Avalonia හෝ Uno හරහා ළඟා විය හැක</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">MIT</div>
+      <div class="msf-stat__label">විවෘත මූලාශ්‍ර</div>
+    </div>
+  </div>
+</div>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">ඇයි majorsilence.forms</div>
+    <h2 class="msf-section__title">සංක්‍රමණය කෙටි කරන්න, ඔබගේ කේත පදනම නොවේ.</h2>
+    <p class="msf-section__lede">
+      WinForms යෙදුමක් සංක්‍රමණය කිරීම සාමාන්‍යයෙන් අදහස් වන්නේ නව UI ආකෘතියකින් — XAML, MVVM, වෙබ් —
+      මුල සිටම නැවත ලිවීමකි. එය මිල අධික, අවදානම් සහිත වන අතර වසර ගණනාවක් තිස්සේ ක්‍රියා කළ ව්‍යාපාරික
+      තර්කනය (business logic) සහ UX ඉවත දමයි. Majorsilence.Forms, WinForms API පෘෂ්ඨය අනුකරණය කරන අතර
+      ගැළපුම් ස්තරයක් සපයයි, එබැවින් ඔබ සතු පෝරම, පාලක සහ කේතය ඉතා අඩු වෙනස්කම් සහිතව ගෙන යා හැක.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title">නැවත භාවිත කරන්න, නැවත නොලියන්න</h3>
+        <p class="msf-card__body">ඔබ WinForms හි ලියූ එම පාලක ආකෘතියම සහ සිදුවීම් මත පදනම් වූ (event-driven) කේතයම. XAML නැත, බලහත්කාර MVVM නැවත ලිවීමක් නැත, framework එක නැවත ඉගෙන ගැනීමක් නැත.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">නිර්මාණයෙන්ම බහු-වේදිකා</h3>
+        <p class="msf-card__body">සියල්ල SkiaSharp මගින් අඳිනු ලබන අතර මාරු කළ හැකි ධාරක backend එකක් මත ධාවනය වේ — ඩෙස්ක්ටොප් සඳහා පෙරනිමියෙන් Avalonia, ජංගම සහ වෙබ් සඳහා එක් මාර්ගයක් ලෙස එහිම Android/iOS/Browser ඉලක්ක, තවත් මාර්ගයක් ලෙස Uno Platform, සහ Linux මත සැබෑ GTK 4 කවුළුවක්.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">වරකට එක් පාලකයක් බැගින් සංක්‍රමණය කරන්න</h3>
+        <p class="msf-card__body">Windows-පමණක් වූ WinForms සහ WPF backend, ඔබ දැනටමත් බෙදාහරින යෙදුම තුළම Majorsilence.Forms පාලක ධාරණය කරයි — <code class="msf-inline-code">ToWinFormsControl()</code>, <code class="msf-inline-code">ToWpfElement()</code> — .NET 10 හෝ .NET Framework 4.8 මත. කොටසින් කොටස port කර, පසුව බහු-වේදිකා වීමට backend එක මාරු කරන්න.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">CSS මගින් තේමාව සකසන්න</h3>
+        <p class="msf-card__body">කුඩා, සම්පූර්ණයෙන් ලේඛනගත කළ CSS උප කුලකයක් සෑම වර්ණ සහ අකුරු token එකක්ම සකසන අතර පාලක වර්ගය සහ තත්ත්වය අනුව හැඩගන්වයි. <a href="{{ site.github_url }}/tree/main/samples/ThemeStudio" target="_blank" rel="noopener">Theme Studio</a> තුළ සජීවීව සංස්කරණය කර, මිශ්‍ර යෙදුමක සැබෑ WinForms හෝ ස්වදේශීය Avalonia පාලකවලට එම stylesheet එකම යොදන්න.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">ඔබට අවශ්‍ය විට MVVM</h3>
+        <p class="msf-card__body"><code class="msf-inline-code">Majorsilence.Forms.Mvvm</code>, reflection නොමැතිව <code class="msf-inline-code">INotifyPropertyChanged</code> සහ <code class="msf-inline-code">ICommand</code> පාලකවලට සම්බන්ධ කරයි — trim සහ AOT සඳහා ආරක්ෂිත වන අතර CommunityToolkit.Mvvm සමඟ ද හොඳින් ක්‍රියා කරයි. කැමති නම් පමණක් භාවිත කරන්න; කිසිවිටෙක අනිවාර්ය නොවේ.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">ඇතුළතින් නවීන</h3>
+        <p class="msf-card__body">GPU-ත්වරිත Skia විදැහුම්කරණය (rendering), HiDPI, ස්පර්ශ ඉඟි (touch gestures), animation frames, වත්මන් .NET — සහ සෑම වේදිකාවකම ආරක්ෂිත ගබඩාව, පෙළ-සිට-කථනය සහ සබැඳි විවෘත කිරීම සඳහා <code class="msf-inline-code">Majorsilence.Forms.Essentials</code>.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">පරීක්ෂා කළ හැකි සහ ප්‍රවේශ විය හැකි</h3>
+        <p class="msf-card__body">එක් <a href="{{ '/si/automation/' | relative_url }}">ස්වයංක්‍රීයකරණ ගසයක් (automation tree)</a> process-තුළ UI පරීක්ෂණ, Selenium සඳහා W3C WebDriver සේවාදායකයක්, AI සහායකයින් සඳහා MCP සේවාදායකයක්, Windows තිර කියවන (screen readers) සහ බ්‍රවුසරයේ ARIA DOM පිළිබිඹුවක් මෙහෙයවයි.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">සෑම තැනකම async සංවාද කවුළු</h3>
+        <p class="msf-card__body">සෑම modal එකකටම async නිවුන්නෙක් ඇත — <code class="msf-inline-code">ShowDialogAsync</code>, <code class="msf-inline-code">MessageBox.ShowAsync</code> — එබැවින් අවහිර කරන loop එකක් කළ නොහැකි බ්‍රවුසරයේ සහ දුරකථනවල එම කේතයම ධාවනය වේ. ඇතුළත් analyzer එකක් ඔබ බෙදාහැරීමට පෙර අවහිර කරන ඇමතුම් සලකුණු කරයි.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">එය ක්‍රියා කරන ආකාරය</div>
+    <h2 class="msf-section__title">එක් පාලක ආකෘතියක්, යටින් මාරු කළ හැකි ධාරකයක්.</h2>
+    <p class="msf-section__lede">
+      පාලක සහ විදැහුම්කරණය Majorsilence.Forms සතු වේ; backend එක කරන්නේ තිරය මත පික්සල තැබීම සහ ආදානය
+      (input) ලබා දීම පමණි. එම සන්ධිය (seam) නිසා එකම යෙදුමට අද Avalonia ද හෙට Uno ද ඉලක්ක කළ හැක —
+      නැතහොත් ටර්මිනලයක් තුළ කිසිදු වෙනසකින් තොරව ධාවනය කළ හැක. මූලය (core)
+      <code class="msf-inline-code">net8.0</code>, <code class="msf-inline-code">net10.0</code> සහ
+      <code class="msf-inline-code">netstandard2.0</code> බහු-ඉලක්ක කරයි; WinForms සහ WPF backend
+      <code class="msf-inline-code">net48</code> එක් කරන බැවින් .NET Framework 4.8 යෙදුමකට ද එය ධාරණය
+      කළ හැක.
+    </p>
+    <div class="msf-diagram">        Your app  (Forms, controls, Designer files — the WinForms model you know)
+            │
+       Majorsilence.Forms  (controls + WinForms-compatible API, drawn with SkiaSharp)
+            │
+   Swappable host backend
+   ├─ Avalonia   → Windows · macOS · Linux  (default)  · also Android · iOS · Browser
+   ├─ Uno         → desktop · iOS · Android · WebAssembly
+   ├─ GTK 4       → Linux-first real GTK window (gir.core), also Windows/macOS with the GTK runtime
+   ├─ Terminal    → the form fills a terminal: Kitty graphics, Sixel, or Unicode block elements
+   ├─ WinForms    → Windows-only migration bridge: embed in an existing WinForms app, port in steps
+   ├─ WPF         → Windows-only migration bridge, same shape, for WPF apps
+   └─ Headless    → offscreen rendering for tests / CI</div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">පෝරමයක් ඔබ බලාපොරොත්තු වන ආකාරයටම පෙනේ</div>
+    <h2 class="msf-section__title">Program.cs, වෙනසක් නැත.</h2>
+    <div class="msf-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>MainForm.cs</span>
+        </div>
+        <pre>using Majorsilence.Forms;
+
+public class MainForm : Form
+{
+}</pre>
+      </div>
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>Program.cs</span>
+          <span class="msf-code-block__label">ධාවනය</span>
+        </div>
+        <pre>static void Main (string [] args)
+{
+    Application.Run (new MainForm ());
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">නිදසුන්</div>
+    <h2 class="msf-section__title">සැබෑ යෙදුම්, සෙල්ලම් demo නොවේ.</h2>
+    <p class="msf-section__lede">
+      repository එකේ ඇති <a href="{{ '/si/samples/' | relative_url }}">සියලුම නිදසුන්</a> ගවේෂණය කරන්න —
+      Windows Explorer ප්‍රතිරූපයක්, Outlook ප්‍රතිරූපයක්, තමන්ගේම API සහ දත්ත සමුදාය සහිත client/server
+      point-of-sale යෙදුමක්, ඩෙස්ක්ටොප්, Uno, GTK 4, බ්‍රවුසරය, Android, iOS, WPF සහ ටර්මිනලයක් තුළ ධාවනය
+      වන එම සම්පූර්ණ පාලක ගැලරියම, සජීවී CSS Theme Studio එකක්, ද්වි-දිශා WinForms interop, සහ ධාරක
+      Avalonia, Uno, GTK 4 සහ WinForms යෙදුම් තුළ කාවැද්දූ Majorsilence.Forms.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary" href="{{ '/si/samples/' | relative_url }}">නිදසුන් බලන්න</a>
+      <a class="msf-btn msf-btn--secondary" href="{{ '/si/backends/' | relative_url }}">වේදිකා backend</a>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">මෙතැනින් අරඹන්න</div>
+    <h2 class="msf-section__title">ඔබ මෙහි පැමිණීමට හේතු වූ ප්‍රශ්නයට පිළිතුර.</h2>
+    <p class="msf-section__lede">
+      බොහෝ දෙනා පැමිණෙන්නේ එක් නිශ්චිත දෙයක් සොයමින් — Windows Forms Linux මත ධාවනය කළ හැකිද, WinForms
+      ගැළපුම් ස්තරයක සැබෑ පිරිවැය කුමක්ද, නැතහොත් මෙය MAUI හෝ Avalonia තුළ නැවත ලිවීමක් සමඟ සැසඳෙන්නේ
+      කෙසේද යන්න. ඒ සෑම එකකටම වෙනම පිටුවක් ඇත.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/cross-platform-winforms/' | relative_url }}">බහු-වේදිකා WinForms, පැහැදිලි කිරීම</a></h3>
+        <p class="msf-card__body"><code class="msf-inline-code">System.Windows.Forms</code> Windows-පමණක් වන්නේ ඇයි, එය මඟහරින ක්‍රම තුන, සහ API-ගැළපෙන නැවත ක්‍රියාත්මක කිරීමකදී (reimplementation) අත්හැරෙන දේ.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/winforms-on-linux/' | relative_url }}">WinForms Linux මත ධාවනය කළ හැකිද?</a></h3>
+        <p class="msf-card__body">එලෙසම නොහැක — Mono හි port එක බොහෝ කලකට පෙර නැවතී ඇති අතර GDI+ එහි නැත. ඒ වෙනුවට Ubuntu, Fedora සහ Debian මත ක්‍රියා කරන දේ, සහ එය බෙදාහරින ආකාරය.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/winforms-on-macos/' | relative_url }}">WinForms macOS මත ධාවනය කළ හැකිද?</a></h3>
+        <p class="msf-card__body">Apple Silicon සහ Intel මත ස්වදේශීය <code class="msf-inline-code">NSWindow</code>, එහි Mac වලට අසාමාන්‍ය ලෙස දැනෙන දේ, සහ <code class="msf-inline-code">.app</code> එකක් ඇසුරුම් කිරීම.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/migration/' | relative_url }}">පවතින යෙදුමක් සංක්‍රමණය කිරීම</a></h3>
+        <p class="msf-card__body"><code class="msf-inline-code">majorsilence-migrate</code> CLI යාන්ත්‍රික නැවත ලිවීම — namespaces, project ගොනු, resources — කියවිය හැකි git diff එකක් ලෙස සිදු කරයි.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/winforms-alternatives/' | relative_url }}">WinForms විකල්ප සැසඳීම</a></h3>
+        <p class="msf-card__body">MAUI, Avalonia, Uno Platform, Eto.Forms, WPF සහ Wine — ඒ සෑම එකක්ම ඔබ සතු කේතයෙන් කොපමණ ප්‍රමාණයක් රඳවා ගන්නේද යන්න අනුව මනිනු ලැබේ.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/si/faq/' | relative_url }}">නිතර අසන ප්‍රශ්න (FAQ)</a></h3>
+        <p class="msf-card__body">Designer ගොනු තවමත් ක්‍රියා කරනවාද? දෘශ්‍ය designer එකක් තිබේද? VB.NET, DataGridView, <code class="msf-inline-code">System.Drawing</code> සහ නිෂ්පාදනය (production) සඳහා සූදානම ගැන කුමක්ද?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">{{ t.ui.from_the_blog }}</div>
+    <h2 class="msf-section__title">{{ t.ui.latest_posts }}</h2>
+    {% assign lang_posts = site.posts | where: "lang", lang %}
+    {% for post in lang_posts limit: 3 %}
+    <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+      <div class="msf-blog-card__meta">{% include date.html date=post.date %}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+      <h3 class="msf-blog-card__title">{{ post.title }}</h3>
+      <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+      <span class="msf-blog-card__link">{{ t.ui.read_post }} &rarr;</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

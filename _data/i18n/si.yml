@@ -1,0 +1,114 @@
+# සිංහල අතුරුමුහුණත් පෙළ. _data/i18n/en.yml හි ඇති යතුරුම (keys) මෙහිද ඇත.
+
+site:
+  tagline: WinForms ඇතුළට. බහු-වේදිකා ලෙස පිටතට.
+  description: >-
+    .NET සඳහා විවෘත-මූලාශ්‍ර බහු-වේදිකා WinForms පුස්තකාලය — ඔබගේ යෙදුම් නැවත ලිවීමකින් තොරව
+    Windows, macOS, Linux සහ බ්‍රවුසරය මත ධාවනය කරන Windows Forms ගැළපුම් ස්තරයකි.
+  og_image_alt: >-
+    Majorsilence.Forms — එකම WinForms යෙදුම Windows, macOS සහ Linux මත ධාවනය වේ.
+  footer_blurb: >-
+    .NET සඳහා බහු-වේදිකා WinForms. ඔබගේ Windows Forms යෙදුම් Windows, macOS, Linux, ජංගම
+    උපාංග සහ බ්‍රවුසරය මත ධාවනය කරන්න — නැවත ලිවීමකින් තොරව.
+
+ui:
+  home: මුල් පිටුව
+  back_home: මුල් පිටුව
+  back_blog: බ්ලොග්
+  blog: බ්ලොග්
+  read_post: ලිපිය කියවන්න
+  github: github
+  nuget: NuGet
+  license: MIT බලපත්‍රය
+  theme: තේමාව
+  theme_light: ආලෝක
+  theme_dark: අඳුරු
+  theme_system: ස්වයං
+  language: භාෂාව
+  copyright: MIT බලපත්‍රය යටතේ · © %YEAR% Majorsilence.Forms දායකයින්
+  fork_of: AI මගින් වැඩිදියුණු කළ fork එකක් — මූලාශ්‍රය
+  not_found_title: පිටුව හමු නොවීය
+  not_found_body: එම පිටුව නොපවතී — එය වෙනත් තැනකට ගෙන ගොස් ඇති හෝ කිසිදා නොපැවති විය හැක.
+  not_found_back: මුල් පිටුවට ආපසු
+  latest_posts: නවතම යාවත්කාලීන
+  from_the_blog: බ්ලොග් වෙතින්
+  translation_note: >-
+    මෙම පිටුව පරිවර්තනයකි. ඉංග්‍රීසි අනුවාදය සමඟ වෙනසක් ඇත්නම්, ඉංග්‍රීසි අනුවාදය නිවැරදි ලෙස සලකන්න.
+
+months:
+  - ජනවාරි
+  - පෙබරවාරි
+  - මාර්තු
+  - අප්‍රේල්
+  - මැයි
+  - ජූනි
+  - ජූලි
+  - අගෝස්තු
+  - සැප්තැම්බර්
+  - ඔක්තෝබර්
+  - නොවැම්බර්
+  - දෙසැම්බර්
+date_format: "%Y %M %D"
+
+nav_links:
+  - label: මුල් පිටුව
+    url: /
+  - label: ඇයි
+    url: /cross-platform-winforms/
+  - label: ආරම්භ කිරීම
+    url: /getting-started/
+  - label: සංක්‍රමණය
+    url: /migration/
+  - label: පුහුණුව
+    url: /training/
+  - label: නිදසුන්
+    url: /samples/
+  - label: backend
+    url: /backends/
+  - label: ස්වයංක්‍රීයකරණය සහ පරීක්ෂණ
+    url: /automation/
+  - label: ස්වදේශීය interop
+    url: /native-interop/
+  - label: නිතර අසන ප්‍රශ්න
+    url: /faq/
+  - label: බ්ලොග්
+    url: /blog/
+
+footer_links:
+  - heading: ආරම්භය
+    items:
+      - label: ආරම්භ කිරීම
+        url: /getting-started/
+      - label: WinForms යෙදුමක් සංක්‍රමණය කිරීම
+        url: /migration/
+      - label: පුහුණු මාර්ගෝපදේශය
+        url: /training/
+      - label: නිදසුන්
+        url: /samples/
+      - label: නිතර අසන ප්‍රශ්න
+        url: /faq/
+  - heading: වේදිකා
+    items:
+      - label: බහු-වේදිකා WinForms
+        url: /cross-platform-winforms/
+      - label: Linux මත WinForms
+        url: /winforms-on-linux/
+      - label: macOS මත WinForms
+        url: /winforms-on-macos/
+      - label: වේදිකා backend
+        url: /backends/
+      - label: සජීවී බ්‍රවුසර ආදර්ශනය
+        url: /gallery/
+        shared: true
+  - heading: යොමු
+    items:
+      - label: WinForms විකල්ප සංසන්දනය
+        url: /winforms-alternatives/
+      - label: ස්වයංක්‍රීයකරණය සහ UI පරීක්ෂණ
+        url: /automation/
+      - label: ස්වදේශීය interop
+        url: /native-interop/
+      - label: බ්ලොග්
+        url: /blog/
+      - label: RSS සංග්‍රහය
+        url: /feed.xml

@@ -25,7 +25,9 @@ permalink: /sitemap.xml
     {%- comment -%} p.url has no extension for permalinked pages ("/faq/"), so `last` is the
     whole path there and only genuine non-HTML outputs match the exclusion list. {%- endcomment -%}
     {%- assign ext = p.url | split: '.' | last -%}
-    {%- unless p.sitemap == false or p.noindex or ext == 'xml' or ext == 'txt' or ext == 'json' -%}
+    {%- assign p_lang = p.lang | default: site.default_lang -%}
+    {%- assign p_language = site.languages | where: "code", p_lang | first -%}
+    {%- unless p.sitemap == false or p.noindex or p_language.enabled != true or ext == 'xml' or ext == 'txt' or ext == 'json' -%}
   <url>
     <loc>{{ p.url | replace: 'index.html', '' | absolute_url | xml_escape }}</loc>
     {%- include sitemap-alternates.html page=p %}
@@ -38,6 +40,9 @@ permalink: /sitemap.xml
     {%- endunless -%}
   {%- endfor %}
   {%- for post in site.posts %}
+    {%- assign post_lang = post.lang | default: site.default_lang -%}
+    {%- assign post_language = site.languages | where: "code", post_lang | first -%}
+    {%- if post_language.enabled != true -%}{%- continue -%}{%- endif %}
   <url>
     <loc>{{ post.url | absolute_url | xml_escape }}</loc>
     {%- include sitemap-alternates.html page=post %}

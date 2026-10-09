@@ -3102,7 +3102,7 @@ Une séquence où les preuves arrivent avant l'engagement.
    enjeu. Lancez le migrateur sur une branche, obtenez un build, travaillez la
    [liste de contrôle des corrections manuelles](#module-5-checklist). Livrable : une estimation
    calibrée par KLOC et une liste des lacunes qui *vous* bloquent réellement.
-3. **Décidez la forme de l'adoption.** Trois options, qui ne s'excluent pas mutuellement :
+3. **Décidez la forme de l'adoption.** Quatre options, qui ne s'excluent pas mutuellement :
    - **Nouvelle application** — démarrez directement sur Majorsilence.Forms ([module 2](#module-2)).
    - **Nouveaux écrans dans une ancienne application** — interop Direction B sous Windows, sans rien
      changer à ce que vous livrez ([module 7](#module-7-b)).
