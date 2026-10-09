@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang }}">
+{%- include lang-vars.html -%}
+<html lang="{{ lang }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% include seo.html %}
   {% include head-theme-init.html %}
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
-  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
+  {%- comment -%}
+    lang-fonts: the design system's Latin faces (loaded from main.css) have no CJK, Sinhala or
+    Tamil glyphs. Each non-Latin language pulls one Noto family here, only on its own pages, and
+    main.css names it first in the stack under html[lang="…"]. Google Fonts splits the CJK face
+    by unicode-range, so a page only downloads the slices its text actually uses.
+  {%- endcomment -%}
+  {%- if lang == "zh" %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap">
+  {%- elsif lang == "si" %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap">
+  {%- elsif lang == "ta" %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+  {%- endif %}
+  <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ prefix | append: '/feed.xml' | relative_url }}">
 </head>
 <body>
   {% include navbar.html %}

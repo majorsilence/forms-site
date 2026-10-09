@@ -5,8 +5,21 @@ permalink: /404.html
 noindex: true
 sitemap: false
 ---
+{%- comment -%}
+  GitHub Pages serves one 404 page for the whole site, so this one speaks every enabled language:
+  the English line first, then one line per other language from _data/i18n, each linking to that
+  language's home page.
+{%- endcomment -%}
 <div class="msf-prose" style="text-align: center; padding-top: 96px;">
   <div class="msf-stat__value" style="font-size: 64px;">404</div>
-  <p class="msf-hero__lede" style="margin: 16px auto 32px;">That page doesn't exist — it may have moved, or never existed.</p>
-  <a class="msf-btn msf-btn--primary" href="{{ '/' | relative_url }}">Back to home</a>
+  <p class="msf-hero__lede" style="margin: 16px auto 32px;">{{ t.ui.not_found_body }}</p>
+  <a class="msf-btn msf-btn--primary" href="{{ '/' | relative_url }}">{{ t.ui.not_found_back }}</a>
+  {%- assign other_languages = site.languages | where: "enabled", true -%}
+  {%- for l in other_languages -%}
+    {%- if l.code == site.default_lang -%}{%- continue -%}{%- endif -%}
+    {%- assign lt = site.data.i18n[l.code] -%}
+    {%- if lt -%}
+  <p class="msf-prose__meta" lang="{{ l.code }}" style="margin-top: 24px;">{{ lt.ui.not_found_body }} <a href="{{ l.prefix | append: '/' | relative_url }}">{{ lt.ui.not_found_back }}</a></p>
+    {%- endif -%}
+  {%- endfor %}
 </div>

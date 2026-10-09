@@ -1,0 +1,114 @@
+# 简体中文界面字符串。键名与 _data/i18n/en.yml 完全一致。
+
+site:
+  tagline: WinForms 进，跨平台出。
+  description: >-
+    面向 .NET 的开源跨平台 WinForms 库——一个 Windows Forms 兼容层，让你的应用无需重写即可运行于
+    Windows、macOS、Linux 和浏览器。
+  og_image_alt: >-
+    Majorsilence.Forms——同一个 WinForms 应用运行在 Windows、macOS 和 Linux 上。
+  footer_blurb: >-
+    面向 .NET 的跨平台 WinForms。让你的 Windows Forms 应用运行在 Windows、macOS、Linux、
+    移动端和浏览器上——无需重写。
+
+ui:
+  home: 首页
+  back_home: 首页
+  back_blog: 博客
+  blog: 博客
+  read_post: 阅读全文
+  github: github
+  nuget: NuGet
+  license: MIT 许可证
+  theme: 主题
+  theme_light: 浅色
+  theme_dark: 深色
+  theme_system: 自动
+  language: 语言
+  copyright: MIT 许可 · © %YEAR% Majorsilence.Forms 贡献者
+  fork_of: 基于 AI 增强的分支，源自
+  not_found_title: 页面不存在
+  not_found_body: 该页面不存在——可能已被移动，或者从未存在。
+  not_found_back: 返回首页
+  latest_posts: 最新动态
+  from_the_blog: 来自博客
+  translation_note: >-
+    本页为译文。如与英文版有出入，以英文版为准。
+
+months:
+  - 1月
+  - 2月
+  - 3月
+  - 4月
+  - 5月
+  - 6月
+  - 7月
+  - 8月
+  - 9月
+  - 10月
+  - 11月
+  - 12月
+date_format: "%Y年%M%D日"
+
+nav_links:
+  - label: 首页
+    url: /
+  - label: 为什么
+    url: /cross-platform-winforms/
+  - label: 快速上手
+    url: /getting-started/
+  - label: 迁移
+    url: /migration/
+  - label: 培训
+    url: /training/
+  - label: 示例
+    url: /samples/
+  - label: 后端
+    url: /backends/
+  - label: 自动化与测试
+    url: /automation/
+  - label: 原生互操作
+    url: /native-interop/
+  - label: 常见问题
+    url: /faq/
+  - label: 博客
+    url: /blog/
+
+footer_links:
+  - heading: 开始
+    items:
+      - label: 快速上手
+        url: /getting-started/
+      - label: 迁移 WinForms 应用
+        url: /migration/
+      - label: 培训指南
+        url: /training/
+      - label: 示例
+        url: /samples/
+      - label: 常见问题
+        url: /faq/
+  - heading: 平台
+    items:
+      - label: 跨平台 WinForms
+        url: /cross-platform-winforms/
+      - label: Linux 上的 WinForms
+        url: /winforms-on-linux/
+      - label: macOS 上的 WinForms
+        url: /winforms-on-macos/
+      - label: 平台后端
+        url: /backends/
+      - label: 浏览器在线演示
+        url: /gallery/
+        shared: true
+  - heading: 参考
+    items:
+      - label: WinForms 替代方案对比
+        url: /winforms-alternatives/
+      - label: 自动化与 UI 测试
+        url: /automation/
+      - label: 原生互操作
+        url: /native-interop/
+      - label: 博客
+        url: /blog/
+      - label: RSS 订阅
+        url: /feed.xml

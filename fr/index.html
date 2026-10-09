@@ -1,0 +1,255 @@
+---
+layout: default
+lang: fr
+title: null
+seo_title: "Majorsilence.Forms — WinForms multiplateforme pour .NET"
+description: >-
+  Bibliothèque WinForms multiplateforme open source pour .NET. Exécutez vos applications Windows Forms
+  existantes sous Windows, macOS, Linux et dans le navigateur — sans réécriture.
+keywords:
+  - winforms multiplateforme
+  - winforms linux
+  - winforms mac
+  - alternative à winforms
+  - couche de compatibilité winforms
+  - migrer une application winforms
+  - framework gui .net multiplateforme
+  - windows forms multiplateforme
+  - bibliothèque winforms cross platform
+priority: "1.0"
+changefreq: weekly
+---
+{%- include lang-vars.html -%}
+<section class="msf-hero">
+  <div class="msf-hero__inner">
+    <div class="msf-hero__eyebrow">winforms multiplateforme pour .net &middot; open source &middot; bêta</div>
+    <h1 class="msf-hero__title">WinForms en entrée. <span class="accent">Multiplateforme en sortie.</span></h1>
+    <p class="msf-hero__lede">
+      <strong>Majorsilence.Forms est une bibliothèque WinForms multiplateforme pour .NET</strong> — une
+      couche de compatibilité Windows Forms qui fait passer les applications WinForms existantes <em>et</em>
+      modernes sur une pile moderne. Gardez vos <code class="msf-inline-code">Form</code>s, vos contrôles,
+      vos gestionnaires d'événements et vos fichiers <code class="msf-inline-code">*.Designer.cs</code> tels quels —
+      <a href="{{ '/fr/winforms-on-linux/' | relative_url }}">exécutez-les sous Linux</a>,
+      <a href="{{ '/fr/winforms-on-macos/' | relative_url }}">sous macOS</a> et sous Windows depuis
+      une seule compilation, avec le mobile et le web à portée de main grâce aux cibles
+      Android, iOS et Browser propres à
+      <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a> ou grâce à
+      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>. Sept backends
+      hôtes partagent un même modèle de contrôles — dont une fenêtre GTK 4 sous Linux, un terminal, et
+      des passerelles WinForms et WPF qui permettent à une application Windows de migrer un contrôle à la fois.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary msf-btn--lg" href="{{ '/fr/getting-started/' | relative_url }}">Commencer</a>
+      <a class="msf-btn msf-btn--secondary msf-btn--lg" href="{{ site.github_url }}" target="_blank" rel="noopener">Voir sur GitHub</a>
+    </div>
+    <div class="msf-hero__chips">
+      <span class="msf-chip msf-chip--accent">Avalonia</span>
+      <span class="msf-chip msf-chip--neutral">Uno Platform</span>
+      <span class="msf-chip msf-chip--neutral">GTK 4</span>
+      <span class="msf-chip msf-chip--neutral">Terminal</span>
+      <span class="msf-chip msf-chip--neutral">WinForms &middot; WPF</span>
+      <span class="msf-chip msf-chip--neutral">Headless</span>
+      <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
+      <span class="msf-chip msf-chip--neutral">.NET 10</span>
+    </div>
+  </div>
+</section>
+
+<div class="msf-stats">
+  <div class="msf-stats__inner">
+    <div class="msf-stat">
+      <div class="msf-stat__value">7</div>
+      <div class="msf-stat__label">Backends de plateforme</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value">Win &middot; macOS &middot; Linux</div>
+      <div class="msf-stat__label">Bureau, prêt à l'emploi</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">iOS &middot; Android &middot; Wasm</div>
+      <div class="msf-stat__label">Accessibles via Avalonia ou Uno</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">MIT</div>
+      <div class="msf-stat__label">Open source</div>
+    </div>
+  </div>
+</div>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">pourquoi majorsilence.forms</div>
+    <h2 class="msf-section__title">Réduisez la migration, pas votre base de code.</h2>
+    <p class="msf-section__lede">
+      Migrer une application WinForms signifie généralement une réécriture complète dans un nouveau
+      paradigme d'interface — XAML, MVVM, le web. C'est coûteux, risqué, et cela jette des années de
+      logique métier et d'expérience utilisateur qui fonctionnent. Majorsilence.Forms reproduit la surface
+      d'API de WinForms et fournit une couche de compatibilité pour que vos formulaires, contrôles et
+      code existants passent de l'autre côté avec bien moins de remaniements.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title">Réutiliser, pas réécrire</h3>
+        <p class="msf-card__body">Le même modèle de contrôles et le même code événementiel que vous avez écrits en WinForms. Pas de XAML, pas de réécriture MVVM imposée, pas de framework à réapprendre.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Multiplateforme par construction</h3>
+        <p class="msf-card__body">Tout est dessiné avec SkiaSharp et s'exécute sur un backend hôte interchangeable — Avalonia par défaut pour le bureau, avec ses propres cibles Android/iOS/Browser comme une voie vers le mobile et le web, Uno Platform comme une autre, et une vraie fenêtre GTK 4 sous Linux.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Migrer un contrôle à la fois</h3>
+        <p class="msf-card__body">Les backends WinForms et WPF, réservés à Windows, hébergent des contrôles Majorsilence.Forms dans l'application que vous livrez déjà — <code class="msf-inline-code">ToWinFormsControl()</code>, <code class="msf-inline-code">ToWpfElement()</code> — sur .NET 10 ou .NET Framework 4.8. Portez morceau par morceau, puis changez de backend pour passer au multiplateforme.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Thème en CSS</h3>
+        <p class="msf-card__body">Un petit sous-ensemble de CSS, entièrement documenté, définit chaque jeton de couleur et de police et stylise les contrôles par type et par état. Modifiez en direct dans <a href="{{ site.github_url }}/tree/main/samples/ThemeStudio" target="_blank" rel="noopener">Theme Studio</a>, et appliquez la même feuille à de vrais contrôles WinForms ou Avalonia natifs dans une application mixte.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">MVVM quand vous le voulez</h3>
+        <p class="msf-card__body"><code class="msf-inline-code">Majorsilence.Forms.Mvvm</code> relie <code class="msf-inline-code">INotifyPropertyChanged</code> et <code class="msf-inline-code">ICommand</code> aux contrôles sans réflexion — compatible trimming et AOT, et à l'aise aux côtés de CommunityToolkit.Mvvm. Optionnel ; jamais obligatoire.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Moderne sous le capot</h3>
+        <p class="msf-card__body">Rendu Skia accéléré par le GPU, HiDPI, gestes tactiles, trames d'animation, .NET à jour — plus <code class="msf-inline-code">Majorsilence.Forms.Essentials</code> pour le stockage sécurisé, la synthèse vocale et l'ouverture de liens sur chaque plateforme.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Testable et accessible</h3>
+        <p class="msf-card__body">Un seul <a href="{{ '/fr/automation/' | relative_url }}">arbre d'automatisation</a> pilote les tests d'interface en processus, un serveur W3C WebDriver pour Selenium, un serveur MCP pour les assistants IA, les lecteurs d'écran Windows et un miroir DOM ARIA dans le navigateur.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Boîtes de dialogue asynchrones, partout</h3>
+        <p class="msf-card__body">Chaque modale a un jumeau asynchrone — <code class="msf-inline-code">ShowDialogAsync</code>, <code class="msf-inline-code">MessageBox.ShowAsync</code> — pour que le même code s'exécute dans le navigateur et sur les téléphones, où une boucle bloquante n'est pas possible. Un analyseur fourni signale les appels bloquants avant la livraison.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">comment ça marche</div>
+    <h2 class="msf-section__title">Un seul modèle de contrôles, un hôte interchangeable en dessous.</h2>
+    <p class="msf-section__lede">
+      Majorsilence.Forms possède les contrôles et le rendu ; le backend ne fait que poser des pixels à
+      l'écran et acheminer les entrées. C'est cette couture qui permet à la même application de cibler
+      Avalonia aujourd'hui et Uno demain — ou de s'exécuter sans modification dans un terminal. Le cœur
+      cible à la fois <code class="msf-inline-code">net8.0</code>,
+      <code class="msf-inline-code">net10.0</code> et <code class="msf-inline-code">netstandard2.0</code> ;
+      les backends WinForms et WPF ajoutent <code class="msf-inline-code">net48</code> pour qu'une application
+      .NET Framework 4.8 puisse aussi l'héberger.
+    </p>
+    <div class="msf-diagram">        Votre application  (Forms, contrôles, fichiers Designer — le modèle WinForms que vous connaissez)
+            │
+       Majorsilence.Forms  (contrôles + API compatible WinForms, dessinés avec SkiaSharp)
+            │
+   Backend hôte interchangeable
+   ├─ Avalonia   → Windows · macOS · Linux  (défaut)  · aussi Android · iOS · Browser
+   ├─ Uno         → bureau · iOS · Android · WebAssembly
+   ├─ GTK 4       → vraie fenêtre GTK, Linux d'abord (gir.core), aussi Windows/macOS avec le runtime GTK
+   ├─ Terminal    → le formulaire remplit un terminal : graphiques Kitty, Sixel ou blocs Unicode
+   ├─ WinForms    → passerelle de migration Windows : s'intègre à une app WinForms existante, portage par étapes
+   ├─ WPF         → passerelle de migration Windows, même forme, pour les apps WPF
+   └─ Headless    → rendu hors écran pour les tests / la CI</div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">un formulaire ressemble exactement à ce que vous attendez</div>
+    <h2 class="msf-section__title">Program.cs, inchangé.</h2>
+    <div class="msf-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>MainForm.cs</span>
+        </div>
+        <pre>using Majorsilence.Forms;
+
+public class MainForm : Form
+{
+}</pre>
+      </div>
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>Program.cs</span>
+          <span class="msf-code-block__label">run</span>
+        </div>
+        <pre>static void Main (string [] args)
+{
+    Application.Run (new MainForm ());
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">exemples</div>
+    <h2 class="msf-section__title">De vraies applications, pas des démos jouets.</h2>
+    <p class="msf-section__lede">
+      Explorez <a href="{{ '/fr/samples/' | relative_url }}">tous les exemples</a> du dépôt — un clone
+      de l'Explorateur Windows, un clone d'Outlook, une application de point de vente client/serveur avec
+      sa propre API et sa base de données, la même galerie de contrôles complète tournant sur le bureau,
+      Uno, GTK 4, le navigateur, Android, iOS, WPF et dans un terminal, un Theme Studio CSS en direct,
+      une interopérabilité WinForms bidirectionnelle, et Majorsilence.Forms intégré dans des applications
+      hôtes Avalonia, Uno, GTK 4 et WinForms.
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary" href="{{ '/fr/samples/' | relative_url }}">Parcourir les exemples</a>
+      <a class="msf-btn msf-btn--secondary" href="{{ '/fr/backends/' | relative_url }}">Backends de plateforme</a>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">commencez ici</div>
+    <h2 class="msf-section__title">La réponse à la question qui vous a amené ici.</h2>
+    <p class="msf-section__lede">
+      La plupart des gens arrivent en cherchant une chose précise — si Windows Forms peut tourner sous
+      Linux, ce que coûte réellement une couche de compatibilité WinForms, ou comment cela se compare à
+      une réécriture en MAUI ou Avalonia. Chacune de ces questions a sa propre page.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/cross-platform-winforms/' | relative_url }}">WinForms multiplateforme, expliqué</a></h3>
+        <p class="msf-card__body">Pourquoi <code class="msf-inline-code">System.Windows.Forms</code> est réservé à Windows, les trois façons de contourner cela, et ce qu'une réimplémentation compatible au niveau de l'API abandonne.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/winforms-on-linux/' | relative_url }}">WinForms peut-il tourner sous Linux ?</a></h3>
+        <p class="msf-card__body">Pas tel quel — le portage de Mono a disparu depuis longtemps et GDI+ n'y est pas. Ce qui fonctionne à la place sous Ubuntu, Fedora et Debian, et comment le livrer.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/winforms-on-macos/' | relative_url }}">WinForms peut-il tourner sous macOS ?</a></h3>
+        <p class="msf-card__body"><code class="msf-inline-code">NSWindow</code> natif sur Apple Silicon et Intel, ce qui n'y fait pas très Mac, et l'empaquetage d'un <code class="msf-inline-code">.app</code>.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/migration/' | relative_url }}">Migrer une application existante</a></h3>
+        <p class="msf-card__body">La CLI <code class="msf-inline-code">majorsilence-migrate</code> fait la réécriture mécanique — espaces de noms, fichiers projet, ressources — sous la forme d'un diff git lisible.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/winforms-alternatives/' | relative_url }}">Alternatives à WinForms comparées</a></h3>
+        <p class="msf-card__body">MAUI, Avalonia, Uno Platform, Eto.Forms, WPF et Wine — mesurés selon la part de votre code existant que chacun conserve.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/fr/faq/' | relative_url }}">FAQ</a></h3>
+        <p class="msf-card__body">Les fichiers Designer fonctionnent-ils encore ? Y a-t-il un concepteur visuel ? Qu'en est-il de VB.NET, de DataGridView, de <code class="msf-inline-code">System.Drawing</code> et de la maturité pour la production ?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">{{ t.ui.from_the_blog }}</div>
+    <h2 class="msf-section__title">{{ t.ui.latest_posts }}</h2>
+    {% assign lang_posts = site.posts | where: "lang", lang %}
+    {% for post in lang_posts limit: 3 %}
+    <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+      <div class="msf-blog-card__meta">{% include date.html date=post.date %}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+      <h3 class="msf-blog-card__title">{{ post.title }}</h3>
+      <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+      <span class="msf-blog-card__link">{{ t.ui.read_post }} &rarr;</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

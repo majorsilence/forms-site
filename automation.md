@@ -1,17 +1,20 @@
 ---
 layout: docs
 title: Automation & UI testing
-subtitle: One automation tree — in-process tests, Selenium, and screen readers — and how to build a real test suite on it. Every example in C# and VB.NET.
-seo_title: "WinForms UI Testing & Automation — Headless CI and Selenium"
+subtitle: One automation tree — in-process tests, Selenium, screen readers, and an MCP server for AI agents — and how to build a real test suite on it. Every example in C# and VB.NET.
+seo_title: "WinForms UI Testing & Automation — Headless CI, Selenium and MCP"
 description: >-
   Automate and test a cross-platform WinForms app from one automation tree: in-process UI tests,
-  headless CI, a W3C WebDriver server, and screen readers.
+  headless CI, a W3C WebDriver server, screen readers (Windows UIA and browser ARIA), and an MCP
+  server that lets AI agents drive the running app.
 keywords:
   - winforms ui testing
   - automate winforms app
   - winforms selenium webdriver
   - headless winforms ci
   - winforms accessibility screen reader
+  - mcp
+  - ai agent ui testing
 priority: "0.8"
 ---
 
@@ -30,7 +33,8 @@ a real Selenium `RemoteWebDriver` session. Where something doesn't work, it says
 ## Contents
 {:#contents}
 
-- [One tree, three consumers](#tree)
+- [One tree, four consumers](#tree)
+- [Custom-painted controls: publishing your own value and state](#custom-controls)
 - [Pick your level](#levels)
 - [Four prerequisites](#prerequisites)
 - [Level 1 — in-process tests on the headless backend](#level-1)
@@ -48,18 +52,20 @@ a real Selenium `RemoteWebDriver` session. Where something doesn't work, it says
 
 ---
 
-## One tree, three consumers
+## One tree, four consumers
 {:#tree}
 
 The tree reads the same logical bounds and state the renderers use, so it behaves identically on the
-headless and the real (Avalonia/Uno) backends — **a test written against Headless describes what a user
-sees on Avalonia.** Three things consume that one model:
+headless and the real backends (Avalonia, Uno, GTK 4, and the rest — see
+[Platform backends]({{ '/backends/' | relative_url }})) — **a test written against Headless describes
+what a user sees on Avalonia.** Four things consume that one model:
 
 | Consumer | Package | What it gives you |
 |---|---|---|
 | In-process UI tests | `Majorsilence.Forms.Automation` (in the core package) | Drive a form from C#/VB without pixel math |
-| Remote automation | `Majorsilence.Forms.WebDriver` | A W3C WebDriver server any Selenium client can drive |
-| Screen readers & magnifiers | `Majorsilence.Forms.WindowsUIAutomation` | Narrator / NVDA / JAWS on Windows |
+| Remote automation | `Majorsilence.Forms.WebDriver` | A W3C WebDriver server any Selenium client can drive — and what the [MCP server](#ai-mcp) for AI agents talks to |
+| Screen readers & magnifiers (Windows) | `Majorsilence.Forms.WindowsUIAutomation` | Narrator / NVDA / JAWS on Windows |
+| Screen readers & DOM tools (browser) | Built into `Majorsilence.Forms.Avalonia` on `net10.0-browser` | A transparent ARIA DOM mirror of the open forms next to the canvas — role, name, state and bounds per control, plus live regions ([details]({{ '/backends/' | relative_url }}#accessibility-dom-browser)) |
 
 Every one of them sees the same thing, and that thing is **text**. `session.GetPageSource()` renders the
 live UI as XML — which is what makes locators recordable, snapshots diffable, and
@@ -95,8 +101,146 @@ index would shift under you as the list scrolls — so locate them by name, text
 `value` is its selected item; an item's own text stays its text. Only the items scrolled into view appear,
 because an item off screen has no rectangle to click.
 
-*Menu and toolbar items, list items, and the HiDPI hit-test fix behind clicking them landed after 26.0.30
-— on a pinned 26.0.30 you'll see the strip and the list but not their contents.*
+*Menu and toolbar items, list items, and the HiDPI hit-test fix behind clicking them have shipped in every
+release since 26.0.30 — only a project still pinned to 26.0.30 sees the strip and the list without their
+contents.*
+
+### Custom-painted controls: publishing your own value and state
+{:#custom-controls}
+
+Everything above works out of the box for built-in controls — `Button`, `TextBox`, `CheckBox` and the
+rest already know how to report their own role and value. A custom-painted control (one you draw yourself
+in `OnPaint`) has no such inference to fall back on: without more, it shows up in the tree with a value of
+`""` and no state at all, just a role guessed from its type name.
+
+**Role and name already have a place**, for any control: `Control.AccessibleRole` and
+`Control.AccessibleName` (existing WinForms-compat properties) are checked ahead of the built-in
+inference, so setting them works for a custom control exactly as it does for anything else — no new API
+needed for those two.
+
+**Value and extra state need `IAutomationStateProvider`.** Implement it on your control and the tree uses
+it instead of guessing — the level a status widget is showing, for example:
+
+**C#**
+
+```csharp
+using System.Collections.Generic;
+using System.Globalization;
+using Majorsilence.Forms;
+using Majorsilence.Forms.Automation;
+
+public sealed class BeaconIndicator : Control, IAutomationStateProvider
+{
+    public int Level { get; set; }
+    public string Status { get; set; } = "warning";
+
+    public string? AutomationValue => Level.ToString (CultureInfo.InvariantCulture);
+
+    public IReadOnlyDictionary<string, string> AutomationState => new Dictionary<string, string> {
+        ["level"] = Level.ToString (CultureInfo.InvariantCulture),
+        ["status"] = Status,
+    };
+
+    protected override void OnPaint (PaintEventArgs e) { /* draw the beacon */ }
+}
+```
+
+**VB.NET**
+
+```vb
+Imports Majorsilence.Forms
+Imports Majorsilence.Forms.Automation
+
+Public NotInheritable Class BeaconIndicator
+    Inherits Control
+    Implements IAutomationStateProvider
+
+    Public Property Level As Integer
+    Public Property Status As String = "warning"
+
+    Public ReadOnly Property AutomationValue As String Implements IAutomationStateProvider.AutomationValue
+        Get
+            Return Level.ToString(Globalization.CultureInfo.InvariantCulture)
+        End Get
+    End Property
+
+    Public ReadOnly Property AutomationState As IReadOnlyDictionary(Of String, String) _
+            Implements IAutomationStateProvider.AutomationState
+        Get
+            Return New Dictionary(Of String, String) From {
+                {"level", Level.ToString(Globalization.CultureInfo.InvariantCulture)},
+                {"status", Status}
+            }
+        End Get
+    End Property
+
+    Protected Overrides Sub OnPaint(e As PaintEventArgs)
+        ' draw the beacon
+    End Sub
+End Class
+```
+
+Set `AccessibleRole`/`AccessibleName` too and the element carries all four:
+
+**C#**
+
+```csharp
+var beacon = new BeaconIndicator {
+    Name = "workshopBeacon",             // AutomationId
+    AccessibleName = "Workshop beacon",  // Name
+    AccessibleRole = AccessibleRole.StatusBar,
+    Level = 3,
+    Status = "alarm",
+};
+```
+
+**VB.NET**
+
+```vb
+Dim beacon As New BeaconIndicator With {
+    .Name = "workshopBeacon",             ' AutomationId
+    .AccessibleName = "Workshop beacon",  ' Name
+    .AccessibleRole = AccessibleRole.StatusBar,
+    .Level = 3,
+    .Status = "alarm"
+}
+```
+
+...which shows up in `session.GetPageSource()` exactly like a built-in control, plus a `state-{key}`
+attribute per entry — independently queryable, not one opaque blob:
+
+```xml
+<BeaconIndicator id="workshopBeacon" name="Workshop beacon" role="statusbar" type="BeaconIndicator"
+                 value="3" state-level="3" state-status="alarm"
+                 enabled="true" visible="true" x="10" y="10" width="60" height="60" />
+```
+
+**C#**
+
+```csharp
+session.Find (By.XPath ("//BeaconIndicator[@state-level='3']"));
+```
+
+**VB.NET**
+
+```vb
+session.Find(By.XPath("//BeaconIndicator[@state-level='3']"))
+```
+
+The same `state-{key}` name works through WebDriver's `getAttribute` too — a locator captured from either
+the page source or a live `getAttribute` call sees the same attribute. Keys should be simple identifiers
+(letters, digits, `-`/`_`): an odd key gets sanitized for the XML attribute *name* the same way a control
+type name does, but `getAttribute` looks the key up unsanitized, so the two would disagree for a key that
+needed it.
+
+`AutomationValue` fully replaces the built-in inference, not blends with it — a `CheckBox`-like custom
+control that wants `"true"`/`"false"` reports that itself rather than getting `ValueOf`'s own switch for
+free. Every built-in control's `State` stays empty; nothing here changes what an existing control (one
+that does not implement the interface) reports.
+
+The same state reaches the other consumers: in the browser it appears as `data-mf-state-*` attributes on
+the control's ARIA mirror element, so a custom control you make automatable is also one a screen reader
+can describe.
 
 ---
 
@@ -188,6 +332,14 @@ using Xunit;
 NUnit: `[assembly: LevelOfParallelism(1)]` and no `[Parallelizable]`. MSTest: leave
 `<Parallelize>` out of your `.runsettings`, or set `Workers` to `1`.
 
+If you'd rather keep parallelism for non-UI tests, do what the framework's own suite does: put every
+class that touches the backend in one xUnit collection (`[Collection ("Headless")]`), which xUnit runs
+serially, and leave the rest free. The framework enforces that convention with a test
+([`HeadlessCollectionConventionTests`]({{ site.github_url }}/blob/main/tests/Majorsilence.Forms.Tests/HeadlessCollectionConventionTests.cs))
+that scans the compiled assembly for calls to `HeadlessRenderer.Use ()` and fails naming any class that
+made one without the attribute — seventy files once drifted out of the convention before it was enforced,
+so if you adopt the pattern, copy the guard too.
+
 ### 4. Install the Headless backend once per assembly
 {:#prerequisites-bootstrap}
 
@@ -228,7 +380,14 @@ Public Class TestBackend
 End Class
 ```
 
-`HeadlessRenderer.Use()` does the same thing if you prefer it.
+`HeadlessRenderer.Use ()` does the same thing if you prefer it, with one extra behaviour worth knowing:
+besides installing the Headless backend when it isn't already active, **every call makes the calling thread
+the UI thread** for the Headless backend. That matters under a test runner, which hands each test to
+whatever worker thread is free: `Application.RunOnUIThread` and the backend's queue decide "am I on the UI
+thread?" by thread id, so a backend that only remembered the *first* thread that ever asked would treat
+every later test's work as off-thread. The framework's own suite therefore calls `HeadlessRenderer.Use ()`
+at the top of every test rather than once per assembly — a cheap habit worth copying if your tests marshal
+work back to the UI thread.
 
 > **Don't run UI tests on the Avalonia backend.** Avalonia's dispatcher is thread-bound and conflicts
 > with a test runner's worker threads. The Headless backend exists precisely so your suite doesn't need
@@ -253,8 +412,9 @@ The API is small enough to learn in one sitting.
 | `session.GetText (element)` | Read the value/text |
 | `session.Root` / `session.GetPageSource ()` | The whole tree as objects / as XML |
 
-Elements expose `AutomationId`, `Name`, `Role`, `ControlType`, `Value`, `Enabled`, `Visible`, `Focused`,
-`Bounds`, `Children`, `ClickPoint`, and `Descendants()`.
+Elements expose `AutomationId`, `Name`, `Role`, `ControlType`, `Value`, `State` (a custom-painted control's
+own extra state — see [above](#custom-controls); empty for every built-in control), `Enabled`, `Visible`,
+`Focused`, `Bounds`, `Children`, `ClickPoint`, and `Descendants()`.
 
 > **An `AutomationElement` is an immutable snapshot — re-resolve before you read.** This is the one
 > gotcha everybody hits, and it's asymmetric: *actions* on a previously-captured element work fine
@@ -400,7 +560,10 @@ HeadlessRenderer.TextInput(form, "typed text")
 ```
 
 Coordinates here are **logical**, and the renderer converts them to device pixels for you — which is why
-these keep working when you run the same test at `MF_HEADLESS_SCALE=2`.
+these keep working when you run the same test at `MF_HEADLESS_SCALE=2`, the simulated-HiDPI gate the
+framework's own CI runs as one of its four shapes (Debug, Release, `MF_FORCE_CUSTOM_CHROME=1`, and
+`MF_FORCE_CUSTOM_CHROME=1 MF_HEADLESS_SCALE=2`). Run your suite under it too; a logical-versus-device
+mix-up is invisible at scale 1.
 
 ---
 
@@ -868,6 +1031,13 @@ keyboard focus fires a UIA focus-changed event, which is what makes a screen rea
 control and a magnifier follow the caret. The focused control's value changes raise a property-changed
 event.
 
+A `Label` whose `LiveSetting` is `Polite` or `Assertive` is a live region: its element reports UIA's
+**LiveSetting**, and changing its text raises UIA's **LiveRegionChanged** event, which is what makes
+Narrator and NVDA read a status label's new text without the user moving to it (as upstream's
+`Label.OnTextChanged` does). An element's **HelpText** is its control's `AccessibilityObject.Help`, so a
+`Control.QueryAccessibilityHelp` handler's `HelpString` is what a screen reader reads as the control's help.
+Both are compiled against the Windows reference assemblies but have not been heard from a real screen reader.
+
 **What works today, and what to expect:** the `Invoke` pattern (buttons) is live, so a FlaUI or
 WinAppDriver script can find controls and click them. `Value` (text, combo) and `Toggle` (checkbox) are
 exposed **for reading**; write support is a later phase — so *setting* text through UIA may not work yet,
@@ -888,6 +1058,15 @@ should be announced with its name and role, and a button should activate from th
 
 Linux (AT-SPI) and macOS (NSAccessibility) bridges over the same tree are roadmap. If you have an
 accessibility obligation on those platforms, plan around that now.
+
+**The browser is covered differently.** On `net10.0-browser` the Avalonia backend mirrors the same tree
+into a DOM of transparent, click-through elements next to the canvas — one per control, with ARIA role,
+name, state and bounds, plus `aria-live` regions for the same label/status/dialog announcements the UIA
+bridge raises. That is what a screen reader, find-in-page, or a DOM-based test tool sees. It needs no
+call from you (opt out with the `Majorsilence.Forms.Browser.DisableAccessibilityDom` AppContext switch),
+and it is verified by reading the DOM in headless Chrome in CI rather than by a real screen reader. The
+[backends page]({{ '/backends/' | relative_url }}#accessibility-dom-browser) documents the roles, states and
+live-region rules.
 
 ---
 
@@ -1399,9 +1578,14 @@ A short `AGENTS.md` / `CLAUDE.md` in your repo is enough to make an assistant go
 {:#ai-mcp}
 
 To let an assistant drive a *running* app conversationally, expose the automation surface as
-[Model Context Protocol](https://modelcontextprotocol.io) tools. **There is a server for this in the
-repo** — `tools/Majorsilence.Forms.Mcp`, a `dotnet` tool that speaks MCP over stdin/stdout and drives
-the app through the WebDriver endpoint from [level 2](#level-2):
+[Model Context Protocol](https://modelcontextprotocol.io) tools. **The framework ships one** —
+[`Majorsilence.Forms.Mcp`]({{ site.github_url }}/tree/main/tools/Majorsilence.Forms.Mcp), a published
+`dotnet` global tool that speaks MCP over stdin/stdout and drives the app through the WebDriver endpoint
+from [level 2](#level-2):
+
+```
+dotnet tool install -g Majorsilence.Forms.Mcp
+```
 
 ```
 assistant  ──MCP/stdio──▶  majorsilence-mcp  ──HTTP/loopback──▶  your app (WebDriverServer)
@@ -1424,7 +1608,8 @@ Then point a client at it. Claude Code:
 claude mcp add majorsilence-ui -- majorsilence-mcp --port 4444
 ```
 
-Any client that launches MCP servers itself takes the same command in its own config format:
+Any client that launches MCP servers itself (Claude Desktop, editors, agent frameworks) takes the same
+command in its own config format:
 
 ```json
 {
@@ -1436,6 +1621,9 @@ Any client that launches MCP servers itself takes the same command in its own co
   }
 }
 ```
+
+Options: `--port <port>` (loopback, default 4444), `--url <url>` for a full base URL, or the
+`MAJORSILENCE_MCP_URL` environment variable; `--help` prints the same summary.
 
 The tools it exposes:
 
@@ -1459,23 +1647,32 @@ Three decisions in there worth copying if you build your own:
 - **`ui_click` and `ui_type` are annotated destructive, the rest read-only**, which is what a host shows
   the user when deciding what to auto-approve.
 
-**Something to point it at.** `samples/AutomationTarget` is a small app built for exactly this: it starts
-the endpoint itself and prints the commands to drive it.
+**Something to point it at.**
+[`samples/AutomationTarget`]({{ site.github_url }}/tree/main/samples/AutomationTarget) is a small app
+built for exactly this: it starts the endpoint itself and prints the commands to drive it (the MCP
+`claude mcp add` line, a Selenium `RemoteWebDriver` constructor, and a `curl` for `/status`).
 
 ```
 dotnet run --project samples/AutomationTarget -- --webdriver 4444
 ```
 
-Its controls each exercise one thing a client has to handle — a text box to write and read, a button whose
-handler changes a label, a permanently disabled button (so you can see a refusal rather than a false
-success), and a Submit button that only becomes enabled once a checkbox is ticked, which is what
-`ui_wait_for` is for. Every action is appended to a visible log, so you can check that what the client
-claims it did is what the app actually saw.
+`--webdriver <port>` picks the port; `--no-webdriver` runs it as an ordinary app. Its controls each
+exercise one thing a client has to handle — a text box to write and read (`nameBox`), a button whose
+handler changes a label (`greetButton` → `greetingLabel`), a permanently disabled button (`lockedButton`,
+so you can see a refusal rather than a false success), a Submit button that only becomes enabled once the
+`agreeCheck` checkbox is ticked (which is what `ui_wait_for` is for), a `logList` whose rows are
+`listitem` nodes, and one deliberately *unnamed* label, so you can see what an empty `id` looks like in
+the tree. Every action is appended to the visible log and to stdout, so you can check that what the client
+claims it did is what the app actually saw. A good first exercise: *"type 'Grace Hopper' into nameBox,
+click greetButton, and read greetingLabel"* should come back as `Hello, Grace Hopper!`.
 
-Where it comes from: it packs as the `Majorsilence.Forms.Mcp` global tool
-(`dotnet tool install -g Majorsilence.Forms.Mcp`) from the next release onwards. Before that — and today —
-run it out of the repo, which also gets you `Majorsilence.Forms.WebDriver` (not yet on NuGet either, so
-the app under test references that project from source):
+Two things it teaches the hard way: it runs on the Avalonia backend, so `ui_screenshot` is refused
+(screenshots are [Headless-only](#level-2)); and its list items have no `id`, so they are located by name,
+text or XPath.
+
+Both halves are on NuGet — the tool, and `Majorsilence.Forms.WebDriver` for the app under test — so
+nothing has to be built from the repo. If you do want to run the server from source (to change it, say),
+the equivalent is:
 
 ```
 dotnet run --project tools/Majorsilence.Forms.Mcp -- --port 4444
@@ -1652,13 +1849,19 @@ without proving anything, so review for these specifically:
 ## Limits and anti-patterns
 {:#limits}
 
-**Playwright cannot drive your app.** It automates browser engines over the Chrome DevTools Protocol
-against a DOM; a Majorsilence.Forms app renders natively with Skia and has no DOM or browser engine to
-attach to. The only way it would apply is hosting the UI inside a real web view, which this framework
-does not do. The HTTP surface *could* be exercised from Playwright's API-request client, treating it as an
-HTTP service — but that isn't browser automation and offers nothing over a plain WebDriver client. Use
-[the WebDriver server](#level-2) instead. (Playwright *is* the right tool for smoke-testing that your
-[WebAssembly bundle boots](#ci-wasm) — a different job.)
+**Playwright cannot drive your desktop app.** It automates browser engines over the Chrome DevTools
+Protocol against a DOM; a Majorsilence.Forms app on a desktop backend renders natively with Skia and has
+no DOM or browser engine to attach to. The HTTP surface *could* be exercised from Playwright's API-request
+client, treating it as an HTTP service — but that isn't browser automation and offers nothing over a plain
+WebDriver client. Use [the WebDriver server](#level-2) instead. (Playwright *is* the right tool for
+smoke-testing that your [WebAssembly bundle boots](#ci-wasm) — a different job.)
+
+**The browser target is the partial exception.** There the Avalonia backend keeps an
+[ARIA DOM mirror](#tree) of the open forms, so a DOM tool *can* locate controls — by role and name, or by
+`[data-mf-automation-id="okButton"]` — and read their state. Input still belongs to the canvas: the mirror
+elements are `pointer-events: none`, so click at the element's bounding box
+(`locator.boundingBox ()` then `page.mouse.click`) rather than with a DOM click. That is enough for a
+browser smoke test; the bulk of a suite still belongs at level 1.
 
 Other boundaries worth knowing before you design a suite around them:
 
@@ -1679,9 +1882,16 @@ Other boundaries worth knowing before you design a suite around them:
 And the two habits that cause most of the pain:
 
 - **Don't assert scale-1 pixel geometry.** The framework's own HiDPI failures were almost entirely one
-  confusion — logical versus device units. `Bounds`, `MouseEventArgs` and `GetTabRect` are logical;
-  `ClientRectangle`, back buffers and captured bitmaps are device pixels. They're identical at scale 1,
-  so mixing them is invisible until a scaled display shows up. Assert proportionally.
+  confusion — logical versus device units. Since 2026-10-01 the public surface is consistently
+  **logical**: `Bounds`, `ClientRectangle`, `ClientSize`, `MouseEventArgs`, `GetTabRect`, and the paint
+  canvas (`OnPaint`, `e.ClipRectangle`) all share one unit, and the framework scales the canvas for you
+  (a custom control that still calls `e.Graphics.ScaleTransform (e.Scaling, e.Scaling)` now scales
+  twice — remove it). Device pixels are reachable only where they are named as such — the `Scaled*`
+  family (`ScaledWidth`, `ScaledBounds`, …), `PaintEventArgs.Scaling`, `LogicalToDeviceUnits`, back
+  buffers and captured bitmaps — plus the remaining exception: **owner-draw events** (`DrawItem`,
+  `DrawNode`, `CellPainting`) still hand you device-pixel bounds. The two unit systems are identical at
+  scale 1, so mixing them is invisible until a scaled display shows up. Assert proportionally, and run the
+  `MF_HEADLESS_SCALE=2` gate.
 - **Don't test on the Avalonia backend under a runner.** It will appear to work and then deadlock or
   behave inconsistently, because its dispatcher is thread-bound. Headless exists for this.
 
@@ -1694,11 +1904,20 @@ And the two habits that cause most of the pain:
   Appium/WinAppDriver) with no custom protocol.
 - Complete the UIA patterns: `Value`/`Toggle` write support, structure-changed events, and `TextBox`
   per-keystroke value events (raising `TextChanged` from the editor).
+- ✅ **Browser accessibility DOM** — on `net10.0-browser` the same tree is mirrored into ARIA elements
+  with live regions, so screen readers, find-in-page and DOM test tools can see the UI
+  ([details]({{ '/backends/' | relative_url }}#accessibility-dom-browser)). Not yet heard through a real
+  screen reader — verified by reading the DOM in headless Chrome.
 - **AT-SPI (Linux)** and **NSAccessibility (macOS)** bridges over the same tree.
 - ✅ **Non-control items**: menu items, toolbar buttons and `ListBox` items are in the tree, with their own
   bounds, and clickable.
-- Expand roles and states (selection, expand/collapse, value ranges) — an item cannot yet report that it
-  is selected, which is why the list carries that.
+- ✅ **Custom-painted controls can publish their own value and extra state** (`IAutomationStateProvider`) —
+  see [above](#custom-controls).
+- ✅ **Live regions and help text in UIA** — `Label.LiveSetting` raises LiveRegionChanged;
+  `QueryAccessibilityHelp` feeds HelpText.
+- Expand roles and states (selection, expand/collapse, value ranges) — a `ListBox` item cannot yet report
+  that it is selected on its own, which is why the list carries that; `IAutomationStateProvider`'s own
+  `State` field is there for a built-in control to use for this too, not wired up for `ListBox` yet.
 - Surface the remaining painted items: tab headers, `DataGridView` cells, tree nodes.
 - A higher-level `Majorsilence.Forms.Testing` ergonomics layer — fluent helpers and golden-image asserts,
   so the [wait helper](#waits) and [golden-image plumbing](#visual) above stop being yours to own.

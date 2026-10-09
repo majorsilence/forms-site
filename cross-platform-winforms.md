@@ -17,6 +17,8 @@ keywords:
   - winforms alternative
   - system.windows.forms cross platform
   - .net cross platform gui
+  - winforms gtk
+  - winforms terminal
 priority: "0.9"
 changefreq: weekly
 ---
@@ -45,8 +47,9 @@ public class MainForm : Form
 }
 ```
 
-That file compiles and runs on Windows, macOS and Linux from a single `net10.0` build. There is no
-`-windows` TFM, no Windows Desktop runtime, and no Wine.
+That file compiles and runs on Windows, macOS and Linux from a single `net10.0` (or `net8.0`)
+build. There is no `-windows` TFM, no Windows Desktop runtime, and no Wine. The core library also
+ships a `netstandard2.0` build, which is how a .NET Framework 4.8 app on Windows can host it too.
 
 ## How a WinForms compatibility layer actually works
 
@@ -73,30 +76,37 @@ literally the same paint code on all three.
    Swappable host backend
    ├─ Avalonia   → Windows · macOS · Linux  (default)  · also Android · iOS · Browser
    ├─ Uno         → desktop · iOS · Android · WebAssembly
+   ├─ GTK 4       → Linux-first real GTK window (gir.core), also Windows/macOS with the GTK runtime
+   ├─ Terminal    → the form drawn in a terminal (Kitty graphics, Sixel or Unicode blocks)
+   ├─ WinForms    → Windows-only migration bridge: embed in an existing WinForms app, port in steps
+   ├─ WPF         → Windows-only migration bridge, same shape, for an existing WPF app
    └─ Headless    → offscreen rendering for tests / CI</div>
 
 The core `Majorsilence.Forms` assembly references **no windowing toolkit** — only SkiaSharp. A
-backend's entire job is to create a native window, run a message loop, deliver input, and present a
-Skia surface. That seam is why the same application binary can target Avalonia on the desktop today
-and Uno or WebAssembly tomorrow. See [Platform backends]({{ '/backends/' | relative_url }}) for the
-interfaces and how to add your own.
+backend's entire job is to create a native window (or a terminal, or nothing at all), run a message
+loop, deliver input, and present a Skia surface. That seam is why the same application binary can
+target Avalonia on the desktop today and GTK 4, Uno or WebAssembly tomorrow — and why a Windows app
+can host the very same controls inside its existing WinForms or WPF windows while it migrates. See
+[Platform backends]({{ '/backends/' | relative_url }}) for the interfaces and how to add your own.
 
 ## What you get on each platform
 
 | Platform | Status | Host |
 |---|---|---|
-| Windows | Supported, out of the box | Avalonia (default) or Uno |
-| macOS (Intel and Apple Silicon) | Supported, out of the box — see [WinForms on macOS]({{ '/winforms-on-macos/' | relative_url }}) | Avalonia (default) or Uno |
-| Linux (X11) | Supported, out of the box — see [WinForms on Linux]({{ '/winforms-on-linux/' | relative_url }}) | Avalonia (default) or Uno |
-| WebAssembly / browser | Working, young — [try the live gallery]({{ '/gallery/' | relative_url }}) | Avalonia Browser or Uno Wasm |
-| Android | Early, work in progress | Avalonia Android or Uno |
-| iOS | Early, unverified | Avalonia iOS or Uno |
+| Windows | Supported, out of the box | Avalonia (default), Uno, or GTK 4 with the GTK runtime installed |
+| Windows, inside an existing WinForms or WPF app | Supported — incremental migration, one control at a time; also hosts from **.NET Framework 4.8** (`net48`) | `Majorsilence.Forms.WinForms` / `Majorsilence.Forms.Wpf` |
+| macOS (Intel and Apple Silicon) | Supported, out of the box — see [WinForms on macOS]({{ '/winforms-on-macos/' | relative_url }}) | Avalonia (default), Uno, or GTK 4 via Homebrew |
+| Linux (X11 / Wayland) | Supported, out of the box — see [WinForms on Linux]({{ '/winforms-on-linux/' | relative_url }}) | Avalonia (default, X11), GTK 4 (native Wayland/X11, verified on Wayland), or Uno |
+| Terminal | Working, young — verified in xterm and WezTerm | `Majorsilence.Forms.Terminal`: the form fills the terminal, drawn as Kitty graphics, Sixel, or Unicode block glyphs |
+| WebAssembly / browser | Working, young — [try the live gallery]({{ '/gallery/' | relative_url }}); screen readers see an ARIA DOM mirror of the UI | Avalonia Browser or Uno Wasm |
+| Android | Early — initial real-device pass done (boots, taps, render scaling, touch scroll confirmed on hardware); keyboard, safe-area and rotation unit-tested only | Avalonia Android or Uno |
+| iOS | Early — CI compiles the real head and launches it in a simulator smoke check, but nobody has run it interactively yet | Avalonia iOS or Uno |
 | Headless / CI | Supported | Headless backend, offscreen Skia |
 
 ## The Windows-only APIs a port has to replace
 
-Making the controls portable is only half of it. A real WinForms application also leans on two
-other Windows-only stacks, and both have a cross-platform answer here:
+Making the controls portable is only half of it. A real WinForms application also leans on other
+Windows-only stacks, and each has a cross-platform answer here:
 
 - **`System.Drawing.Common` (GDI+)** has been Windows-only since .NET 7.
   `Majorsilence.Forms.Drawing.Common` is a Skia-backed reimplementation of it — `Bitmap`, `Font`,
@@ -107,6 +117,12 @@ other Windows-only stacks, and both have a cross-platform answer here:
 - **Printing** goes through `Majorsilence.Forms.Printing.PrintDocument`, which renders pages with
   the same Skia pipeline and produces a PDF rather than talking to an OS print driver. That is a
   platform-agnostic substitute by design, not an unfinished per-OS gap.
+- **Visual styles (uxtheme).** WinForms borrows its look from the OS theme engine via
+  `Application.EnableVisualStyles()`; here that call is a no-op, and the look comes from the
+  framework's own theme instead. Themes are plain CSS files — a documented subset with tokens for
+  colours and fonts plus per-control rules — so one sheet styles the app identically on every OS,
+  and the built-in `Default` theme follows the OS light/dark preference. See
+  [Theming with CSS]({{ site.github_url }}/blob/main/docs/theming.md).
 
 ## What it costs
 
@@ -114,16 +130,31 @@ Being honest about the trade is more useful than a feature list:
 
 - **`Control.Handle` is `IntPtr.Zero`.** A control here is paint operations on a canvas, not an OS
   window, so there is no `HWND` to hand out and the framework refuses to invent one. Window-level
-  handles *are* real (`HWND`/`NSWindow`/`XID`). See [Native interop]({{ '/native-interop/' | relative_url }}).
+  handles *are* real (`HWND`/`NSWindow`/`XID`, and a real HWND on the WinForms backend). See
+  [Native interop]({{ '/native-interop/' | relative_url }}).
 - **No `WndProc`, no Win32 P/Invoke against controls.** Message-based tricks have to be rewritten
   against real APIs.
+- **Blocking dialogs don't exist in a browser or on a phone.** On the browser, Android and iOS
+  targets the host has no nested message loop, so `Form.ShowDialog`, `MessageBox.Show` and the
+  file pickers throw `PlatformNotSupportedException` — naming the async twin — before showing
+  anything. `ShowDialogAsync`, `MessageBox.ShowAsync` and friends work everywhere, and a Roslyn
+  analyzer that ships in the core package (`MFB001`–`MFB003`, with code fixes) flags the blocking
+  calls on those targets. Desktop apps can keep their blocking calls.
+- **Coordinates are logical units, not device pixels.** `Width`, `Bounds`, `ClientRectangle`,
+  mouse positions and the paint canvas are all in logical units; the framework scales to the
+  display. Custom-painted controls that did their own `ScaleTransform` by the DPI factor must drop
+  it, and device pixels are reachable through `ScaledBounds`, `PaintEventArgs.Scaling` and
+  `LogicalToDeviceUnits`.
 - **Coverage is not 100%.** The project is beta. Unimplemented members deliberately no-op or return
   a sensible default instead of throwing, so migrated code compiles *and runs* — which also means a
   gap can be silent. The
   [compatibility matrix]({{ site.github_url }}/blob/main/COMPATIBILITY_MATRIX.md) tracks what is
   real, what is approximated, and what is out of scope, control by control.
 - **Pixel-identical rendering with native WinForms is a non-goal.** Controls are themed and drawn by
-  Skia; they look consistent across platforms rather than matching each OS's native widgets.
+  Skia; they look consistent across platforms rather than matching each OS's native widgets. One
+  deliberate exception: a ported app that picks its font with `Application.SetDefaultFont` — the
+  way a WinForms app does — gets push buttons and check/radio glyphs drawn the way WinForms draws
+  them under the Windows 11 theme, so a side-by-side migration doesn't look like two products.
 
 ## Where to go next
 

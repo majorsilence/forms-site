@@ -15,6 +15,7 @@ keywords:
   - .net gui framework mac
   - winforms apple silicon
   - system.windows.forms macos
+  - winforms dark mode mac
 priority: "0.9"
 ---
 
@@ -33,12 +34,13 @@ plain `net10.0` build — no `-windows` TFM — produces an app that launches na
 Silicon (arm64) and Intel (x64)** Macs.
 
 ```bash
-dotnet new install MajorsilenceForms.Templates
+dotnet new install Majorsilence.Forms.Templates
 dotnet new majorsilenceforms
-dotnet run
+dotnet run --project MajorsilenceFormsApp
 ```
 
-The same source builds unchanged on Windows and Linux.
+The template produces a shared UI library plus a desktop head; the same source builds unchanged on
+Windows and Linux.
 
 ## What actually works on macOS
 
@@ -53,9 +55,12 @@ The same source builds unchanged on Windows and Linux.
 | Printing | `PrintDocument` renders through Skia to PDF, identically on every OS |
 | WebView controls | Real `WKWebView`, including inline PDF rendering |
 | Sound | Played through `afplay` |
+| Secure storage and speech | `Majorsilence.Forms.Essentials`: `SecureStorage` writes to Keychain Services, `Speech` uses the system `say` voice; both report `IsSupported` and degrade to no-ops rather than throwing |
+| Themes and dark mode | Themes are CSS files (a documented subset); `BuiltInTheme.Default` follows the OS light/dark appearance, and `Theme.SetBuiltInTheme`/`Theme.ApplyTheme` switch at runtime. The [Theme Studio]({{ site.github_url }}/tree/main/samples/ThemeStudio) sample is a live CSS editor with preview, and prebuilt binaries are attached to GitHub Releases |
 | Trackpad gestures | `Pinch`, `Swipe`, `LongPress` and momentum `ScrollGesture` are first-class events; `ScrollableControl` already applies them, so `Panel`/`ListBox`/`TreeView` pan with no app changes |
 | Native window handle | A real `NSWindow` pointer via `WindowBase.PlatformHandle` (per-*control* handles are `IntPtr.Zero` everywhere — see [Native interop]({{ '/native-interop/' | relative_url }})) |
 | Uno backend | Also supported and verified booting and rendering a full form on macOS, if you'd rather host in Uno |
+| GTK 4 backend | Compiles and runs on macOS with the GTK runtime from Homebrew (`brew install gtk4`) — a Linux-first backend, so expect a GTK window rather than an AppKit one; useful mainly for testing the GTK head on a Mac |
 
 ## Where it will feel un-Mac-like
 
@@ -66,13 +71,15 @@ rather than bugs:
   WinForms draws it — it is not projected onto the macOS global menu bar at the top of the screen.
 - **Controls are drawn, not native.** A `Button` is Skia paint code themed by the framework, so it
   matches your app on Windows and Linux rather than matching AppKit. Consistency across platforms
-  and native look on each are genuinely opposed goals; this project picks the first.
+  and native look on each are genuinely opposed goals; this project picks the first. CSS theming
+  lets you get close to a Mac palette and typography, but it is still your theme, not AppKit's.
 - **Windows conventions travel with the code.** Keyboard shortcuts, dialog button ordering and
   window-close semantics come from your existing WinForms design. Adapting them to macOS habits is
   app-level work.
 - **No UI Automation bridge.** Screen-reader support (`Majorsilence.Forms.WindowsUIAutomation`) is
-  Windows-only today; there is no `NSAccessibility` bridge yet. The backend-neutral
-  [automation tree]({{ '/automation/' | relative_url }}) still drives tests and Selenium on macOS.
+  Windows-only today; an `NSAccessibility` bridge is roadmap, not wired. The backend-neutral
+  [automation tree]({{ '/automation/' | relative_url }}) still drives tests, Selenium and the MCP
+  server on macOS.
 
 ## Shipping a `.app`
 
@@ -91,7 +98,7 @@ publishing `osx-arm64` and `osx-x64` and joining them with `lipo`.
 ## Verified on macOS
 
 The [`Explorer`]({{ '/samples/' | relative_url }}) sample and the full control gallery both run on
-macOS:
+macOS, and the Uno head of the gallery has been verified there too:
 
 ![The Explorer sample running on macOS]({{ '/assets/img/explorer-macos.png' | relative_url }})
 

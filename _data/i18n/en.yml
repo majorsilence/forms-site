@@ -1,0 +1,119 @@
+# English UI strings. Every other _data/i18n/<code>.yml has exactly these keys.
+# URLs are language-neutral: the layouts prepend the language prefix.
+
+site:
+  tagline: WinForms in. Cross-platform out.
+  description: >-
+    Open-source cross-platform WinForms library for .NET — a Windows Forms compatibility layer that
+    runs your apps on Windows, macOS, Linux and the browser, without a rewrite.
+  og_image_alt: >-
+    Majorsilence.Forms — the same WinForms app running on Windows, macOS and Linux.
+  footer_blurb: >-
+    Cross-platform WinForms for .NET. Run your Windows Forms apps on Windows, macOS, Linux,
+    mobile and the browser — without a rewrite.
+
+ui:
+  home: Home
+  back_home: home
+  back_blog: blog
+  blog: Blog
+  read_post: Read post
+  github: github
+  nuget: NuGet
+  license: MIT license
+  theme: Theme
+  theme_light: light
+  theme_dark: dark
+  theme_system: auto
+  language: Language
+  copyright: MIT licensed · © %YEAR% Majorsilence.Forms contributors
+  fork_of: An AI-enhanced fork of
+  not_found_title: Page not found
+  not_found_body: That page doesn't exist — it may have moved, or never existed.
+  not_found_back: Back to home
+  latest_posts: Latest updates
+  from_the_blog: from the blog
+  translation_note: >-
+    This page is a translation. The English version is the reference when they differ.
+
+months:
+  - January
+  - February
+  - March
+  - April
+  - May
+  - June
+  - July
+  - August
+  - September
+  - October
+  - November
+  - December
+# strftime-style pattern using %D (day), %M (month name), %Y (year)
+date_format: "%M %D, %Y"
+
+nav_links:
+  - label: home
+    url: /
+  - label: why
+    url: /cross-platform-winforms/
+  - label: getting started
+    url: /getting-started/
+  - label: migrate
+    url: /migration/
+  - label: training
+    url: /training/
+  - label: samples
+    url: /samples/
+  - label: backends
+    url: /backends/
+  - label: automation & testing
+    url: /automation/
+  - label: native interop
+    url: /native-interop/
+  - label: faq
+    url: /faq/
+  - label: blog
+    url: /blog/
+
+# The footer sitemap. Beyond being useful navigation, this is the site's internal-linking
+# backbone: every page links to every other with descriptive anchor text, which is how the
+# keyword landing pages get crawled and get a share of the home page's authority.
+footer_links:
+  - heading: Start
+    items:
+      - label: Getting started
+        url: /getting-started/
+      - label: Migrate a WinForms app
+        url: /migration/
+      - label: Training guide
+        url: /training/
+      - label: Samples
+        url: /samples/
+      - label: FAQ
+        url: /faq/
+  - heading: Platforms
+    items:
+      - label: Cross-platform WinForms
+        url: /cross-platform-winforms/
+      - label: WinForms on Linux
+        url: /winforms-on-linux/
+      - label: WinForms on macOS
+        url: /winforms-on-macos/
+      - label: Platform backends
+        url: /backends/
+      - label: Live browser demo
+        url: /gallery/
+        shared: true
+  - heading: Reference
+    items:
+      - label: WinForms alternatives compared
+        url: /winforms-alternatives/
+      - label: Automation & UI testing
+        url: /automation/
+      - label: Native interop
+        url: /native-interop/
+      - label: Blog
+        url: /blog/
+      - label: RSS feed
+        url: /feed.xml

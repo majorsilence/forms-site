@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: Training guide
-subtitle: A structured curriculum for application teams building and shipping on Majorsilence.Forms — every example in both C# and VB.NET.
+subtitle: A structured curriculum for application teams building and shipping on Majorsilence.Forms — every example in both C# and VB.NET. Revised October 2026 for 26.9.0.
 seo_title: "Cross-Platform WinForms Training Guide (C# and VB.NET)"
 description: >-
   A structured curriculum for teams building or migrating a WinForms app onto a cross-platform
-  stack — mental model, migration, testing, CI. C# and VB.NET.
+  stack — mental model, migration, seven backends, async dialogs, theming, testing, CI. C# and VB.NET.
 keywords:
   - winforms training
   - cross platform winforms tutorial
@@ -24,9 +24,12 @@ contributor guide — you never need to clone or build the framework itself to f
 do end up wanting to fix something in the framework, [module 10](#module-10-gaps) points you at the one
 paragraph that matters.)
 
-**Every code example appears in both C# and VB.NET.** Every C# example was compiled and run on macOS
-before publishing — the screenshots throughout are those runs, not mock-ups, and two of the honest
-caveats you'll read below were found by running them. VB is a first-class migration target here: the
+**Every code example appears in both C# and VB.NET.** The C# examples in the original edition were
+compiled and run on macOS before publishing — the screenshots throughout are those runs, not mock-ups,
+and two of the honest caveats you'll read below were found by running them. The examples added in the
+October 2026 revision (theming, MVVM, async dialogs, the newer backends, animation frames, custom
+automation state) were checked against the repository's own documentation and samples rather than run
+for this guide, and are marked as such where it matters. VB is a first-class migration target here: the
 migrator handles `.vbproj`/`.vb` files, re-injects the constructor the classic VB compiler used to
 supply, and generates a `My.Resources` accessor. Three VB-specific caveats are called out where they
 land — [`--dual-build` is C#-only](#module-5-dualbuild), [`My.*` is only partly
@@ -38,7 +41,7 @@ Two ways to use it:
 | Format | How | Modules |
 |---|---|---|
 | **Two-day workshop** | Day 1: modules 0–4 (model, first app, knowing what works, drawing). Day 2: modules 5–10 (migration, targets, interop, testing, native content, shipping). | all |
-| **Self-paced** | Modules 0–3 are the mandatory core — nobody should start a migration without them. Then take 5 if you're migrating, or 6 + 8 if you're building something new. | pick |
+| **Self-paced** | Modules 0–3 are the mandatory core — nobody should start a migration without them. Then take 5 if you're migrating, or 6 + 8 if you're building something new. Appendices D and E (theming, MVVM helpers) are optional reading for whoever owns the look and the view-model wiring. | pick |
 
 Two things to accept up front, because they shape every decision below. Majorsilence.Forms is
 **beta**: the API is stabilizing, and not every WinForms corner is covered — so pin your package
@@ -65,6 +68,8 @@ tell which is which, and it is the module that most repays a slow read.
 - [Appendix A — Troubleshooting by symptom](#appendix-a)
 - [Appendix B — Rollout plan for a real codebase](#appendix-b)
 - [Appendix C — Reference card](#appendix-c)
+- [Appendix D — Theming your app with CSS](#appendix-d)
+- [Appendix E — MVVM helpers](#appendix-e)
 
 ---
 
@@ -78,12 +83,27 @@ All you need is the [.NET 10 SDK](https://dotnet.microsoft.com/download). No Win
 Studio, no platform workloads, and no framework source.
 
 ```
-dotnet new --install MajorsilenceForms.Templates
+dotnet new install Majorsilence.Forms.Templates
 dotnet new majorsilenceforms
-dotnet run
+dotnet run --project MajorsilenceFormsApp
 ```
 
-That's a running cross-platform app. Now the reference material.
+That's a running cross-platform app. Note the shape of what was scaffolded, because it is the shape to
+keep: a **solution with two projects** — `MajorsilenceFormsApp.Shared`, a plain class library holding
+`MainForm` and its Designer file, and `MajorsilenceFormsApp`, a thin desktop *head* on the Avalonia
+backend. Your forms live in the shared library; a head is just an entry point plus a backend. That is
+what lets the same UI later run on a phone or in a browser by adding another head rather than
+touching the forms ([module 6](#module-6)):
+
+```
+dotnet new majorsilenceforms -n MyApp --IncludeAndroid --IncludeWasm --IncludeiOS
+```
+
+Each switch adds one head project and needs its workload (`android`, `wasm-tools`, `ios` — the last on
+a Mac only); all three default to off, so the plain command builds with no extra workload installed.
+`--msformsVersion` and `--avaloniaVersion` pin the package versions the scaffold references.
+
+Now the reference material.
 
 **Your API documentation is the control gallery.** There is no standalone API reference yet, so the
 fastest answer to "does `TreeView` support X" is the gallery — one demo panel per built-in control. The
@@ -169,8 +189,17 @@ There is one architectural fact, and almost everything else follows from it:
    Swappable host backend
    ├─ Avalonia   → Windows · macOS · Linux  (default)  · also Android · iOS · Browser
    ├─ Uno        → desktop · iOS · Android · WebAssembly
+   ├─ GTK 4      → Linux first (real Gtk.Window); Windows/macOS with the GTK runtime
+   ├─ Terminal   → a console (Kitty graphics / Sixel / Unicode blocks) — single-view, like a phone
+   ├─ WinForms   → Windows only; real System.Windows.Forms windows — a *migration* backend
+   ├─ WPF        → Windows only; a real WPF Window — the same migration idea
    └─ Headless   → offscreen rendering for tests / CI
 ```
+
+Seven backends, one set of forms. The two Windows-only ones exist for one purpose — letting a WinForms
+or WPF app adopt Majorsilence.Forms one control at a time ([module 7](#module-7-c)) — and the Terminal
+one is the proof that the host really is interchangeable: nothing in your form knows whether it is being
+presented through a GPU swapchain or a `▄` character.
 
 Every control paints into a Skia canvas. The host underneath creates native windows, runs the message
 loop, delivers input, and presents the rendered surface — and that's all it does. The core package
@@ -188,8 +217,9 @@ way to, rather than memorize.
 | Because drawing is the framework's and windows are the host's… | So… |
 |---|---|
 | One native OS window per top-level window; everything inside it is painted | `Control.Handle` is `IntPtr.Zero`. There is no OS object behind a `Button` to report. See [module 9](#module-9). |
-| `WindowBase.Handle` still has to satisfy the WinForms "touch `.Handle` to force creation" idiom | It returns an **opaque nonzero token — not an `HWND`**. Never hand it to native code. `WindowBase.PlatformHandle` is the genuine article (Avalonia backend only). |
-| Appearance is resolved by the framework, not by Win32 | `BackColor`, `ForeColor` and `Font` are **ambient** — see the example below. |
+| `WindowBase.Handle` still has to satisfy the WinForms "touch `.Handle` to force creation" idiom | It returns an **opaque nonzero token — not an `HWND`**. Never hand it to native code. `WindowBase.PlatformHandle` is the genuine article — real on the Avalonia backend (`HWND`/`NSWindow`/`XID`) and on the WinForms backend (a real `HWND`); zero elsewhere. |
+| The framework scales its own canvas to the display | **Everything you see on a `Control` is in logical units** — `Width`/`Height`/`Bounds`, `MouseEventArgs`, and (since 2026-10-01) `ClientRectangle`, `ClientSize` and the paint canvas too. Ordinary WinForms layout and paint code is the right size at any scaling with no changes. Device pixels are opt-in (`ScaledBounds`, `PaintEventArgs.Scaling`, `LogicalToDeviceUnits`). The one exception: owner-draw events (`DrawItem`, `DrawNode`, `CellPainting`, …) still hand you device-pixel bounds with a device-pixel `Graphics`. See [module 4](#module-4-paint). |
+| Appearance is resolved by the framework, not by Win32 | `BackColor`, `ForeColor` and `Font` are **ambient** — see the example below. And because the framework paints everything, one CSS stylesheet can restyle the whole app ([appendix D](#appendix-d)). |
 | Input routing is the framework's | **Mouse capture belongs to the control that took it for the whole gesture** — a drag begun on a container survives crossing a button sitting on it. A child that takes capture itself still wins over its ancestors. |
 | A `Form` is not a `Control` here — it derives from an internal `WindowBase` | The common `Control` members exist on `Form` (`Anchor`, `Dock`, `TabIndex`, `Padding`/`Margin`, `Parent`, `MouseEnter`/`MouseLeave`), but a `Form` still can't go into a `Control.ControlCollection` or be found by a `Control`-typed walk of a tree. |
 | Touch is a first-class input, not mouse emulation | `Control` raises `LongPress`, `Pinch`, `Swipe` and `ScrollGesture`. **None of them fire for the mouse.** `ScrollableControl` already applies `ScrollGesture` to `AutoScrollPosition`, so your `Panel`/`ListBox`/`TreeView` subclasses get touch panning with no code changes. |
@@ -284,8 +314,8 @@ Start from a console app and change three things.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Majorsilence.Forms" Version="26.0.30" />
-    <PackageReference Include="Majorsilence.Forms.Avalonia" Version="26.0.30" />
+    <PackageReference Include="Majorsilence.Forms" Version="26.9.0" />
+    <PackageReference Include="Majorsilence.Forms.Avalonia" Version="26.9.0" />
   </ItemGroup>
 </Project>
 ```
@@ -302,8 +332,8 @@ Start from a console app and change three things.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Majorsilence.Forms" Version="26.0.30" />
-    <PackageReference Include="Majorsilence.Forms.Avalonia" Version="26.0.30" />
+    <PackageReference Include="Majorsilence.Forms" Version="26.9.0" />
+    <PackageReference Include="Majorsilence.Forms.Avalonia" Version="26.9.0" />
   </ItemGroup>
 </Project>
 ```
@@ -312,12 +342,20 @@ Note what is **not** there in the VB version: no `MyType`, no VB application fra
 structural difference the migrator can't paper over, and it's why
 [`--dual-build` isn't offered for VB](#module-5-dualbuild).
 
+A note on target frameworks, since the `-windows` suffix is the first thing a migration removes: a plain
+`net10.0` (or `net8.0`) is all a cross-platform head needs. The core packages (`Majorsilence.Forms`,
+`Majorsilence.Forms.Drawing.Common`, `Majorsilence.Forms.Telerik`) also ship a **`netstandard2.0`** build,
+which is what lets a classic **.NET Framework 4.8** app reference the controls — paired with the `net48`
+row of the WinForms or WPF backend ([module 7](#module-7-c)). The cross-platform backends are
+`net8.0`+ only.
+
 **Both packages, and this is the part to say out loud in training.** The core `Majorsilence.Forms`
 package references no windowing toolkit at all — only SkiaSharp. It owns the controls and the drawing;
 it cannot put a window on screen. `Majorsilence.Forms.Avalonia` is the backend that does, and
 referencing it is what makes the app *runnable* on Windows, macOS and Linux. Swap that second line for
-`Majorsilence.Forms.Uno` or `Majorsilence.Forms.Headless` to target a different host — that one line is
-the whole switch ([module 6](#module-6)).
+`Majorsilence.Forms.Uno`, `.Gtk4`, `.Terminal`, `.WinForms`, `.Wpf` or `.Headless` to target a different
+host — that one line (plus, for the non-default backends, one line of selection code) is the whole
+switch ([module 6](#module-6)).
 
 ### The smallest complete app
 {:#module-2-code}
@@ -560,6 +598,13 @@ control isn't decoration — it becomes the test locator *and* the accessibility
 ([module 8](#module-8)) — and `Anchor` uses `AnchorStyles.Top Or AnchorStyles.Left` in VB where C# uses
 `|`, which is the single most common VB porting typo.
 
+A third, if a browser or phone head is anywhere on your roadmap: the blocking `ShowDialog` and
+`MessageBox.Show` above are desktop-only. On the browser, Android and iOS rows they throw
+`PlatformNotSupportedException` *before* showing anything, and every dialog has an awaitable twin
+(`ShowDialogAsync`, `MessageBox.ShowAsync`). Nothing to change today — but read the
+[async-dialog rule](#module-6-async) before you write your hundredth handler, because a shared UI
+library is far cheaper to write async from the start than to convert later.
+
 ### What a real app looks like
 {:#module-2-real}
 
@@ -640,9 +685,13 @@ There was nothing to grep for.
 
 Two things follow for you. First, **when something renders or behaves wrongly and nothing threw,
 suspect a stub before you suspect your own code** — check the matrix row for the member involved.
-Second, that class of gap is now guarded: the project pins its known empty-bodied public methods in a
-baseline test, so a new one can't be added silently, and the entries shrink over releases. That's why
-the matrix is worth trusting as a reference rather than treating as marketing.
+Second, that class of gap is now guarded: the project pins its known empty-bodied public `void` methods
+in a baseline test (`NoOpStubBaseline.txt` — 161 entries at the time of writing), so a new one can't be
+added silently, and the entries shrink over releases. Three sibling baselines pin the other kinds of
+hollowness — events that are declared but inert, events never raised, and properties that only store a
+value (79, 127 and 812 of 1,254 respectively as the matrix currently reports them). That's why the
+matrix is worth trusting as a reference rather than treating as marketing: the numbers are enforced,
+not estimated.
 
 ### Pin the behavior you depend on
 {:#module-3-pin}
@@ -708,6 +757,18 @@ entries** — including **126 enum members that exist with the wrong numeric val
 is the one to take personally: the code compiles, runs, and silently means something else. It is the
 best argument available for verifying the specific members your app leans on instead of assuming
 parity.
+
+**Both API-surface baselines — WinForms and GDI+ — are now at zero.** Every member upstream declares,
+this layer declares. Read that carefully, because it is the smaller half of the problem: a name-level
+diff cannot ask whether a member *behaves* like WinForms. A twelve-area source audit (2026-08-25) asked
+exactly that and found **483 places where behaviour differed** — 41 of them severe enough to break a
+common migrated app. Most of that list has since landed in phases (keyboard pre-processing through
+`ProcessCmdKey`, one focus/validation choke point, real dialogs, `AutoScaleMode.Font` really scaling,
+live data binding with a working `CurrencyManager`, `ListView.View = Details` rendering as a table,
+form lifecycle events in upstream order, text-box undo on Ctrl+Z, …); what remains is tracked in
+[`docs/behaviour-gap-plan.md`]({{ site.github_url }}/blob/main/docs/behaviour-gap-plan.md). The
+lesson for your team doesn't change: **"it compiles" means the name exists; the matrix row tells you
+whether it works.**
 
 ### Reading the per-control table
 {:#module-3-reading}
@@ -804,11 +865,11 @@ AddHandler grid.CellParsing,
 formatted as currency, and negatives red because the handler's `e.CellStyle.ForeColor` really does
 reach the renderer.*
 
-> **One version caveat worth knowing if you pin 26.0.30.** In the package as published, bound cell
+> **One version caveat worth knowing if you are still pinned to 26.0.30.** In that package, bound cell
 > values arrive at `CellFormatting` already converted to strings, so `e.Value is decimal` never
-> matches and this handler silently does nothing — the exact failure mode this module is about. It is
-> fixed in the framework's main branch (bound cells now keep the member's type), so the code above is
-> correct going forward. If you're on the published 26.0.30 and see unformatted values, parse
+> matches and this handler silently does nothing — the exact failure mode this module is about. It was
+> fixed in the releases that followed (bound cells keep the member's type), so the code above is
+> correct on a current version such as 26.9.0. If you're on 26.0.30 and see unformatted values, parse
 > defensively instead: `decimal.TryParse (e.Value?.ToString (), out var total)`. That form works
 > either way.
 
@@ -1064,6 +1125,86 @@ Skia path — rounded corners and a real gradient shader, in a single `DrawRound
 for `e.Canvas` deliberately for new visuals. Mixing them in one handler is fine; they draw to the same
 surface.
 
+**The canvas is in logical units — do not scale it yourself.** Both examples above draw against
+`ClientRectangle`, `Width` and `Height` and are the right size on a HiDPI desktop or a phone (where
+Android reports a scaling of roughly 2.6–2.75) with no further code, because the framework scales the
+canvas to the display before your `OnPaint` runs. Before 2026-10-01 the canvas was in *device* pixels
+and a custom control had to call `e.Graphics.ScaleTransform (e.Scaling, e.Scaling)` itself. **If you
+have that call in a control, remove it** — it now scales the drawing twice, and the symptom is a
+control that draws at double size on a 2× display and looks fine on your 1× monitor. `e.ClipRectangle`
+and `e.Canvas` are logical too; `PaintEventArgs.Scaling` is still there for the rare case where you want
+to land on an exact device pixel (a hairline, a pixel-art sprite). The only place you still receive
+device pixels is the owner-draw family — `DrawItem`, `DrawNode`, `CellPainting` and friends — whose
+`Bounds` and `Graphics` agree with each other but not with the control's logical `ClientRectangle`. Test
+either kind under `MF_HEADLESS_SCALE=2` ([module 8](#module-8-headless)).
+
+### Animating a control: `RequestAnimationFrame`
+{:#module-4-animation}
+
+A `Timer` at 16 ms is how WinForms animated, and it still works. The framework also offers the browser's
+idiom, which is display-aligned on Avalonia and — the part that matters for your tests — fully
+deterministic on Headless. `control.RequestAnimationFrame (callback)` calls back **once**, at the start of
+the next frame, with a timestamp that only has meaning as a difference; ask again from inside the
+callback to keep going. (Checked against `docs/animation.md`, not run for this guide.)
+
+**C#**
+
+```csharp
+private TimeSpan? start;
+private float fade;                  // 0..1 — read by OnPaint
+
+public void StartFade ()
+{
+    start = null;
+    RequestAnimationFrame (OnFrame);
+}
+
+private void OnFrame (TimeSpan timestamp)
+{
+    start ??= timestamp;
+    var progress = Math.Min (1, (timestamp - start.Value).TotalSeconds / 0.4);
+
+    fade = (float) progress;
+    Invalidate ();
+
+    if (progress < 1)
+        RequestAnimationFrame (OnFrame);   // served on the *next* frame, never this one
+}
+```
+
+**VB.NET**
+
+```vb
+Private start As TimeSpan?
+Private fade As Single               ' 0..1 — read by OnPaint
+
+Public Sub StartFade()
+    start = Nothing
+    RequestAnimationFrame(AddressOf OnFrame)
+End Sub
+
+Private Sub OnFrame(timestamp As TimeSpan)
+    If Not start.HasValue Then start = timestamp
+    Dim progress = Math.Min(1, (timestamp - start.Value).TotalSeconds / 0.4)
+
+    fade = CSng(progress)
+    Invalidate()
+
+    If progress < 1 Then
+        RequestAnimationFrame(AddressOf OnFrame)   ' served on the *next* frame, never this one
+    End If
+End Sub
+```
+
+On the Headless backend nothing runs until you step the clock, which turns an animation into an exact
+assertion: `HeadlessRenderer.AnimationClock.Reset ()`, request your frames, then
+`HeadlessRenderer.AnimationClock.Step (10)` runs ten frames of 1/60 s and your callback has seen
+exactly ten timestamps. The `Majorsilence.Forms.Animation` package layers `Tween<T>`, `Easing` and
+`control.Animate (…)` on top of the same frame request, and `SystemInformation.PrefersReducedMotion`
+tells you when the user asked for less of it — advisory, so the check is yours to make at the point
+you *start* an animation. Details in
+[`docs/animation.md`]({{ site.github_url }}/blob/main/docs/animation.md).
+
 One trap when you go Skia-native: **raw `SKFont`/`DrawText` does no font fallback.** The framework's own
 text rendering resolves missing glyphs through a fallback chain, but a bare `SKTypeface.Default` does
 not — draw a string containing a glyph that typeface lacks (an arrow, an emoji, CJK) and you get the
@@ -1096,9 +1237,11 @@ majorsilence-migrate --help
 ```
 
 Prefer a per-repo install (`dotnet new tool-manifest`, then
-`dotnet tool install Majorsilence.Forms.Migrator`, run as `dotnet majorsilence-migrate`). Each GitHub
-release also attaches a self-contained single-file binary per platform, if you'd rather not install a
-tool at all.
+`dotnet tool install Majorsilence.Forms.Migrator`, run as `dotnet majorsilence-migrate`), so the whole
+team runs the same version. **The tool package is the only shipped form** — releases used to attach a
+self-contained single-file binary per platform and no longer do. It needs a .NET runtime on the machine
+(it rolls forward to whatever newer major you have), and if you'd rather install nothing, run it from a
+clone with `dotnet run --project tools/Majorsilence.Forms.Migrator -- <input>`.
 
 ### What the migration looks like in your source
 {:#module-5-beforeafter}
@@ -1343,7 +1486,7 @@ between "it compiled" and "it behaves".
 | 4 | **`TreeViewDrawMode.OwnerDrawContent` was renamed** to WinForms' `OwnerDrawText`, and `OwnerDrawAll` now exists. | Nothing breaks — the old name is an `[Obsolete]` alias with the same value — but it will be removed. Rename now. `OwnerDrawText` raises `DrawNode` after background/focus painting; `OwnerDrawAll` raises it before anything is painted. |
 | 5 | **Two `DataGridViewDataErrorContexts` members were removed** (`RowDirtyStateNeeded`, `CleanupExceptionHandling`) — neither is a WinForms member. | Replace with the real ones now present at those values: `RowDeletion`, `ClipboardContent`. |
 | 6 | **Strongly-typed resource designers.** A generated `Resources.Designer.cs`/`.vb` casts `ResourceManager.GetObject(...)` to a drawing type; a real `System.Resources.ResourceManager` hands back whatever the compiled `.resources` names, so the cast throws `InvalidCastException` at runtime on first resource read, having compiled cleanly. | The migrator handles this for you, gated on the builder's own `GeneratedCodeAttribute`: in those files only, `ResourceManager` becomes `Majorsilence.Forms.ComponentResourceManager`, which reads the same `.resources` but normalizes graphics entries. Hand-written string lookups keep the BCL type. **Verify your resource-heavy forms early.** |
-| 7 | **VB `My.*`** — only `My.Application.Info.*`, `My.Resources.*` and `My.Computer.Name` are implemented. | Everything else still warns: `My.Forms`, `My.Settings`, `My.User`, `My.Application.Log`/`Startup`/`Shutdown`, `My.Computer.Registry`/`Clipboard`/`Info`. See the porting patterns below. Also note: resx entries stored as `ResXFileRef` (linked file rather than inline data) compile but resolve to `null` at runtime. |
+| 7 | **VB `My.*` is partly implemented, by evidence rather than by API.** A feasibility audit of a large real VB codebase found hand-written code touching only three pieces, so exactly those three are real: `My.Application.Info.*` (`Title`, `Version` as a real `Version`, `Copyright`, `CompanyName`, …), `My.Resources.*` (a generated accessor module) and `My.Computer.Name`. | Everything else still warns rather than being silently rewritten: `My.Forms`, `My.Settings`, `My.User`, `My.Application.Log`/`Startup`/`Shutdown`/`UnhandledException`, splash screens, `My.Computer.Registry`/`Clipboard`/`Info` — the audit found zero hand-written usage of any of them outside generated `Settings.Designer.vb` boilerplate, and several have no portable equivalent. See the porting patterns below, and MIGRATION.md's "Still not implemented, and why". Also note: resx entries stored as `ResXFileRef` (linked file rather than inline data) compile but resolve to `null` at runtime. |
 | 8 | **Telerik sub-namespaces with no compatibility target** — `Telerik.WinControls.Themes`, `.Design`, `.Primitives`, `.Layouts` — are warn-and-leave. | Decide per usage: drop the theming, or reimplement. Also: `RadScheduler`'s month/week/day **calendar grid UI** is deliberately out of scope (the data layer, navigation and agenda view are real), so code using the grid needs rewriting against the agenda view. |
 
 **Porting the VB `My.*` surface.** The three implemented pieces need no work:
@@ -1382,6 +1525,24 @@ And `My.Settings` becomes whatever configuration you already use elsewhere in .N
 Dim url = AppSettings.Current.ApiBaseUrl
 ```
 
+### When you can't rewrite the imports at all
+{:#module-5-compat}
+
+One situation the migrator can't serve: a **distributed control library whose public API is typed to
+`System.Windows.Forms`** — its consumers pass it real WinForms types, so rewriting its `using`s breaks
+them. For that case there is a proof-of-concept source generator,
+[`Majorsilence.Forms.WinFormsShims.Compat`]({{ site.github_url }}/tree/main/src/Majorsilence.Forms.WinFormsShims.Compat),
+that emits `System.Windows.Forms` and `System.Drawing` namespaces *backed by* Majorsilence.Forms, so
+**unmodified** WinForms source — Designer files included — compiles against the framework with no real
+WinForms assembly involved. The [`WinFormsCompatDemo`]({{ site.github_url }}/tree/main/samples/WinFormsCompatDemo)
+sample shows it working and its `RESULTS.md` records what did and didn't. Treat it as an experiment to
+evaluate, not a plan to depend on; the migrator is the shipped path.
+
+**Where the breaking changes live.** Every item in the checklist above came from
+[`MIGRATION.md`]({{ site.github_url }}/blob/main/MIGRATION.md)'s "Breaking change" and "Renamed to match
+WinForms" sections, which is where a new one will appear first. Read those sections on every upgrade,
+not only on the first migration — that habit is what [module 10](#module-10-versioning) is about.
+
 **Exercise 5.** Run the migrator on a real internal app — ideally one nobody depends on this quarter —
 with `--dry-run --diff` first. Then run it for real on a branch, get it building, and work the checklist
 above item by item. Time-box it to a day; the goal is a calibrated estimate for the rest of your
@@ -1399,11 +1560,57 @@ Your target set is a package choice:
 
 | Reference this | To target | Notes |
 |---|---|---|
-| `Majorsilence.Forms.Avalonia` | **Default.** Windows/macOS/Linux desktop — plus Browser/WASM, Android and iOS through Avalonia's own platform packages | The only backend where the window host *is* a real native window, so the only one that can hand out a real platform handle or give a host app OS-level modal semantics |
-| `Majorsilence.Forms.Uno` | Desktop plus iOS/Android/WebAssembly through the Uno stack | Presents via `SKXamlCanvas`; needs an Uno app head |
-| `Majorsilence.Forms.Headless` | Tests, CI, servers, pixel-diff | No display needed. This is your test story ([module 8](#module-8)) |
+| `Majorsilence.Forms.Avalonia` | **Default.** Windows/macOS/Linux desktop — plus Browser/WASM (always built), Android and iOS (opt-in, need workloads) through Avalonia's own platform packages | Resolved automatically when referenced. The cross-platform backend whose window host *is* a real native window, so it hands out a real platform handle and gives a host app OS-level modal semantics. WebView via WebView2/WKWebView/WebKitGTK |
+| `Majorsilence.Forms.Uno` | Desktop plus iOS/Android/WebAssembly through the Uno stack | Presents via `SKXamlCanvas`; needs an Uno app head. No owner concept — use `Form.ShowDialog(parent)` for modality |
+| `Majorsilence.Forms.Gtk4` | Linux first — a real `Gtk.Window` per form; also Windows/macOS with the GTK 4 runtime installed | Selected explicitly. Both embedding directions, `NativeControlHost` with **no airspace problem**, `WebBrowser` via WebKitGTK 6.0. Known limits: no screen-position control (GTK 4 removed it, so `Location` is a hint), `SetIcon(byte[])` no-op, file pickers fall back to the framework's own dialogs, integer scale factor only |
+| `Majorsilence.Forms.Terminal` | A console — the form fills the terminal with no title bar, like a phone | Kitty graphics or Sixel at real pixel resolution where the terminal has them, else Unicode block glyphs; mouse and keyboard; Ctrl+C always exits. Verified in xterm and WezTerm. No native pickers, `NativeControlHost` or webview |
+| `Majorsilence.Forms.WinForms` | **Windows only** — real `System.Windows.Forms` windows on the Win32 pump | A *migration* backend ([module 7](#module-7-c)): embed Majorsilence controls in a WinForms app one at a time. Also targets `net48`. Real `HWND`. No gestures, no webview |
+| `Majorsilence.Forms.Wpf` | **Windows only** — a real WPF `Window` on the `Dispatcher` loop | Same shape and purpose as the WinForms backend: `ToWpfElement()`, `ToWpfWindow()`. `net48`, `net8.0-windows`, `net10.0-windows` |
+| `Majorsilence.Forms.Headless` | Tests, CI, servers, pixel-diff | No display needed. This is your test story ([module 8](#module-8)). Manual animation clock |
 
-Desktop is the mature path. Everything below is about the newer targets, and the honest state of each.
+Avalonia is the only backend that installs itself. The others are one line, placed before the first
+form is constructed (the ordering constraint from [module 2](#module-2-code)):
+
+**C#**
+
+```csharp
+// GTK 4 — has a helper
+Majorsilence.Forms.Gtk4.Gtk4Application.Use ();
+
+// Terminal — likewise
+Majorsilence.Forms.Terminal.TerminalApplication.Use ();
+
+// WinForms, WPF, Headless — assign the backend directly
+Majorsilence.Forms.Backends.Platform.Backend = new Majorsilence.Forms.WinForms.WinFormsPlatformBackend ();
+Majorsilence.Forms.Backends.Platform.Backend = new Majorsilence.Forms.Wpf.WpfPlatformBackend ();
+Majorsilence.Forms.Backends.Platform.Backend = new Majorsilence.Forms.Headless.HeadlessPlatformBackend ();
+
+Majorsilence.Forms.Application.Run (new MainForm ());   // after whichever line you picked
+```
+
+**VB.NET**
+
+```vb
+' GTK 4 — has a helper
+Majorsilence.Forms.Gtk4.Gtk4Application.Use()
+
+' Terminal — likewise
+Majorsilence.Forms.Terminal.TerminalApplication.Use()
+
+' WinForms, WPF, Headless — assign the backend directly
+Majorsilence.Forms.Backends.Platform.Backend = New Majorsilence.Forms.WinForms.WinFormsPlatformBackend()
+Majorsilence.Forms.Backends.Platform.Backend = New Majorsilence.Forms.Wpf.WpfPlatformBackend()
+Majorsilence.Forms.Backends.Platform.Backend = New Majorsilence.Forms.Headless.HeadlessPlatformBackend()
+
+Majorsilence.Forms.Application.Run(New MainForm())      ' after whichever line you picked
+```
+
+(Pick one, of course — the block shows every form of the line.) The GTK 4 backend also needs the
+native libraries on the machine: `libgtk-4-1` on Debian/Ubuntu, `gtk4` on Fedora/Arch, `brew install
+gtk4` on macOS, plus WebKitGTK 6.0 if you use `WebBrowser`.
+
+Desktop on Avalonia is the mature path. Everything below is about the newer targets, and the honest
+state of each.
 
 ### Single-view platforms: browser, Android, iOS
 {:#module-6-singleview}
@@ -1454,18 +1661,177 @@ Note the shape of the argument: a **factory** (`Function() New MainForm()`), not
 
 - **No window chrome.** `Title`, `Topmost`, `SetSystemDecorations`, `SetIcon`, min/max size,
   `CanResize`, `ShowInTaskbar` and `WindowState` are no-ops; `WindowState` always reads `Normal`.
-- **`ShowDialog` isn't OS-modal**, because there's no modal window concept — but it still *behaves*
-  modally: the parent-disable and blocking wait live above the backend seam.
+- **Dialogs aren't OS-modal**, because there's no modal window concept — a dialog is a child of the
+  main view, disabled-parent semantics and all. And **the blocking calls don't work at all**: see the
+  next section.
 - **No WebView**, so compatibility controls needing one (`RadPdfViewer`, `RadRichTextEditor`) fall back
   to their plain-viewer/`RichTextBox` paths.
 - **Outside-click popup dismissal via window deactivation doesn't fire.** Clicking elsewhere *inside*
   the app still dismisses popups; only losing focus to something outside the app entirely is unhandled.
 
-**Maturity differs sharply, and this belongs in your planning rather than in a footnote:** the browser
-path runs the full gallery and is young; Android builds and boots but has had no real-device testing;
-**iOS has never been compiled at all** — it's written from Avalonia.iOS's API surface and standard
-.NET-for-iOS conventions, so expect a first-build shakeout. If mobile is on your roadmap, treat it as a
-spike with real risk, not a checkbox.
+### The async-dialog rule
+{:#module-6-async}
+
+This is the one rule in the module that changes how you *write* code, so it gets its own heading. In
+the browser, .NET runs on the page's single JavaScript thread, and a call that doesn't return stops
+the input, timers and painting that would have let it return. On Android and iOS, Avalonia's dispatcher
+can't push a nested frame. So on all three rows the Avalonia backend reports `CanRunModalLoop = false`,
+and every blocking modal call — `Form.ShowDialog`, `MessageBox.Show`, the file pickers' `ShowDialog`,
+`TaskDialog.ShowDialog`, `VbInteraction.MsgBox`/`InputBox`, `RadMessageBox.Show` — throws
+`PlatformNotSupportedException` **naming its async twin, before anything is shown**. (Measured on an
+Android 15 emulator and an iPhone 17 Pro simulator; recorded in `docs/backends.md`.)
+
+The async forms work on every backend, desktop included, so a shared UI library writes them once:
+
+**C#**
+
+```csharp
+// Before — desktop-only
+private void OkButton_Click (object? sender, EventArgs e)
+{
+    if (string.IsNullOrWhiteSpace (nameBox.Text)) {
+        MessageBox.Show ("Please enter a name.", "Greeter");
+        return;
+    }
+    using var confirm = new ConfirmForm ();
+    if (confirm.ShowDialog (this) == DialogResult.OK)
+        Save ();
+}
+
+// After — runs everywhere. An async void handler is the idiom; the result is still a DialogResult.
+private async void OkButton_Click (object? sender, EventArgs e)
+{
+    if (string.IsNullOrWhiteSpace (nameBox.Text)) {
+        await MessageBox.ShowAsync ("Please enter a name.", "Greeter");
+        return;
+    }
+    using var confirm = new ConfirmForm ();
+    if (await confirm.ShowDialogAsync (this) == DialogResult.OK)
+        Save ();
+}
+```
+
+**VB.NET**
+
+```vb
+' Before — desktop-only
+Private Sub OkButton_Click(sender As Object, e As EventArgs)
+    If String.IsNullOrWhiteSpace(nameBox.Text) Then
+        MessageBox.Show("Please enter a name.", "Greeter")
+        Return
+    End If
+    Using confirm As New ConfirmForm()
+        If confirm.ShowDialog(Me) = DialogResult.OK Then Save()
+    End Using
+End Sub
+
+' After — runs everywhere. Async Sub ... Await is VB's event-handler idiom.
+Private Async Sub OkButton_Click(sender As Object, e As EventArgs)
+    If String.IsNullOrWhiteSpace(nameBox.Text) Then
+        Await MessageBox.ShowAsync("Please enter a name.", "Greeter")
+        Return
+    End If
+    Using confirm As New ConfirmForm()
+        If Await confirm.ShowDialogAsync(Me) = DialogResult.OK Then Save()
+    End Using
+End Sub
+```
+
+The same rule covers everything else that blocks the UI thread — `.Result`, `.Wait()`,
+`GetAwaiter().GetResult()` and `Thread.Sleep` — so `await` the task and `await Task.Delay (n)` instead.
+
+**You don't have to find these by hand.** The core `Majorsilence.Forms` package carries a Roslyn
+analyzer — `MFB001` (blocking modal call, naming its awaitable twin), `MFB002` (synchronous wait on a
+task) and `MFB003` (`Thread.Sleep`) — with code fixes that rewrite a handler to the awaited form where
+that keeps the program's shape (inside an `async` method, or a `void` event handler, which it marks
+`async`). It is silent in desktop-only code and switches on for a `net*-browser` target. To cover a
+**shared UI library** that a browser head references, opt in next to that library:
+
+```ini
+# .editorconfig (or a .globalconfig) beside the shared UI project
+[*.cs]
+majorsilence_forms.browser_target = true
+```
+
+Make that opt-in on day one of any project with a browser or phone head on its roadmap; it is far
+cheaper than converting handlers later. One honest limit: the analyzer is browser-only today, so a
+blocking call reached only from Android or iOS code isn't flagged at build time — it fails at run time
+with the message above. (The analyzer and its diagnostics are C#-only Roslyn rules; a VB project gets
+the runtime exception but not the build-time warning.)
+
+### What does work on the phone rows
+{:#module-6-mobile}
+
+The Avalonia Android and iOS rows have gained the things a phone app can't ship without, all of them
+automatic from the form's point of view:
+
+- **The on-screen keyboard** is raised when a `TextBox` gets focus and dismissed on blur; the field is
+  scrolled above the keyboard when it opens. `TextBoxBase.InputKind` (`Number`, `Email`, `Url`, `Phone`)
+  picks the keyboard layout — set it before the box gets focus, as it is read then. Desktop ignores it.
+- **Safe-area insets** (status bar, notch, home indicator) are applied to the form's client layout
+  through `Form.SafeAreaPadding`, so docked and anchored controls stay clear without code.
+- **The Android back button** raises `WindowBase.BackRequested` (a cancellable event — an open popup or
+  sheet gets it first). The template's generated `MainActivity` already forwards it.
+- **`Form.SizeClass`** (`Compact` under 600 logical px, `Medium`, `Expanded` from 840) and
+  `SizeClassChanged` let one form switch between a phone layout and a tablet layout.
+- `Application.Suspended`/`Resumed`, haptics, keep-screen-awake, in-process audio.
+
+And four controls built for phone-shaped screens, all in the core package and usable on desktop too:
+**`StackPanel`** (a Majorsilence extension — stretches each child to the column width, caps the column
+at a readable width on a wide window), **`Card`** (a rounded, bordered `Panel` coloured from the theme),
+**`RichListBox`** (a `ListBox` whose rows are templated multi-line items) and **`NavigationHost`** (a page
+stack with a title bar and back button that honours `BackRequested`). A settings screen, in the shape
+`docs/mobile-layout.md` recommends (checked against that document, not run for this guide):
+
+**C#**
+
+```csharp
+var column = new StackPanel {
+    Dock = DockStyle.Fill, AutoScroll = true,
+    MaximumContentWidth = 560, Spacing = 8, Padding = new Padding (8)
+};
+column.Controls.Add (new Label { Text = "Server address", AutoSize = true });      // wraps to the column
+column.Controls.Add (new TextBox { Name = "serverBox", Height = 48, InputKind = TextInputKind.Url });
+
+var card = new Card { Height = 120 };                                              // rounded, themed
+card.Controls.Add (new Label { Text = "Reminders", Dock = DockStyle.Top });
+column.Controls.Add (card);
+
+var nav = new NavigationHost { Dock = DockStyle.Fill };                            // page stack + back button
+Controls.Add (nav);
+await nav.PushAsync (column);                                                      // from an async handler
+```
+
+**VB.NET**
+
+```vb
+Dim column As New StackPanel With {
+    .Dock = DockStyle.Fill, .AutoScroll = True,
+    .MaximumContentWidth = 560, .Spacing = 8, .Padding = New Padding(8)
+}
+column.Controls.Add(New Label With {.Text = "Server address", .AutoSize = True})   ' wraps to the column
+column.Controls.Add(New TextBox With {.Name = "serverBox", .Height = 48, .InputKind = TextInputKind.Url})
+
+Dim card As New Card With {.Height = 120}                                           ' rounded, themed
+card.Controls.Add(New Label With {.Text = "Reminders", .Dock = DockStyle.Top})
+column.Controls.Add(card)
+
+Dim nav As New NavigationHost With {.Dock = DockStyle.Fill}                         ' page stack + back button
+Controls.Add(nav)
+Await nav.PushAsync(column)                                                         ' from an Async handler
+```
+
+(`TextInputKind` lives in `Majorsilence.Forms.Backends`.) Everything else in the recipe is the WinForms
+you know — `AutoSize` labels wrap, `FlowLayoutPanel`/`TableLayoutPanel` go inside a card.
+
+**Maturity differs sharply, and this belongs in your planning rather than in a footnote.** All three
+rows compile in CI. The **browser** runs the full gallery and is young. **Android** has had an initial
+real-device pass: the gallery boots, taps hit the right control, render scaling is right, and touch
+scroll and flick work on hardware — but the keyboard, safe-area and rotation behaviour above are
+unit-tested on Headless, not yet exercised on a device. **iOS** compiles, and CI launches the real head
+in a simulator as a smoke check, but nobody has run it interactively on a simulator or a device yet.
+If mobile is on your roadmap, treat it as a spike with real risk, not a checkbox — a much smaller spike
+than it was a few months ago, but a spike.
 
 Workloads you'll need, once each:
 
@@ -1514,11 +1880,22 @@ Public Shared Function LoadEmbedded(name As String) As Bitmap
 End Function
 ```
 
-### Embedding inside an existing Avalonia or Uno app
+**Accessibility in the browser comes free — if you named your controls.** A canvas is opaque to a
+screen reader, the browser's find-in-page and any DOM-based test tool. So on the browser row the
+Avalonia backend keeps a **DOM mirror** of the open forms beside the canvas: one transparent,
+click-through element per control carrying its ARIA role, name, state and bounds, built from the same
+automation tree your tests read ([module 8](#module-8-tree)) and re-synced at most every 100 ms after a
+paint. Anything a test can find, a screen reader can find — which is one more reason the
+"every interactive control gets a `Name`" rule from module 8 belongs in your code review checklist.
+
+### Embedding inside an existing Avalonia, Uno, WinForms, WPF or GTK 4 app
 {:#module-6-embedding}
 
-If you already ship an Avalonia or Uno app, you can adopt Majorsilence.Forms additively — using its
-controls and windows as if they were native objects, without changing the normal `Form.Show()` flow:
+If you already ship an app on one of those five toolkits, you can adopt Majorsilence.Forms additively —
+using its controls and windows as if they were native objects, without changing the normal
+`Form.Show()` flow. The pattern is identical everywhere (a `MajorsilenceFormsPresenter` plus a pair of
+extension methods); only the host type changes. Avalonia and Uno shown here, the Windows pair in
+[module 7](#module-7-c), and GTK 4 is `ToGtkWidget()` / `ToGtkWindow()`:
 
 **C#**
 
@@ -1548,10 +1925,11 @@ Dim unoWin As Microsoft.UI.Xaml.Window = myForm.ToUnoWindow()
 window.Show()                      ' the host owns showing it from here
 ```
 
-**Owner/modal relationships differ by backend:** `ToAvaloniaWindow()` gives a genuine OS-level modal
-relationship; Uno has no owner concept in this backend, so `ToUnoWindow()` gives back an independent
-top-level window. Under Uno, use `Form.ShowDialog(parent)` — the framework's own modal loop, which
-doesn't depend on native window ownership.
+**Owner/modal relationships differ by backend:** `ToAvaloniaWindow()`, `ToWinFormsForm()` and
+`ToGtkWindow()` each give a genuine OS-level modal relationship; Uno has no owner concept in this
+backend, so `ToUnoWindow()` gives back an independent top-level window. Under Uno, use
+`Form.ShowDialog(parent)` — the framework's own modal loop, which doesn't depend on native window
+ownership.
 
 ### If you draw your own title bar
 {:#module-6-chrome}
@@ -1563,22 +1941,35 @@ forwards to WinUI. That's a Windows-desktop API, so OS title-bar drag works on t
 uses native decorations and the OS owns drag/resize; on the **X11 head title-bar drag is unavailable** —
 use system decorations there if you need OS window dragging.
 
-**Exercise 6.** Take `GreetForm` from [module 2](#module-2) and run it on two backends by changing only
-the package reference. Then publish it to WebAssembly and open it in a browser. Write down every
-behavioral difference you observe and check each against the list above — anything not on it is worth
-reporting.
+**Exercise 6.** Take `GreetForm` from [module 2](#module-2) and run it on two backends by changing the
+package reference and, for a non-Avalonia backend, the one selection line (on Linux, GTK 4; anywhere,
+Terminal — it is the quickest way to *feel* the host seam). Then publish it to WebAssembly and open it
+in a browser: the `MessageBox.Show` in `OkButton_Click` throws there, and converting that handler to
+`ShowAsync` is the whole async-dialog rule in one edit. Write down every behavioral difference you
+observe and check each against the lists above — anything not on them is worth reporting.
 
 ---
 
 ## Module 7 — Incremental adoption on Windows
 {:#module-7}
 
-**Outcome:** you can run Majorsilence.Forms and real WinForms in one process, in either direction, and
-you know the three rules that keep it stable.
+**Outcome:** you can run Majorsilence.Forms and real WinForms in one process, in either direction and
+at either granularity — whole forms or single controls — and you know the three rules that keep it
+stable.
 
-`Majorsilence.Forms.WindowsFormsInterop` is a **Windows-only** bridge for incremental migration. Off
-Windows the assembly is an empty placeholder (so cross-platform builds stay green) and every call
-throws `PlatformNotSupportedException`.
+There are two Windows-only tools for this, and they work at different layers:
+
+| | `Majorsilence.Forms.WindowsFormsInterop` (Directions A and B) | `Majorsilence.Forms.WinForms` backend (Direction C) |
+|---|---|---|
+| Granularity | Whole forms and dialogs | Individual controls (and forms) |
+| Majorsilence runs on | The Avalonia backend, sharing the Win32 pump with WinForms | Real WinForms windows — no Avalonia involved |
+| Best for | Opening legacy WinForms forms from a Majorsilence app, and vice versa | Embedding Majorsilence controls inside WinForms UI; a control library porting its internals first; .NET Framework 4.8 hosts |
+
+They can coexist — the presenter in Direction C leaves an already-configured backend alone.
+
+`Majorsilence.Forms.WindowsFormsInterop` is a **Windows-only** bridge. Off Windows the assembly is an
+empty placeholder (so cross-platform builds stay green) and every call throws
+`PlatformNotSupportedException`.
 
 **Why it works at all:** on Windows, the Avalonia backend registers its windows with the OS message pump
 rather than running its own loop, and `System.Windows.Forms` uses the same pump. The two toolkits
@@ -1732,6 +2123,99 @@ AddHandler okButton.Click,
     End Sub
 ```
 
+### Direction C — one control at a time, on the WinForms (or WPF) backend
+{:#module-7-c}
+
+Directions A and B move whole screens. When the unit you can afford to move is *a control* — a custom
+grid, a chart, one panel of a busy form — reference `Majorsilence.Forms.WinForms` instead. It is a full
+platform backend ([module 6](#module-6)) whose windows are real `System.Windows.Forms` forms on the
+classic Win32 pump, with the Skia surface presented through a GDI-backed control. A Majorsilence control
+dropped into a WinForms container becomes an ordinary `System.Windows.Forms.Control`; the backend
+installs itself the first time a presenter is created, and the app's existing `Application.Run`
+services everything. (Checked against the package README and `samples/EmbeddingWinForms`, not run for
+this guide.)
+
+**C#**
+
+```csharp
+using Majorsilence.Forms.WinForms;
+
+// Namespace-qualify: this file has both System.Windows.Forms and Majorsilence.Forms in scope.
+var scene = new Majorsilence.Forms.Panel ();
+scene.Controls.Add (new Majorsilence.Forms.Button { Text = "Ported button", Left = 12, Top = 12 });
+
+System.Windows.Forms.Control host = scene.ToWinFormsControl ();   // or: new MajorsilenceFormsPresenter { Content = scene }
+legacyForm.Controls.Add (host);
+
+// A whole Majorsilence Form, owned by WinForms — a genuine native-modal relationship:
+var dialog = new Majorsilence.Forms.Form { Text = "Ported dialog" };
+System.Windows.Forms.Form native = dialog.ToWinFormsForm ();
+native.ShowDialog (legacyForm);
+```
+
+**VB.NET**
+
+```vb
+Imports Majorsilence.Forms.WinForms
+
+' Namespace-qualify: this file has both System.Windows.Forms and Majorsilence.Forms in scope.
+Dim scene As New Majorsilence.Forms.Panel()
+scene.Controls.Add(New Majorsilence.Forms.Button With {.Text = "Ported button", .Left = 12, .Top = 12})
+
+Dim host As System.Windows.Forms.Control = scene.ToWinFormsControl()   ' or: New MajorsilenceFormsPresenter With {.Content = scene}
+legacyForm.Controls.Add(host)
+
+' A whole Majorsilence Form, owned by WinForms — a genuine native-modal relationship:
+Dim dialog As New Majorsilence.Forms.Form With {.Text = "Ported dialog"}
+Dim native As System.Windows.Forms.Form = dialog.ToWinFormsForm()
+native.ShowDialog(legacyForm)
+```
+
+Three properties of this route matter for planning:
+
+- **It targets `net48`.** Paired with the core's `netstandard2.0` build, a **.NET Framework 4.8** app
+  can host Majorsilence controls without first moving to modern .NET. That reorders a lot of migration
+  plans: the UI port and the runtime upgrade no longer have to be the same project.
+- **It works in both directions.** `NativeControlHost` ([module 9](#module-9-route-a)) hosts a *real*
+  WinForms control inside the embedded Majorsilence scene, and the backend returns a real `HWND`
+  through `PlatformHandle`. Popups the embedded content opens (dropdowns, menus) are real borderless OS
+  windows.
+- **When the last control is ported, swap the package** for `Majorsilence.Forms.Avalonia` and the same
+  code is cross-platform. Nothing above the backend seam changes.
+
+Not there: gestures (WinForms has no gesture API — touch arrives as mouse) and a webview (the
+WebView-dependent compatibility controls fall back, as on Headless). `Majorsilence.Forms.Wpf` is the
+same idea for a WPF shell — `ToWpfElement()` and `ToWpfWindow()`, `net48`/`net8.0-windows`/
+`net10.0-windows`, selected with `Platform.Backend = new WpfPlatformBackend ()`.
+
+**Making both halves look like one app.** The giveaway in a mixed-toolkit app is two visual styles on
+one screen. `Majorsilence.Forms.Theming.WinForms` applies the *same* CSS theme ([appendix D](#appendix-d))
+to the real `System.Windows.Forms` controls, as far as WinForms allows and with every gap reported as a
+diagnostic rather than silently skipped:
+
+**C#**
+
+```csharp
+using Majorsilence.Forms.Theming.WinForms;
+
+Theme.LoadFromCssFile ("Themes/graphite.css");                     // the Majorsilence half
+WinFormsCssTheme.Apply (File.ReadAllText ("Themes/graphite.css")); // the WinForms half
+WinFormsCssTheme.Track (legacyForm);                               // style it now, and controls added later
+```
+
+**VB.NET**
+
+```vb
+Imports Majorsilence.Forms.Theming.WinForms
+
+Theme.LoadFromCssFile("Themes/graphite.css")                        ' the Majorsilence half
+WinFormsCssTheme.Apply(File.ReadAllText("Themes/graphite.css"))     ' the WinForms half
+WinFormsCssTheme.Track(legacyForm)                                  ' style it now, and controls added later
+```
+
+(`WinFormsCssTheme.Watch (path)` re-applies on every save, which is how the Windows-only
+`ThemeStudio.WinForms` sample works.)
+
 ### The three rules
 {:#module-7-rules}
 
@@ -1762,8 +2246,9 @@ AddHandler okButton.Click,
    WF → MF direction the MF window is currently unowned at the OS level.
 
 **Exercise 7.** In a scratch copy of an existing WinForms app, add one new screen built on
-Majorsilence.Forms via Direction B, with the owner handle wired. This is the demo that unblocks
-stakeholders, because it changes nothing about what you already ship.
+Majorsilence.Forms via Direction B, with the owner handle wired. Then, in the same app, replace one
+existing control with a Majorsilence one via Direction C. Together they are the demo that unblocks
+stakeholders, because they change nothing about what you already ship.
 
 ---
 
@@ -1818,7 +2303,91 @@ Dim nameBox As New TextBox With {.Name = "nameBox", .AccessibleName = "Full name
 Roles are inferred from the control type (`button`, `textbox`, `checkbox`, `radio`, `combobox`, `list`,
 `label`, `tablist`, `window`, …) unless you set `Control.AccessibleRole`. Make "every interactive control
 gets a `Name`" a code-review rule — it buys test locators *and* screen-reader support from the same
-keystroke.
+keystroke, on Windows through UI Automation and in the browser through the
+[ARIA DOM mirror](#module-6-singleview).
+
+### Custom-painted controls: publish your own value and state
+{:#module-8-stateprovider}
+
+Built-in controls know how to report their value — a `TextBox` its text, a `CheckBox` `"true"`. A
+control you paint yourself ([module 4](#module-4-paint)) has nothing to infer from, so it appears in the
+tree with an empty value and a role guessed from its type name. `AccessibleRole` and `AccessibleName`
+already fix the role and name. For the value and any extra state, implement
+`IAutomationStateProvider` — the tree then uses what you report instead of guessing, and each state
+entry becomes a `state-{key}` attribute you can query independently. (From `docs/automation.md`; not
+run for this guide.)
+
+**C#**
+
+```csharp
+using System.Collections.Generic;
+using System.Globalization;
+using Majorsilence.Forms;
+using Majorsilence.Forms.Automation;
+
+public sealed class BeaconIndicator : Control, IAutomationStateProvider
+{
+    public int Level { get; set; }
+    public string Status { get; set; } = "warning";
+
+    public string? AutomationValue => Level.ToString (CultureInfo.InvariantCulture);
+
+    public IReadOnlyDictionary<string, string> AutomationState => new Dictionary<string, string> {
+        ["level"]  = Level.ToString (CultureInfo.InvariantCulture),
+        ["status"] = Status,
+    };
+
+    protected override void OnPaint (PaintEventArgs e) { /* draw the beacon */ }
+}
+
+// In a test — the state is XPath-addressable:
+session.Find (By.XPath ("//BeaconIndicator[@state-level='3']"));
+```
+
+**VB.NET**
+
+```vb
+Imports System.Globalization
+Imports Majorsilence.Forms
+Imports Majorsilence.Forms.Automation
+
+Public NotInheritable Class BeaconIndicator
+    Inherits Control
+    Implements IAutomationStateProvider
+
+    Public Property Level As Integer
+    Public Property Status As String = "warning"
+
+    Public ReadOnly Property AutomationValue As String Implements IAutomationStateProvider.AutomationValue
+        Get
+            Return Level.ToString(CultureInfo.InvariantCulture)
+        End Get
+    End Property
+
+    Public ReadOnly Property AutomationState As IReadOnlyDictionary(Of String, String) _
+            Implements IAutomationStateProvider.AutomationState
+        Get
+            Return New Dictionary(Of String, String) From {
+                {"level", Level.ToString(CultureInfo.InvariantCulture)},
+                {"status", Status}
+            }
+        End Get
+    End Property
+
+    Protected Overrides Sub OnPaint(e As PaintEventArgs)
+        ' draw the beacon
+    End Sub
+End Class
+
+' In a test — the state is XPath-addressable:
+session.Find(By.XPath("//BeaconIndicator[@state-level='3']"))
+```
+
+Set `Name`, `AccessibleName` and `AccessibleRole` on it as well and the element carries all four in
+`GetPageSource()` — and, through WebDriver, `getAttribute("state-level")` reads the same thing. Keep
+state keys to letters, digits, `-` and `_`. One rule to know: `AutomationValue` *replaces* the built-in
+inference rather than blending with it, so a checkbox-like custom control reports `"true"`/`"false"`
+itself.
 
 ### The Headless backend is your CI story
 {:#module-8-headless}
@@ -1859,6 +2428,11 @@ End Class
 
 That is a genuine language difference, not a style preference: if you copy the C# pattern into VB, your
 tests will run against no backend at all and fail in confusing ways.
+
+And don't be tempted to run UI tests on the Avalonia backend "because it's the real one": Avalonia's
+dispatcher is thread-bound and conflicts with a test runner's worker threads. Headless exists precisely
+so your suite needs neither a display nor a UI thread — the framework's own suite runs on it, and
+`HeadlessRenderer.Use ()` is equivalent to assigning `HeadlessPlatformBackend` yourself.
 
 ### A complete UI test
 {:#module-8-inprocess}
@@ -1964,11 +2538,15 @@ how you test layout at 2× without a scaled monitor. The framework's own suite p
 CI gates it, so it's a supported thing to do rather than a known-broken corner.
 
 Take the lesson from how those failures were fixed, though, because it's the same trap in your code:
-almost all of them were **one confusion — logical versus device units.** `Bounds`, `MouseEventArgs` and
-`GetTabRect` are logical; `ClientRectangle`, back buffers and captured bitmaps are device pixels. They're
+almost all of them were **one confusion — logical versus device units.** Since 2026-10-01 everything
+you read off a `Control` — `Bounds`, `ClientRectangle`, `ClientSize`, `MouseEventArgs`, the paint canvas
+— is logical ([module 4](#module-4-paint)), which removed the worst of the trap. What is *still* in
+device pixels: captured bitmaps (`HeadlessRenderer.CapturePng` at scale 2 is twice the size in each
+direction), the `Scaled*` family you asked for by name, and the owner-draw events' `Bounds`. They're
 identical at scale 1, so mixing them is invisible until a scaled display shows up. So: **assert geometry
 proportionally rather than in scale-1 pixels**, and when you compare a captured bitmap against a
-rectangle, check which space each one is in.
+rectangle, check which space each one is in. A custom control that still calls
+`ScaleTransform (e.Scaling, …)` is the most common way to fail this gate today.
 
 ### Remote automation with Selenium
 {:#module-8-webdriver}
@@ -2047,8 +2625,32 @@ While Not task.IsCompleted
 End While
 ```
 
-**Playwright is not a fit** — it automates browser engines over a DOM, and there is no DOM here. Don't
-let that question consume a sprint.
+**Playwright is not a fit** for the desktop app — it automates browser engines over a DOM, and there is
+no DOM here. (The browser head's [ARIA mirror](#module-6-singleview) is a DOM, but it is an
+accessibility surface, not an automation API; drive the app through WebDriver.) Don't let that question
+consume a sprint.
+
+### Letting an AI agent drive the app
+{:#module-8-mcp}
+
+The same WebDriver endpoint is what an AI assistant uses. `Majorsilence.Forms.Mcp` is an MCP server
+shipped as a dotnet global tool: it speaks MCP over stdio to the assistant and HTTP over loopback to
+your app's `WebDriverServer`, exposing `ui_snapshot`, `ui_find`, `ui_read`, `ui_click`, `ui_type`,
+`ui_wait_for` and `ui_screenshot`. Every tool takes a locator, not an element handle, so nothing goes
+stale between a find and an action.
+
+```
+dotnet tool install -g Majorsilence.Forms.Mcp
+claude mcp add majorsilence-ui -- majorsilence-mcp --port 4444     # or the same command in any MCP client's config
+```
+
+Something to point it at while learning: `samples/AutomationTarget` is a small app built for exactly
+this — `dotnet run --project samples/AutomationTarget -- --webdriver 4444` starts the endpoint and
+prints the commands to drive it. Its controls each exercise one thing a client has to handle: a
+permanently disabled button (so you see a refusal rather than a false success), a Submit button that
+only enables once a checkbox is ticked (what `ui_wait_for` is for), one deliberately unnamed control,
+and a visible log of every action so you can check what the client *claims* it did against what the app
+saw. The automation surface is unauthenticated, so expose it in development and test builds only.
 
 ### Accessibility on Windows
 {:#module-8-a11y}
@@ -2108,7 +2710,7 @@ fake one.**
 |---|---|---|
 | `Control.Handle` | `IntPtr.Zero` | No per-control OS window exists. Same for `ImageList.Handle`, `TreeNode.Handle`, `Cursor.Handle`, `TaskDialog.Handle`. |
 | `WindowBase.Handle` | An opaque nonzero token | **Not an `HWND`.** It exists because WinForms code routinely reads `.Handle` to force handle creation before `Invoke`, and returning zero breaks that idiom. Meaningful only inside managed code. |
-| `WindowBase.PlatformHandle` | The real native handle, or zero | The genuine article — `HWND`/`NSWindow`/`XID` on the Avalonia backend. Currently zero on Uno and Headless. |
+| `WindowBase.PlatformHandle` | The real native handle, or zero | The genuine article — `HWND`/`NSWindow`/`XID` on the Avalonia backend, a real `HWND` on the WinForms backend. Zero on Uno and Headless. |
 
 **The rule about faking:** a fabricated handle is safe *only* while it round-trips through managed code
 you control. It stops being safe the moment it crosses into native code — LibVLC's
@@ -2120,7 +2722,7 @@ it to the OS (`SetParent`, `CreateWindowEx`, `SetWindowPos`), which will not tol
 
 The supported seam: your control reserves a rectangle, and the backend fills it with a real toolkit
 element overlaid on the Skia surface, kept aligned to the placeholder's bounds, clip and visibility.
-Available on Avalonia and Uno; absent on Headless.
+Available on Avalonia, Uno, GTK 4 and the WinForms backend; absent on Headless and Terminal.
 
 **C#**
 
@@ -2171,11 +2773,13 @@ theme. The seam works; the styling is yours to supply. Budget for that if you pl
 UI rather than a self-drawing surface like a map or video view.*
 
 Three things to know. **Airspace limits:** the overlay is a native element *above* your painted content,
-so nothing the framework draws can appear on top of it. **Styling is not inherited** from
+so nothing the framework draws can appear on top of it (GTK 4 is the exception — it composites every
+widget into one render tree, so there is no airspace problem there). **Styling is not inherited** from
 Majorsilence.Forms — see the screenshot above. And **assigning the wrong type fails silently** —
-`NativeControl` is typed `Object`, both backends type-check it and simply return if it doesn't match;
+`NativeControl` is typed `Object`, each backend type-checks it and simply returns if it doesn't match;
 nothing throws, nothing logs, nothing appears. An Avalonia `Control` handed to the Uno backend produces
-exactly that. If your native content is invisible, check the type first.
+exactly that; so does a WinForms control handed to GTK 4. If your native content is invisible, check the
+type first: Avalonia `Control`, Uno `UIElement`, `System.Windows.Forms.Control`, `Gtk.Widget`.
 
 ### Route B — video via frame callbacks (recommended)
 {:#module-9-route-b}
@@ -2261,13 +2865,18 @@ to do when you hit a gap.
 | Build clean | `dotnet build --configuration Release` | Warnings before they compound |
 | Tests | `dotnet test --configuration Release --no-build` | Everything from [module 8](#module-8) — no display required |
 | Migration drift | `majorsilence-migrate <sln> --dry-run --strict` | A new unmapped reference the moment it lands on a branch, while you're still converging |
-| HiDPI | `MF_HEADLESS_SCALE=2` on your scaling-sensitive tests | Layout that only works at scale 1 |
+| HiDPI | `MF_HEADLESS_SCALE=2` on your scaling-sensitive tests | Layout that only works at scale 1 — and a custom control that still scales its own canvas ([module 4](#module-4-paint)) |
+| Blocking calls in browser code | The `MFB001`–`MFB003` analyzer, with `majorsilence_forms.browser_target = true` in the shared UI library's `.editorconfig`, and warnings as errors on that project | A `ShowDialog`/`MessageBox.Show`/`.Result`/`Thread.Sleep` that will throw or freeze the page ([module 6](#module-6-async)) |
 | Browser boot | `dotnet publish` your wasm head + a headless-Chromium smoke test | The wasm pipeline breaking |
 
 That last one is worth stealing outright if you target the browser: **building a wasm target is not
 evidence it works.** `dotnet publish` is what runs the wasm-tools pipeline (the emcc/wasm-opt native
 link), and only a real boot in a browser proves the bundle. A `dotnet build` that succeeds tells you
-nothing about it.
+nothing about it. The framework's own CI does this with a `?check=<name>` query string the gallery
+head understands and a small Node script (`samples/Gallery.Wasm/tools/modal-check.mjs`) that boots the
+published bundle in headless Chrome, runs each named check and compares the outcome to an expected
+table — the modal checks are what proved the async-dialog rule. Copy the shape: a `?check=` switch in
+your own head costs an afternoon and turns "it published" into "it ran".
 
 ### Version discipline
 {:#module-10-versioning}
@@ -2285,12 +2894,15 @@ nothing about it.
       <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-      <PackageVersion Include="Majorsilence.Forms" Version="26.0.30" />
-      <PackageVersion Include="Majorsilence.Forms.Avalonia" Version="26.0.30" />
-      <PackageVersion Include="Majorsilence.Forms.Headless" Version="26.0.30" />
+      <PackageVersion Include="Majorsilence.Forms" Version="26.9.0" />
+      <PackageVersion Include="Majorsilence.Forms.Avalonia" Version="26.9.0" />
+      <PackageVersion Include="Majorsilence.Forms.Headless" Version="26.9.0" />
     </ItemGroup>
   </Project>
   ```
+
+  Add `Majorsilence.Forms.Mvvm`, `.Theming.WinForms`, `.Animation` or a second backend to the same list
+  as you adopt them — every package in the family ships from the same release, at the same version.
 
 - **Upgrade on a branch with your golden-image tests green** before it reaches anyone else. Rendering
   changes are exactly what those tests are for.
@@ -2340,12 +2952,20 @@ or close it upstream. Write down which and why.
 | Every icon invisible, nothing logged | A relative asset path resolved against the wrong **working directory**; the missing file became a 1×1 placeholder instead of throwing | Resolve assets against `AppContext.BaseDirectory` — see [module 0](#module-0) |
 | Icons missing in the browser build only | No real filesystem there; relative file loads can't work | Ship images as embedded resources — see [module 6](#module-6-singleview) |
 | A property set has no visible effect at all | It's a stub per the [stub policy](#module-3-stub-policy) — stores and reads back, nothing consumes it | Check the matrix row. If it *throws* instead, that's a bug — report it |
-| Hosted native content is invisible | The backend type-checked your native control, didn't match, and returned silently | Check the type: Avalonia `Control` for the Avalonia backend, Uno `UIElement` for Uno |
-| Maximize/minimize does nothing; `Title` is ignored | You're on a single-view platform (browser/Android/iOS) — no window manager | Expected. See [module 6](#module-6-singleview) |
-| Clicks land in the wrong place at HiDPI | Input routing mixing logical and device units — fixed in main, where the full suite now passes at scale 2 under CI | Upgrade past 26.0.30 when released; check your own code for the same logical-vs-device mix ([module 8](#module-8-headless)) |
+| Hosted native content is invisible | The backend type-checked your native control, didn't match, and returned silently | Check the type: Avalonia `Control` for the Avalonia backend, Uno `UIElement` for Uno, `System.Windows.Forms.Control` for the WinForms backend, `Gtk.Widget` for GTK 4 |
+| Maximize/minimize does nothing; `Title` is ignored | You're on a single-view platform (browser/Android/iOS/Terminal) — no window manager | Expected. See [module 6](#module-6-singleview) |
+| Clicks land in the wrong place at HiDPI | Input routing mixing logical and device units — a framework bug in 26.0.30, since fixed and gated in CI at scale 2 | Upgrade (26.9.0 or later). If it persists, it's your own code mixing the two spaces — see [module 8](#module-8-headless) |
+| A custom control draws at twice the size on a HiDPI display, fine at 1× | The paint canvas is logical now; the control still calls `e.Graphics.ScaleTransform (e.Scaling, e.Scaling)` and scales twice | Remove the `ScaleTransform` — see [module 4](#module-4-paint). Test under `MF_HEADLESS_SCALE=2` |
+| Owner-drawn items (`DrawItem`, `DrawNode`, `CellPainting`) come out small or offset on HiDPI | Those events are still in device pixels, unlike the control's logical `ClientRectangle` | Use `e.Bounds` and `e.Graphics` together and don't mix in the control's own logical geometry; see [module 4](#module-4-paint) |
+| `PlatformNotSupportedException` from `ShowDialog` / `MessageBox.Show` in the browser, on Android or iOS | Those rows can't run a nested modal loop; the exception names the awaitable twin | Use `ShowDialogAsync` / `MessageBox.ShowAsync` from an `async` handler — see [module 6](#module-6-async). Turn on the `MFB` analyzer so the build finds the rest |
+| The browser tab freezes after a click | Something blocked the page's single thread — `.Result`, `.Wait()`, `Thread.Sleep` | `await` it (`MFB002`/`MFB003` flag these) — see [module 6](#module-6-async) |
+| A GTK 4 window ignores `Location` / `StartPosition` | GTK 4 removed client-side positioning of top-level windows; the window manager decides | Expected. `Location` is a stored hint on that backend — see [module 6](#module-6) |
+| File pickers return nothing on GTK 4 / Headless | Those backends have no native picker yet, so the framework's own fallback dialog is used | Expected; the fallback works. `Gtk.FileDialog` wiring is deferred work |
 | A WinForms dialog isn't modal to its Majorsilence parent | `OwnerHandleResolver` was never wired | Wire it once at startup — see [module 7](#module-7-a) |
 | Deadlock or double message loop on Windows | Both `Application.Run`s were called | One host per process; use the bridge for the other direction |
 | `PlatformNotSupportedException` from interop on macOS/Linux | `System.Windows.Forms` doesn't exist there | Guard interop calls behind a Windows check |
+| A CSS theme rule has no effect, no error | A control set that property in code (`button.BackColor = …`) — explicit per-control values win, as in WinForms | Remove the per-control value, or accept it. A *typo'd* rule, by contrast, always errors — check `ThemeStyleSheet.Parse` diagnostics ([appendix D](#appendix-d)) |
+| A `BindCommand`ed button runs its command twice per click | `Button.Command` is also set on the same control | Use one or the other ([appendix E](#appendix-e)) |
 
 ---
 
@@ -2364,6 +2984,8 @@ A sequence that has the evidence arriving before the commitment does.
    - **New app** — start on Majorsilence.Forms directly ([module 2](#module-2)).
    - **New screens in an old app** — Direction B interop on Windows, changing nothing you ship
      ([module 7](#module-7-b)).
+   - **One control at a time in an old app** — the WinForms or WPF backend ([module 7](#module-7-c)),
+     which also works on .NET Framework 4.8, so the UI port needn't wait for the runtime upgrade.
    - **Whole-app migration** — the migrator, optionally with `--dual-build` if you're on C#
      ([module 5](#module-5-dualbuild)). **VB teams: plan a cut-over instead** — dual-build isn't
      available to you.
@@ -2379,8 +3001,9 @@ Decide these explicitly and early, because each constrains the plan: which platf
 (desktop-only is a very different project from "and iOS"), whether you need a visual designer (there
 isn't one yet), whether you depend on a vendor control suite (Telerik has a compatibility layer; other
 vendors need a `--map` file and manual work), whether you have an accessibility obligation outside
-Windows, whether your codebase is VB (cut-over, not dual-build), and whether anything in your app hosts
-native content or reads window handles.
+Windows, whether your codebase is VB (cut-over, not dual-build), whether anything in your app hosts
+native content or reads window handles, and — if a browser or phone head is in scope — whether your
+dialogs are written async from the start ([module 6](#module-6-async)).
 
 ---
 
@@ -2388,31 +3011,307 @@ native content or reads window handles.
 {:#appendix-c}
 
 **Site pages:** [Getting started]({{ '/getting-started/' | relative_url }}) ·
+[Migration]({{ '/migration/' | relative_url }}) ·
 [Samples]({{ '/samples/' | relative_url }}) · [Platform backends]({{ '/backends/' | relative_url }}) ·
 [Automation & UI testing]({{ '/automation/' | relative_url }}) ·
-[Native interop]({{ '/native-interop/' | relative_url }}) · [Blog]({{ '/blog/' | relative_url }}) ·
-[Live browser gallery]({{ '/gallery/' | relative_url }})
+[Native interop]({{ '/native-interop/' | relative_url }}) · [FAQ]({{ '/faq/' | relative_url }}) ·
+[Blog]({{ '/blog/' | relative_url }}) · [Live browser gallery]({{ '/gallery/' | relative_url }})
 
-**In the repository — the four documents an application team actually needs:**
+**In the repository — the documents an application team actually needs:**
 
 | Document | Read it when |
 |---|---|
 | [`COMPATIBILITY_MATRIX.md`]({{ site.github_url }}/blob/main/COMPATIBILITY_MATRIX.md) | Before relying on any member. Keep it open |
 | [`MIGRATION.md`]({{ site.github_url }}/blob/main/MIGRATION.md) | Running the migrator; every breaking change is documented here |
+| [`docs/backends.md`]({{ site.github_url }}/blob/main/docs/backends.md) | Choosing a backend; logical vs. device units; the single-view rows; the async-dialog rule and analyzer |
+| [`docs/theming.md`]({{ site.github_url }}/blob/main/docs/theming.md) | Writing a CSS theme — the whole language is on that one page |
+| [`docs/mvvm.md`]({{ site.github_url }}/blob/main/docs/mvvm.md) | Wiring view models with `Observe`/`BindText`/`BindCommand` |
+| [`docs/mobile-layout.md`]({{ site.github_url }}/blob/main/docs/mobile-layout.md) | Laying out a phone-shaped screen — `StackPanel`, `Card`, `RichListBox` |
+| [`docs/animation.md`]({{ site.github_url }}/blob/main/docs/animation.md) | `RequestAnimationFrame`, tweens, reduced motion, the Headless clock |
+| [`docs/automation.md`]({{ site.github_url }}/blob/main/docs/automation.md) | Testing in depth, including custom controls' `IAutomationStateProvider` and the MCP server |
 | [`docs/winforms-interop.md`]({{ site.github_url }}/blob/main/docs/winforms-interop.md) | Running both stacks in one process on Windows |
 | [`docs/native-interop.md`]({{ site.github_url }}/blob/main/docs/native-interop.md) | Hosting native content or video |
 
 **Commands worth memorising:**
 
 ```
-dotnet new majorsilenceforms                           # new app from the template
+dotnet new install Majorsilence.Forms.Templates        # once
+dotnet new majorsilenceforms -n MyApp                  # new app (shared library + desktop head)
+dotnet run --project MyApp
 dotnet build --configuration Release && dotnet test --configuration Release --no-build
+MF_HEADLESS_SCALE=2 dotnet test --configuration Release --no-build   # the HiDPI gate
+dotnet tool install -g Majorsilence.Forms.Migrator
 majorsilence-migrate MySolution.sln --dry-run --diff   # scope a migration
 majorsilence-migrate MySolution.sln --no-backup        # run it on a branch
 majorsilence-migrate MySolution.sln --dry-run --strict # CI drift gate
+dotnet tool install -g Majorsilence.Forms.Mcp          # let an AI agent drive the app (module 8)
 dotnet workload install wasm-tools && dotnet publish <YourWasmHead> -c Release -o out
+dotnet run --project samples/ThemeStudio               # from a clone: live CSS theme editor (appendix D)
 ```
 
 **The two-line summary for anyone who asks what changes:** your imports move from
 `System.Windows.Forms` to `Majorsilence.Forms` and from GDI+ to `Majorsilence.Forms.Drawing`, and you
 add a backend package. Your forms, designer files, event handlers and business logic stay yours.
+
+---
+
+## Appendix D — Theming your app with CSS
+{:#appendix-d}
+
+**Outcome:** you can restyle a whole application from one file, know what the theme language can and
+cannot express, and know how to find out when a rule is wrong.
+
+Because the framework paints every pixel itself ([module 1](#module-1)), appearance is a framework
+concern rather than an OS one — and the framework exposes it as a **small, strictly defined subset of
+CSS**. A theme is a `.css` file; the whole language fits on one page
+([`docs/theming.md`]({{ site.github_url }}/blob/main/docs/theming.md)), and the parser rejects anything
+outside it with a line, a column and the supported alternative. There is deliberately **no silent
+no-op** in this corner of the framework — a misspelt property is an error, not a stub. (This appendix
+was checked against that document and the `ThemeStudio` sample, not run for this guide. The older
+`<Theme>` XML format still works and can be mixed with CSS.)
+
+### Loading a theme
+{:#appendix-d-load}
+
+**C#**
+
+```csharp
+using Majorsilence.Forms;
+
+// Apply a file straight away:
+Theme.LoadFromCssFile ("Themes/ocean.css");
+
+// Or register by name and switch at runtime:
+Theme.RegisterThemeCssFromFile ("Themes/ocean.css");   // returns "Ocean", from the file's @theme header
+Theme.ApplyTheme ("Ocean");
+Theme.SetBuiltInTheme (BuiltInTheme.Light);            // back to a built-in; resets everything
+
+// Start your own from the current theme:
+File.WriteAllText ("mine.css", Theme.ExportCss ("Mine", "Light"));
+```
+
+**VB.NET**
+
+```vb
+Imports Majorsilence.Forms
+
+' Apply a file straight away:
+Theme.LoadFromCssFile("Themes/ocean.css")
+
+' Or register by name and switch at runtime:
+Theme.RegisterThemeCssFromFile("Themes/ocean.css")     ' returns "Ocean", from the file's @theme header
+Theme.ApplyTheme("Ocean")
+Theme.SetBuiltInTheme(BuiltInTheme.Light)              ' back to a built-in; resets everything
+
+' Start your own from the current theme:
+File.WriteAllText("mine.css", Theme.ExportCss("Mine", "Light"))
+```
+
+Load the theme before the first form is shown if you want no flash; applying later repaints everything
+that is open.
+
+### The language, in one example
+{:#appendix-d-language}
+
+Three kinds of statement — a header, tokens and control rules — and nothing else:
+
+```css
+/* Ocean: a deep blue-green dark theme. */
+@theme "Ocean" extends Dark;             /* start from a built-in (Light, Dark, Classic, Aero, …) or any registered theme */
+
+:root {
+  --brand: #1e90ff;                      /* your own variable, referenced below with var() */
+
+  --accent-color: var(--brand);          /* tokens: one per Theme property, kebab-cased */
+  --background-color: #0a1929;
+  --control-mid-color: #102a43;
+  --foreground-color: #cfe8ff;
+  --foreground-color-on-accent: white;
+  --font-size: 14px;                     /* whole pixels only — pt/em/rem/% are errors */
+  --ui-font: "Segoe UI", "Noto Sans", sans-serif;
+}
+
+/* A rule styles a control TYPE — every Button in the app that hasn't set its own colour in code. */
+Button        { border: 1px solid #15395c; border-radius: 4px; box-shadow: 2px 2px #06101c; }
+Button:hover  { background-color: var(--brand); color: white; }
+Button:active { box-shadow: 0px 0px #06101c; }
+
+TextBox, ComboBox, NumericUpDown { background-color: #061120; border-color: var(--border-low-color); }
+
+/* Parts: pieces a control paints inside itself. */
+DataGridView::header    { background-color: #2c2c30; color: #e8e8ea; font-weight: bold; }
+DataGridView::selection { background-color: var(--accent-color); color: var(--foreground-color-on-accent); }
+ScrollBar::thumb        { background-color: #55555c; border-radius: 4px; }
+Menu::item:hover        { background-color: #34343a; }
+```
+
+What to tell your team about it, because each is a place CSS intuition misleads:
+
+- **Tokens first.** Setting only `:root` tokens already recolours every control *and* every part; add
+  control rules only where the defaults aren't what you want.
+- **Selectors are control type names** (`Button`, `TextBox`, `DataGridView`, and every Telerik compat
+  control). There are no classes, no ids, no descendant selectors and no `*` — a rule applies to every
+  control of that type, wherever it sits. To style *one* control, set `button.Style.BackgroundColor` (or
+  WinForms `BackColor`) in code; **explicit per-control values always win**, exactly as in WinForms.
+- **Four pseudo-classes** (`:hover`, `:active`, `:disabled`, `:focus`), and only on controls that repaint
+  for that state — today `Button`, `LinkLabel` and `TrackBar`. `TextBox:hover` is an error with an
+  explanation, not a silent nothing.
+- **No cascade, no specificity, no `!important`.** Later declarations replace earlier ones. No
+  `@import`, no `@media` — register two themes and pick one in code.
+- **Layout is not themable.** Colours, borders, radii (per corner), dashed borders, hard offset
+  `box-shadow` and fonts are; `margin`/`padding` are errors — set them in code.
+- **Hex alpha comes last** (`#rrggbbaa`), the opposite of the XML format's `#AARRGGBB`.
+
+### Theme Studio, and letting an assistant write the theme
+{:#appendix-d-studio}
+
+`samples/ThemeStudio` (in the repo, with prebuilt binaries attached to GitHub releases) is a live
+editor: CSS on the left, every themable control on the right, the parser's diagnostics underneath,
+re-applied as you type — including to the Studio's own window. Open a file and it is **watched**, so
+you can edit it in your own editor or let a coding assistant edit it. Its **Copy reference for AI**
+button puts the complete token/selector/property reference on the clipboard; paste that into a chat
+with "a warm, high-contrast light theme with rounded buttons" and paste the answer back. If the parser
+objects, paste the error text back to the assistant — every message names the offending text and the
+alternative. `--render-headless out.png theme.css` renders the preview without a display and exits
+non-zero on errors, which makes a theme file something CI can check. Six starting points ship in
+`samples/ThemeStudio/Themes/`: `light`/`dark` (a matched pair), `ocean`, `graphite`, `paper`,
+`parchment`.
+
+### Diagnostics from code
+{:#appendix-d-diagnostics}
+
+For a theme your users supply, parse it yourself and show the problems rather than applying blind:
+
+**C#**
+
+```csharp
+var sheet = ThemeStyleSheet.Parse (File.ReadAllText (path));
+
+foreach (var d in sheet.Diagnostics)
+    log.WriteLine ($"{d.Severity} ({d.Line}:{d.Column}): {d.Message}");
+```
+
+**VB.NET**
+
+```vb
+Dim sheet = ThemeStyleSheet.Parse(File.ReadAllText(path))
+
+For Each d In sheet.Diagnostics
+    log.WriteLine($"{d.Severity} ({d.Line}:{d.Column}): {d.Message}")
+Next
+```
+
+### One sheet, three toolkits
+{:#appendix-d-hosts}
+
+In a mixed migration app, the same file can also restyle the *other* half: `Majorsilence.Forms.Theming.WinForms`
+applies it to real `System.Windows.Forms` controls ([module 7](#module-7-c)) and
+`Majorsilence.Forms.Theming.Avalonia` to native Avalonia Fluent controls (`AvaloniaCssTheme.Apply` /
+`Watch`), each with a documented support matrix and every gap reported as a diagnostic. That is the
+answer to "it will look like two apps stapled together" during a long migration.
+
+**Exercise D.** Export the Light theme (`Theme.ExportCss`), change three tokens and one `Button` rule,
+and load it at startup. Then deliberately write `TextBox:hover { color: red; }` and read the error the
+parser gives you — it is the whole philosophy of this corner of the framework in one message.
+
+---
+
+## Appendix E — MVVM helpers
+{:#appendix-e}
+
+**Outcome:** you can wire a view model to a form without reflection, in a way that is safe under
+trimming and NativeAOT, and you know when *not* to use it.
+
+WinForms teams moving to a shared UI library often take the opportunity to separate view models from
+forms. `Control.DataBindings` works here and is two-way — but it is reflective, which means rooting your
+view-model properties for the trimmer. `Majorsilence.Forms.Mvvm` is the alternative: a small set of
+extension methods over `INotifyPropertyChanged` and `ICommand` that name the property with `nameof` and
+read and write it through lambdas, so nothing is looked up by string at run time. It has no toolkit
+dependency and works with any view model, including one written with CommunityToolkit.Mvvm. (Checked
+against [`docs/mvvm.md`]({{ site.github_url }}/blob/main/docs/mvvm.md) and the gallery's
+`MvvmHelpersPanel`, not run for this guide.)
+
+### The four helpers
+{:#appendix-e-helpers}
+
+**C#**
+
+```csharp
+using Majorsilence.Forms.Mvvm;
+
+var scope = new BindingScope ();                        // collects every subscription this page makes
+
+// One-way: apply now, and again on every PropertyChanged for that property.
+viewModel.Observe (nameof (CounterViewModel.Count), vm => vm.Count,
+                   count => countLabel.Text = $"Count: {count}").AddTo (scope);
+
+// Two-way: TextBox.Text <-> ProfileViewModel.Name (also BindChecked, BindSelectedIndex, BindValue).
+nameBox.BindText (viewModel, nameof (ProfileViewModel.Name),
+                  vm => vm.Name, (vm, value) => vm.Name = value).AddTo (scope);
+
+// Commands: Enabled follows CanExecute; Click runs the command. Works on ANY control, custom-painted included.
+incrementButton.BindCommand (viewModel.IncrementCommand).AddTo (scope);
+
+// When the page is left:
+scope.Dispose ();
+```
+
+**VB.NET**
+
+```vb
+Imports Majorsilence.Forms.Mvvm
+
+Dim scope As New BindingScope()                          ' collects every subscription this page makes
+
+' One-way: apply now, and again on every PropertyChanged for that property.
+viewModel.Observe(NameOf(CounterViewModel.Count), Function(vm) vm.Count,
+                  Sub(count) countLabel.Text = $"Count: {count}").AddTo(scope)
+
+' Two-way: TextBox.Text <-> ProfileViewModel.Name (also BindChecked, BindSelectedIndex, BindValue).
+nameBox.BindText(viewModel, NameOf(ProfileViewModel.Name),
+                 Function(vm) vm.Name, Sub(vm, value) vm.Name = value).AddTo(scope)
+
+' Commands: Enabled follows CanExecute; Click runs the command. Works on ANY control, custom-painted included.
+incrementButton.BindCommand(viewModel.IncrementCommand).AddTo(scope)
+
+' When the page is left:
+scope.Dispose()
+```
+
+### What the helpers guarantee — and the two rules
+{:#appendix-e-rules}
+
+- **Every push lands on the UI thread.** A `PropertyChanged` raised on a worker thread is posted
+  through the dispatcher; one raised on the UI thread applies at once, so order is kept. If several
+  changes queue, each push reads the *current* value when it runs, so a control never shows an older
+  value after a newer one.
+- **Two-way binding leaves the caret alone.** The control is written only when its value differs, and
+  while one direction is being applied the other is ignored, so the two can't ping-pong. The
+  consequence to know: if the view model *rewrites* what it is given (trimming, upper-casing), the box
+  keeps what the user typed until the view model raises a change of its own.
+- **`BindCommand` disables the control while an async command reports it cannot run** — which
+  CommunityToolkit's `AsyncRelayCommand` does by default — with no extra code.
+- **Rule 1: don't combine `BindCommand` with `Button.Command` on the same control.** Both would run the
+  command, so it runs twice per click. Use one or the other.
+- **Rule 2: dispose the scope when the page goes away.** `BindingScope` disposes everything it holds,
+  latest first, so no view leaks a handler onto a view model that outlives it. A `PropertyChanged` with
+  a `null`/empty name means "everything changed" and refreshes every observation.
+
+Two-way covers four controls today: `TextBox`, `CheckBox`, `ComboBox` (selected index) and
+`NumericUpDown` (clamped to its range, as the control itself does). Anything else — a `TrackBar`, a
+`DateTimePicker`, a radio group — is `Observe` in one direction plus the control's own event in the
+other, or `DataBindings`.
+
+### Testing the wiring without a UI thread
+{:#appendix-e-testing}
+
+The helpers take an optional `IUiDispatcher` (`CheckAccess()` + `Post(Action)`). The default asks the
+active backend whether you're on the UI thread and posts through `Application.RunOnUIThread`. In a test,
+pass a fake that reports "not on the UI thread" and queues what it's given — then your test can *prove*
+a background change was marshalled, and run the queue when it chooses. That is a stronger test than
+anything a reflective binding lets you write.
+
+**Exercise E.** Take one form from your pilot migration with a hand-written view-model wiring (events
+in, property sets out) and replace it with `Observe`/`BindText`/`BindCommand` in a `BindingScope`. Count
+the lines you deleted; then write one test with a fake dispatcher that proves a worker-thread change
+reaches the label.

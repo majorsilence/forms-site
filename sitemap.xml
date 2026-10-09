@@ -13,11 +13,14 @@ permalink: /sitemap.xml
   Opt a page out with `sitemap: false` in its front matter (see robots.txt, feed.xml, 404.html).
 
   No <lastmod> on regular pages on purpose: the only date available at build time is the build
-  itself, and stamping "modified today" on all thirteen pages every deploy trains crawlers to
-  ignore the field. Pages can opt in with a real `last_modified:` date; posts use their own.
+  itself, and stamping "modified today" on every page every deploy trains crawlers to ignore the
+  field. Pages can opt in with a real `last_modified:` date; posts use their own.
+
+  Every URL also lists its translations as xhtml:link alternates (sitemap-alternates.html), the
+  same set the <head> hreflang tags emit, so a crawler sees one consistent language map.
 {%- endcomment -%}
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   {%- for p in site.pages -%}
     {%- comment -%} p.url has no extension for permalinked pages ("/faq/"), so `last` is the
     whole path there and only genuine non-HTML outputs match the exclusion list. {%- endcomment -%}
@@ -25,6 +28,7 @@ permalink: /sitemap.xml
     {%- unless p.sitemap == false or p.noindex or ext == 'xml' or ext == 'txt' or ext == 'json' -%}
   <url>
     <loc>{{ p.url | replace: 'index.html', '' | absolute_url | xml_escape }}</loc>
+    {%- include sitemap-alternates.html page=p %}
       {%- if p.last_modified %}
     <lastmod>{{ p.last_modified | date_to_xmlschema }}</lastmod>
       {%- endif %}
@@ -36,6 +40,7 @@ permalink: /sitemap.xml
   {%- for post in site.posts %}
   <url>
     <loc>{{ post.url | absolute_url | xml_escape }}</loc>
+    {%- include sitemap-alternates.html page=post %}
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

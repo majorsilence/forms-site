@@ -18,6 +18,7 @@ keywords:
 priority: "1.0"
 changefreq: weekly
 ---
+{%- include lang-vars.html -%}
 <section class="msf-hero">
   <div class="msf-hero__inner">
     <div class="msf-hero__eyebrow">cross-platform winforms for .net &middot; open source &middot; beta</div>
@@ -32,7 +33,9 @@ changefreq: weekly
       one build, with mobile and web within reach through
       <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a>'s own
       Android, iOS, and Browser targets or through
-      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>.
+      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>. Seven host
+      backends share one control model — including a GTK 4 window on Linux, a terminal, and
+      WinForms and WPF bridges that let a Windows app migrate one control at a time.
     </p>
     <div class="msf-hero__actions">
       <a class="msf-btn msf-btn--primary msf-btn--lg" href="{{ '/getting-started/' | relative_url }}">Get started</a>
@@ -41,6 +44,9 @@ changefreq: weekly
     <div class="msf-hero__chips">
       <span class="msf-chip msf-chip--accent">Avalonia</span>
       <span class="msf-chip msf-chip--neutral">Uno Platform</span>
+      <span class="msf-chip msf-chip--neutral">GTK 4</span>
+      <span class="msf-chip msf-chip--neutral">Terminal</span>
+      <span class="msf-chip msf-chip--neutral">WinForms &middot; WPF</span>
       <span class="msf-chip msf-chip--neutral">Headless</span>
       <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
       <span class="msf-chip msf-chip--neutral">.NET 10</span>
@@ -51,7 +57,7 @@ changefreq: weekly
 <div class="msf-stats">
   <div class="msf-stats__inner">
     <div class="msf-stat">
-      <div class="msf-stat__value">3</div>
+      <div class="msf-stat__value">7</div>
       <div class="msf-stat__label">Platform backends</div>
     </div>
     <div class="msf-stat">
@@ -86,23 +92,31 @@ changefreq: weekly
       </div>
       <div class="msf-card">
         <h3 class="msf-card__title">Cross-platform by construction</h3>
-        <p class="msf-card__body">Everything is drawn with SkiaSharp and runs on a swappable host backend — Avalonia by default for desktop, with its own Android/iOS/Browser targets as one path to mobile and web, and Uno Platform as another.</p>
+        <p class="msf-card__body">Everything is drawn with SkiaSharp and runs on a swappable host backend — Avalonia by default for desktop, with its own Android/iOS/Browser targets as one path to mobile and web, Uno Platform as another, and a real GTK 4 window on Linux.</p>
       </div>
       <div class="msf-card">
-        <h3 class="msf-card__title">Bring your skills, your team, your code</h3>
-        <p class="msf-card__body">WinForms muscle memory transfers directly, so the ramp-up cost for an existing .NET shop is close to zero.</p>
+        <h3 class="msf-card__title">Migrate one control at a time</h3>
+        <p class="msf-card__body">Windows-only WinForms and WPF backends host Majorsilence.Forms controls inside the app you already ship — <code class="msf-inline-code">ToWinFormsControl()</code>, <code class="msf-inline-code">ToWpfElement()</code> — on .NET 10 or .NET Framework 4.8. Port piece by piece, then swap the backend to go cross-platform.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">Theme it with CSS</h3>
+        <p class="msf-card__body">A small, fully documented CSS subset sets every color and font token and styles controls per type and state. Edit live in <a href="{{ site.github_url }}/tree/main/samples/ThemeStudio" target="_blank" rel="noopener">Theme Studio</a>, and apply the same sheet to real WinForms or native Avalonia controls in a mixed app.</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">MVVM when you want it</h3>
+        <p class="msf-card__body"><code class="msf-inline-code">Majorsilence.Forms.Mvvm</code> wires <code class="msf-inline-code">INotifyPropertyChanged</code> and <code class="msf-inline-code">ICommand</code> to controls without reflection — trim- and AOT-safe, and happy alongside CommunityToolkit.Mvvm. Opt in; never required.</p>
       </div>
       <div class="msf-card">
         <h3 class="msf-card__title">Modern under the hood</h3>
-        <p class="msf-card__body">GPU-accelerated Skia rendering, HiDPI, touch gestures, current .NET — a clean foundation, not a museum piece.</p>
+        <p class="msf-card__body">GPU-accelerated Skia rendering, HiDPI, touch gestures, animation frames, current .NET — plus <code class="msf-inline-code">Majorsilence.Forms.Essentials</code> for secure storage, text to speech, and launching links on every platform.</p>
       </div>
       <div class="msf-card">
         <h3 class="msf-card__title">Testable and accessible</h3>
-        <p class="msf-card__body">One <a href="{{ '/automation/' | relative_url }}">automation tree</a> drives in-process UI tests, a W3C WebDriver server for Selenium, and Windows screen readers.</p>
+        <p class="msf-card__body">One <a href="{{ '/automation/' | relative_url }}">automation tree</a> drives in-process UI tests, a W3C WebDriver server for Selenium, an MCP server for AI assistants, Windows screen readers, and an ARIA DOM mirror in the browser.</p>
       </div>
       <div class="msf-card">
-        <h3 class="msf-card__title">Migrate incrementally</h3>
-        <p class="msf-card__body">Run alongside real WinForms in one process on Windows, or embed Majorsilence.Forms controls and windows inside an existing Avalonia or Uno app.</p>
+        <h3 class="msf-card__title">Async dialogs, everywhere</h3>
+        <p class="msf-card__body">Every modal has an async twin — <code class="msf-inline-code">ShowDialogAsync</code>, <code class="msf-inline-code">MessageBox.ShowAsync</code> — so the same code runs in the browser and on phones, where a blocking loop isn't possible. A bundled analyzer flags the blocking calls before you ship.</p>
       </div>
     </div>
   </div>
@@ -114,7 +128,11 @@ changefreq: weekly
     <h2 class="msf-section__title">One control model, a swappable host underneath.</h2>
     <p class="msf-section__lede">
       Majorsilence.Forms owns the controls and rendering; the backend only puts pixels on screen and
-      delivers input. That seam is what lets the same app target Avalonia today and Uno tomorrow.
+      delivers input. That seam is what lets the same app target Avalonia today and Uno tomorrow —
+      or run unchanged inside a terminal. The core multi-targets <code class="msf-inline-code">net8.0</code>,
+      <code class="msf-inline-code">net10.0</code> and <code class="msf-inline-code">netstandard2.0</code>;
+      the WinForms and WPF backends add <code class="msf-inline-code">net48</code> so a .NET Framework 4.8
+      app can host it too.
     </p>
     <div class="msf-diagram">        Your app  (Forms, controls, Designer files — the WinForms model you know)
             │
@@ -123,6 +141,10 @@ changefreq: weekly
    Swappable host backend
    ├─ Avalonia   → Windows · macOS · Linux  (default)  · also Android · iOS · Browser
    ├─ Uno         → desktop · iOS · Android · WebAssembly
+   ├─ GTK 4       → Linux-first real GTK window (gir.core), also Windows/macOS with the GTK runtime
+   ├─ Terminal    → the form fills a terminal: Kitty graphics, Sixel, or Unicode block elements
+   ├─ WinForms    → Windows-only migration bridge: embed in an existing WinForms app, port in steps
+   ├─ WPF         → Windows-only migration bridge, same shape, for WPF apps
    └─ Headless    → offscreen rendering for tests / CI</div>
   </div>
 </section>
@@ -162,9 +184,10 @@ public class MainForm : Form
     <h2 class="msf-section__title">Real apps, not toy demos.</h2>
     <p class="msf-section__lede">
       Explore <a href="{{ '/samples/' | relative_url }}">every sample</a> in the repository — a
-      Windows Explorer clone, an Outlook clone, the same full control gallery running on desktop,
-      Uno, the browser, Android and iOS, bi-directional WinForms interop, and Majorsilence.Forms
-      embedded inside host Avalonia and Uno apps.
+      Windows Explorer clone, an Outlook clone, a client/server point-of-sale app with its own API
+      and database, the same full control gallery running on desktop, Uno, GTK 4, the browser,
+      Android, iOS, WPF and in a terminal, a live CSS Theme Studio, bi-directional WinForms interop,
+      and Majorsilence.Forms embedded inside host Avalonia, Uno, GTK 4 and WinForms apps.
     </p>
     <div class="msf-hero__actions">
       <a class="msf-btn msf-btn--primary" href="{{ '/samples/' | relative_url }}">Browse samples</a>
@@ -213,14 +236,15 @@ public class MainForm : Form
 
 <section class="msf-section">
   <div class="msf-section__inner">
-    <div class="msf-section__eyebrow">from the blog</div>
-    <h2 class="msf-section__title">Latest updates</h2>
-    {% for post in site.posts limit: 3 %}
+    <div class="msf-section__eyebrow">{{ t.ui.from_the_blog }}</div>
+    <h2 class="msf-section__title">{{ t.ui.latest_posts }}</h2>
+    {% assign lang_posts = site.posts | where: "lang", lang %}
+    {% for post in lang_posts limit: 3 %}
     <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
-      <div class="msf-blog-card__meta">{{ post.date | date: "%B %-d, %Y" }}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+      <div class="msf-blog-card__meta">{% include date.html date=post.date %}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
       <h3 class="msf-blog-card__title">{{ post.title }}</h3>
       <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
-      <span class="msf-blog-card__link">Read post &rarr;</span>
+      <span class="msf-blog-card__link">{{ t.ui.read_post }} &rarr;</span>
     </a>
     {% endfor %}
   </div>

@@ -1,0 +1,115 @@
+# Chaînes d'interface en français. Mêmes clés que _data/i18n/en.yml.
+
+site:
+  tagline: WinForms en entrée. Multiplateforme en sortie.
+  description: >-
+    Bibliothèque WinForms multiplateforme open source pour .NET — une couche de compatibilité
+    Windows Forms qui exécute vos applications sous Windows, macOS, Linux et dans le navigateur,
+    sans réécriture.
+  og_image_alt: >-
+    Majorsilence.Forms — la même application WinForms sous Windows, macOS et Linux.
+  footer_blurb: >-
+    WinForms multiplateforme pour .NET. Exécutez vos applications Windows Forms sous Windows,
+    macOS, Linux, sur mobile et dans le navigateur — sans réécriture.
+
+ui:
+  home: Accueil
+  back_home: accueil
+  back_blog: blog
+  blog: Blog
+  read_post: Lire l'article
+  github: github
+  nuget: NuGet
+  license: Licence MIT
+  theme: Thème
+  theme_light: clair
+  theme_dark: sombre
+  theme_system: auto
+  language: Langue
+  copyright: Sous licence MIT · © %YEAR% les contributeurs de Majorsilence.Forms
+  fork_of: Un fork enrichi par l'IA de
+  not_found_title: Page introuvable
+  not_found_body: Cette page n'existe pas — elle a peut-être été déplacée, ou n'a jamais existé.
+  not_found_back: Retour à l'accueil
+  latest_posts: Dernières nouvelles
+  from_the_blog: sur le blog
+  translation_note: >-
+    Cette page est une traduction. En cas de divergence, la version anglaise fait foi.
+
+months:
+  - janvier
+  - février
+  - mars
+  - avril
+  - mai
+  - juin
+  - juillet
+  - août
+  - septembre
+  - octobre
+  - novembre
+  - décembre
+date_format: "%D %M %Y"
+
+nav_links:
+  - label: accueil
+    url: /
+  - label: pourquoi
+    url: /cross-platform-winforms/
+  - label: démarrer
+    url: /getting-started/
+  - label: migrer
+    url: /migration/
+  - label: formation
+    url: /training/
+  - label: exemples
+    url: /samples/
+  - label: backends
+    url: /backends/
+  - label: automatisation & tests
+    url: /automation/
+  - label: interop native
+    url: /native-interop/
+  - label: faq
+    url: /faq/
+  - label: blog
+    url: /blog/
+
+footer_links:
+  - heading: Démarrer
+    items:
+      - label: Prise en main
+        url: /getting-started/
+      - label: Migrer une application WinForms
+        url: /migration/
+      - label: Guide de formation
+        url: /training/
+      - label: Exemples
+        url: /samples/
+      - label: FAQ
+        url: /faq/
+  - heading: Plateformes
+    items:
+      - label: WinForms multiplateforme
+        url: /cross-platform-winforms/
+      - label: WinForms sous Linux
+        url: /winforms-on-linux/
+      - label: WinForms sous macOS
+        url: /winforms-on-macos/
+      - label: Backends de plateforme
+        url: /backends/
+      - label: Démo en direct dans le navigateur
+        url: /gallery/
+        shared: true
+  - heading: Référence
+    items:
+      - label: Alternatives à WinForms comparées
+        url: /winforms-alternatives/
+      - label: Automatisation & tests d'interface
+        url: /automation/
+      - label: Interop native
+        url: /native-interop/
+      - label: Blog
+        url: /blog/
+      - label: Flux RSS
+        url: /feed.xml

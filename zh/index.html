@@ -1,0 +1,249 @@
+---
+layout: default
+lang: zh
+title: null
+seo_title: "Majorsilence.Forms — 面向 .NET 的跨平台 WinForms"
+description: >-
+  面向 .NET 的开源跨平台 WinForms 库。让你现有的 Windows Forms 应用无需重写即可运行于
+  Windows、macOS、Linux 和浏览器。
+keywords:
+  - 跨平台 WinForms
+  - WinForms Linux
+  - WinForms macOS
+  - WinForms 兼容层
+  - WinForms 替代方案
+  - WinForms 迁移
+  - .NET 跨平台 GUI 框架
+  - Windows Forms 跨平台
+  - WinForms 跨平台库
+priority: "1.0"
+changefreq: weekly
+---
+{%- include lang-vars.html -%}
+<section class="msf-hero">
+  <div class="msf-hero__inner">
+    <div class="msf-hero__eyebrow">面向 .net 的跨平台 winforms &middot; 开源 &middot; 测试版（beta）</div>
+    <h1 class="msf-hero__title">WinForms 进。<span class="accent">跨平台出。</span></h1>
+    <p class="msf-hero__lede">
+      <strong>Majorsilence.Forms 是一个面向 .NET 的跨平台 WinForms 库</strong>——一个 Windows Forms
+      兼容层，把传统<em>和</em>现代的 WinForms 应用迁移到现代技术栈上。保留你已有的
+      <code class="msf-inline-code">Form</code>、控件、事件处理程序和
+      <code class="msf-inline-code">*.Designer.cs</code> 文件——
+      <a href="{{ '/zh/winforms-on-linux/' | relative_url }}">运行在 Linux 上</a>、
+      <a href="{{ '/zh/winforms-on-macos/' | relative_url }}">运行在 macOS 上</a>，并以同一份构建运行在
+      Windows 上；移动端和 Web 也触手可及，可通过
+      <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a> 自身的
+      Android、iOS 和 Browser 目标，或者通过
+      <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>。七个宿主后端共享同一个控件模型——包括
+      Linux 上的 GTK 4 窗口、终端，以及让 Windows 应用逐个控件迁移的 WinForms 与 WPF 桥接。
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary msf-btn--lg" href="{{ '/zh/getting-started/' | relative_url }}">快速上手</a>
+      <a class="msf-btn msf-btn--secondary msf-btn--lg" href="{{ site.github_url }}" target="_blank" rel="noopener">在 GitHub 上查看</a>
+    </div>
+    <div class="msf-hero__chips">
+      <span class="msf-chip msf-chip--accent">Avalonia</span>
+      <span class="msf-chip msf-chip--neutral">Uno Platform</span>
+      <span class="msf-chip msf-chip--neutral">GTK 4</span>
+      <span class="msf-chip msf-chip--neutral">Terminal</span>
+      <span class="msf-chip msf-chip--neutral">WinForms &middot; WPF</span>
+      <span class="msf-chip msf-chip--neutral">Headless</span>
+      <span class="msf-chip msf-chip--neutral">SkiaSharp</span>
+      <span class="msf-chip msf-chip--neutral">.NET 10</span>
+    </div>
+  </div>
+</section>
+
+<div class="msf-stats">
+  <div class="msf-stats__inner">
+    <div class="msf-stat">
+      <div class="msf-stat__value">7</div>
+      <div class="msf-stat__label">平台后端</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value">Win &middot; macOS &middot; Linux</div>
+      <div class="msf-stat__label">桌面端，开箱即用</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">iOS &middot; Android &middot; Wasm</div>
+      <div class="msf-stat__label">可通过 Avalonia 或 Uno 到达</div>
+    </div>
+    <div class="msf-stat">
+      <div class="msf-stat__value is-accent">MIT</div>
+      <div class="msf-stat__label">开源</div>
+    </div>
+  </div>
+</div>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">为什么选择 majorsilence.forms</div>
+    <h2 class="msf-section__title">压缩的是迁移，不是你的代码库。</h2>
+    <p class="msf-section__lede">
+      迁移一个 WinForms 应用，通常意味着在全新的 UI 范式里从头重写——XAML、MVVM、Web。
+      这既昂贵又有风险，还会丢掉多年来一直正常运作的业务逻辑和用户体验。
+      Majorsilence.Forms 镜像了 WinForms 的 API 表面，并提供一个兼容层，让你现有的窗体、控件和代码
+      以小得多的改动迁移过来。
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title">复用，而不是重写</h3>
+        <p class="msf-card__body">与你在 WinForms 中编写的相同的控件模型和事件驱动代码。没有 XAML，没有被迫的 MVVM 重写，不必重新学习框架。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">从构造上就是跨平台</h3>
+        <p class="msf-card__body">一切都用 SkiaSharp 绘制，运行在可替换的宿主后端之上——桌面默认使用 Avalonia，其自带的 Android/iOS/Browser 目标是通往移动端和 Web 的一条路径，Uno Platform 是另一条，Linux 上则有真正的 GTK 4 窗口。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">逐个控件迁移</h3>
+        <p class="msf-card__body">仅限 Windows 的 WinForms 和 WPF 后端把 Majorsilence.Forms 控件托管在你已经在交付的应用内部——<code class="msf-inline-code">ToWinFormsControl()</code>、<code class="msf-inline-code">ToWpfElement()</code>——支持 .NET 10 或 .NET Framework 4.8。逐块移植，然后换掉后端即可跨平台。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">用 CSS 定制主题</h3>
+        <p class="msf-card__body">一个小而完整记录的 CSS 子集设定每一个颜色和字体令牌，并按类型和状态为控件设置样式。在 <a href="{{ site.github_url }}/tree/main/samples/ThemeStudio" target="_blank" rel="noopener">Theme Studio</a> 中实时编辑，并在混合应用中把同一份样式表应用到真正的 WinForms 或原生 Avalonia 控件上。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">需要时再用 MVVM</h3>
+        <p class="msf-card__body"><code class="msf-inline-code">Majorsilence.Forms.Mvvm</code> 不借助反射就把 <code class="msf-inline-code">INotifyPropertyChanged</code> 和 <code class="msf-inline-code">ICommand</code> 接到控件上——裁剪和 AOT 安全，并能与 CommunityToolkit.Mvvm 和睦共处。可选启用，从不强制。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">内核现代</h3>
+        <p class="msf-card__body">GPU 加速的 Skia 渲染、HiDPI、触控手势、动画帧、当前版本的 .NET——外加 <code class="msf-inline-code">Majorsilence.Forms.Essentials</code>，在每个平台上提供安全存储、文本转语音和打开链接。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">可测试、可访问</h3>
+        <p class="msf-card__body">一棵<a href="{{ '/zh/automation/' | relative_url }}">自动化树</a>驱动进程内 UI 测试、面向 Selenium 的 W3C WebDriver 服务器、面向 AI 助手的 MCP 服务器、Windows 屏幕阅读器，以及浏览器中的 ARIA DOM 镜像。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title">异步对话框，无处不在</h3>
+        <p class="msf-card__body">每个模态对话框都有一个异步孪生——<code class="msf-inline-code">ShowDialogAsync</code>、<code class="msf-inline-code">MessageBox.ShowAsync</code>——所以同一份代码也能在浏览器和手机上运行，那里不可能有阻塞式循环。随附的分析器会在你发布之前标出阻塞调用。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">工作原理</div>
+    <h2 class="msf-section__title">一个控件模型，底下是可替换的宿主。</h2>
+    <p class="msf-section__lede">
+      Majorsilence.Forms 拥有控件和渲染；后端只负责把像素放到屏幕上并传递输入。正是这条接缝（seam）
+      让同一个应用今天面向 Avalonia、明天面向 Uno——或者原封不动地跑在终端里。核心多目标支持
+      <code class="msf-inline-code">net8.0</code>、
+      <code class="msf-inline-code">net10.0</code> 和 <code class="msf-inline-code">netstandard2.0</code>；
+      WinForms 和 WPF 后端额外支持 <code class="msf-inline-code">net48</code>，因此 .NET Framework 4.8
+      应用也能托管它。
+    </p>
+    <div class="msf-diagram">        Your app  (Forms, controls, Designer files — the WinForms model you know)
+            │
+       Majorsilence.Forms  (controls + WinForms-compatible API, drawn with SkiaSharp)
+            │
+   Swappable host backend
+   ├─ Avalonia   → Windows · macOS · Linux  (default)  · also Android · iOS · Browser
+   ├─ Uno         → desktop · iOS · Android · WebAssembly
+   ├─ GTK 4       → Linux-first real GTK window (gir.core), also Windows/macOS with the GTK runtime
+   ├─ Terminal    → the form fills a terminal: Kitty graphics, Sixel, or Unicode block elements
+   ├─ WinForms    → Windows-only migration bridge: embed in an existing WinForms app, port in steps
+   ├─ WPF         → Windows-only migration bridge, same shape, for WPF apps
+   └─ Headless    → offscreen rendering for tests / CI</div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">窗体看起来和你预期的一模一样</div>
+    <h2 class="msf-section__title">Program.cs，原封不动。</h2>
+    <div class="msf-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>MainForm.cs</span>
+        </div>
+        <pre>using Majorsilence.Forms;
+
+public class MainForm : Form
+{
+}</pre>
+      </div>
+      <div class="msf-code-block">
+        <div class="msf-code-block__header">
+          <span>Program.cs</span>
+          <span class="msf-code-block__label">run</span>
+        </div>
+        <pre>static void Main (string [] args)
+{
+    Application.Run (new MainForm ());
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">示例</div>
+    <h2 class="msf-section__title">真实的应用，而不是玩具演示。</h2>
+    <p class="msf-section__lede">
+      浏览仓库中的<a href="{{ '/zh/samples/' | relative_url }}">每一个示例</a>——一个 Windows Explorer
+      克隆、一个 Outlook 克隆、一个带有自己的 API 和数据库的客户端/服务器 POS 应用、同一个完整控件库
+      分别运行在桌面、Uno、GTK 4、浏览器、Android、iOS、WPF 和终端中、一个实时的 CSS Theme Studio、
+      双向的 WinForms 互操作，以及嵌入在宿主 Avalonia、Uno、GTK 4 和 WinForms 应用内部的 Majorsilence.Forms。
+    </p>
+    <div class="msf-hero__actions">
+      <a class="msf-btn msf-btn--primary" href="{{ '/zh/samples/' | relative_url }}">浏览示例</a>
+      <a class="msf-btn msf-btn--secondary" href="{{ '/zh/backends/' | relative_url }}">平台后端</a>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">从这里开始</div>
+    <h2 class="msf-section__title">回答把你带到这里的那个问题。</h2>
+    <p class="msf-section__lede">
+      大多数人来这里都是为了找一件具体的事——Windows Forms 能不能在 Linux 上运行、一个 WinForms
+      兼容层真正的代价是什么、或者它与用 MAUI 或 Avalonia 重写相比如何。每个问题都有自己的页面。
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/cross-platform-winforms/' | relative_url }}">跨平台 WinForms 详解</a></h3>
+        <p class="msf-card__body">为什么 <code class="msf-inline-code">System.Windows.Forms</code> 只能在 Windows 上运行、绕过它的三种方式，以及一个 API 兼容的重新实现要放弃什么。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/winforms-on-linux/' | relative_url }}">WinForms 能在 Linux 上运行吗？</a></h3>
+        <p class="msf-card__body">原样不行——Mono 的移植早已不在，GDI+ 也不存在。在 Ubuntu、Fedora 和 Debian 上有什么可行的替代方案，以及如何发布。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/winforms-on-macos/' | relative_url }}">WinForms 能在 macOS 上运行吗？</a></h3>
+        <p class="msf-card__body">Apple Silicon 和 Intel 上的原生 <code class="msf-inline-code">NSWindow</code>、它哪些地方不像 Mac，以及如何打包 <code class="msf-inline-code">.app</code>。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/migration/' | relative_url }}">迁移现有应用</a></h3>
+        <p class="msf-card__body"><code class="msf-inline-code">majorsilence-migrate</code> CLI 完成机械性的重写——命名空间、项目文件、资源——并以可读的 git diff 呈现。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/winforms-alternatives/' | relative_url }}">WinForms 替代方案对比</a></h3>
+        <p class="msf-card__body">MAUI、Avalonia、Uno Platform、Eto.Forms、WPF 和 Wine——以各自能保留多少你现有代码来衡量。</p>
+      </div>
+      <div class="msf-card">
+        <h3 class="msf-card__title"><a href="{{ '/zh/faq/' | relative_url }}">常见问题</a></h3>
+        <p class="msf-card__body">设计器文件（Designer.cs）还能用吗？有可视化设计器吗？VB.NET、DataGridView、<code class="msf-inline-code">System.Drawing</code> 和生产就绪情况又如何？</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">{{ t.ui.from_the_blog }}</div>
+    <h2 class="msf-section__title">{{ t.ui.latest_posts }}</h2>
+    {% assign lang_posts = site.posts | where: "lang", lang %}
+    {% for post in lang_posts limit: 3 %}
+    <a class="msf-blog-card{% unless forloop.last %} is-bordered{% endunless %}" href="{{ post.url | relative_url }}">
+      <div class="msf-blog-card__meta">{% include date.html date=post.date %}{% if post.read_time %} &middot; {{ post.read_time }}{% endif %}</div>
+      <h3 class="msf-blog-card__title">{{ post.title }}</h3>
+      <p class="msf-blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+      <span class="msf-blog-card__link">{{ t.ui.read_post }} &rarr;</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

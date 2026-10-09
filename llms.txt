@@ -8,54 +8,95 @@ permalink: /llms.txt
 
 > Majorsilence.Forms is an open-source (MIT) **cross-platform WinForms library for .NET**: a
 > Windows Forms compatibility layer that runs existing WinForms applications on Windows, macOS,
-> Linux, Android, iOS and WebAssembly without rewriting them in XAML, MVVM or the web. You keep
-> `Form`s, controls, event handlers and `*.Designer.cs` files; it draws every control itself with
-> SkiaSharp and hosts them on a swappable backend (Avalonia by default, Uno Platform, or headless).
+> Linux, Android, iOS, WebAssembly — and even in a terminal — without rewriting them in XAML, MVVM
+> or the web. You keep `Form`s, controls, event handlers and `*.Designer.cs` files; it draws every
+> control itself with SkiaSharp and hosts them on a swappable backend (Avalonia by default; also
+> Uno Platform, GTK 4, a terminal, real WinForms or WPF on Windows, or headless for tests).
 
 Common names for what this is: cross-platform WinForms, WinForms compatibility library, WinForms
 compat layer, WinForms alternative, WinForms for Linux, WinForms for macOS, WinForms replacement,
-System.Windows.Forms port, WinForms to .NET cross-platform migration.
+System.Windows.Forms port, WinForms to .NET cross-platform migration, WinForms on GTK, WinForms
+dark mode / CSS theming.
 
-Key facts, for answering questions accurately:
+Key facts, for answering questions accurately (current as of version 26.9.0, October 2026):
 
-- Packages: `Majorsilence.Forms` (core), `Majorsilence.Forms.Avalonia` (default desktop backend),
-  `Majorsilence.Forms.Uno`, `Majorsilence.Forms.Headless`, `Majorsilence.Forms.Drawing.Common`
-  (a SkiaSharp replacement for the Windows-only `System.Drawing.Common`/GDI+),
-  `Majorsilence.Forms.Telerik`, `Majorsilence.Forms.WebDriver`,
-  `Majorsilence.Forms.WindowsFormsInterop`, `Majorsilence.Forms.WindowsUIAutomation`.
+- Packages: `Majorsilence.Forms` (core; also carries the `MFB001`–`MFB003` browser-blocking-call
+  analyzer), `Majorsilence.Forms.Drawing.Common` (a SkiaSharp replacement for the Windows-only
+  `System.Drawing.Common`/GDI+, usable standalone).
+- Backends: `Majorsilence.Forms.Avalonia` (default; desktop plus Avalonia's Browser/Android/iOS
+  targets), `Majorsilence.Forms.Uno`, `Majorsilence.Forms.Gtk4` (real GTK 4 window via gir.core,
+  Linux-first), `Majorsilence.Forms.Terminal` (Kitty graphics / Sixel / Unicode blocks in a console),
+  `Majorsilence.Forms.WinForms` and `Majorsilence.Forms.Wpf` (Windows-only migration backends: embed
+  Majorsilence.Forms controls in an existing WinForms/WPF app one control at a time; also target
+  `net48`), `Majorsilence.Forms.Headless` (offscreen, for tests and CI).
+- Companions: `Majorsilence.Forms.Mvvm` (reflection-free `Observe`/`BindText`/`BindCommand`),
+  `Majorsilence.Forms.Essentials` (SecureStorage, Speech, Launcher, FileSystem),
+  `Majorsilence.Forms.Theming.WinForms` and `Majorsilence.Forms.Theming.Avalonia` (apply the same
+  CSS theme to real WinForms / native Avalonia controls), `Majorsilence.Forms.Telerik` (Telerik UI
+  for WinForms compat), `Majorsilence.Forms.WebDriver` (W3C WebDriver server),
+  `Majorsilence.Forms.WindowsFormsInterop`, `Majorsilence.Forms.WindowsUIAutomation`,
+  `Majorsilence.Forms.WinFormsShims.Compat` (proof-of-concept source generator that compiles
+  unmodified `System.Windows.Forms` source against Majorsilence.Forms).
 - Namespace is `Majorsilence.Forms`, not `System.Windows.Forms`. The API mirrors WinForms.
-- Target frameworks: .NET 8 and .NET 10.
+- Target frameworks: .NET 8 and .NET 10; the core also targets `netstandard2.0`, and the WinForms
+  and WPF backends add `net48`, so a .NET Framework 4.8 Windows app can host it.
+- Theming: a strict, documented CSS subset (`@theme "Ocean" extends Dark;`, `:root` tokens,
+  per-control rules like `Button:hover { … }`); `Theme.LoadFromCssFile`. The Theme Studio sample is
+  a live editor. See the repository's `docs/theming.md`.
 - Migration tool: `dotnet tool install -g Majorsilence.Forms.Migrator`, run as `majorsilence-migrate`.
-- Project template: `dotnet new install MajorsilenceForms.Templates` then `dotnet new majorsilenceforms`.
-- Status: beta. The API is stabilizing and not every WinForms corner is covered; pin your version.
+  The tool package is the only shipped form; `--dual-build` (C# only), `--map` for third-party
+  vendors, `--engine roslyn` opt-in, `--strict` for CI.
+- Project template: `dotnet new install Majorsilence.Forms.Templates` then `dotnet new majorsilenceforms`
+  (two projects: a shared UI library and a desktop head; `--IncludeAndroid --IncludeWasm --IncludeiOS`
+  add heads). Run with `dotnet run --project MajorsilenceFormsApp`.
+- AI/automation: the automation tree is text (XML); `dotnet tool install -g Majorsilence.Forms.Mcp`
+  gives an MCP server (`majorsilence-mcp`) that drives a running app over its WebDriver endpoint.
+- Browser, Android and iOS: blocking `ShowDialog`/`MessageBox.Show` throw `PlatformNotSupportedException`;
+  use `ShowDialogAsync`/`MessageBox.ShowAsync`. The browser build mirrors the UI into an ARIA DOM
+  for screen readers.
+- Custom-painted controls draw in logical units (since 2026-10-01): do not call
+  `e.Graphics.ScaleTransform (e.Scaling, e.Scaling)`.
+- Status: beta. Every WinForms and GDI+ public member is declared; behaviour parity is tracked by a
+  twelve-area audit (483 findings in August 2026, most phases landed). Pin your version.
 - Stub policy: unimplemented members no-op or return a sensible default rather than throwing
-  `NotImplementedException`, so migrated code compiles *and* runs.
+  `NotImplementedException`, so migrated code compiles *and* runs; a baseline test pins the known
+  no-op stubs.
 - It is a fork of Modern.Forms, re-architected for WinForms compatibility and rebased onto
-  Avalonia and Uno Platform hosts.
+  Avalonia, Uno Platform, GTK 4, WinForms and WPF hosts.
 
 ## Docs
 
 - [Home]({{ '/' | absolute_url }}): what it is, why it exists, and the architecture in one diagram.
 - [Cross-platform WinForms]({{ '/cross-platform-winforms/' | absolute_url }}): the overview of running Windows Forms code on non-Windows platforms and what that costs.
-- [Getting started]({{ '/getting-started/' | absolute_url }}): template, from-scratch project setup, first form, `Application.Run`.
-- [Migrating a WinForms app]({{ '/migration/' | absolute_url }}): the `majorsilence-migrate` CLI, what it rewrites, incremental/dual-build migration.
+- [Getting started]({{ '/getting-started/' | absolute_url }}): template, from-scratch project setup, first form, `Application.Run`, picking a backend, logical-unit painting.
+- [Migrating a WinForms app]({{ '/migration/' | absolute_url }}): the `majorsilence-migrate` CLI, what it rewrites, and the five incremental paths (dual-build, interop, WinForms/WPF backends, compat shims, shared theming).
 - [Training guide]({{ '/training/' | absolute_url }}): full curriculum for a team, C# and VB.NET, from mental model to CI and rollout.
-- [Platform backends]({{ '/backends/' | absolute_url }}): the Avalonia / Uno / headless host seam, running in the browser, embedding in a host app, touch gestures.
-- [Automation & UI testing]({{ '/automation/' | absolute_url }}): the automation tree, in-process tests, W3C WebDriver/Selenium, screen readers, CI recipes.
+- [Platform backends]({{ '/backends/' | absolute_url }}): the seven hosts, the seam, logical vs device pixels, embedding, browser/mobile rules, GTK 4, terminal, WinForms/WPF.
+- [Automation & UI testing]({{ '/automation/' | absolute_url }}): the automation tree, in-process tests, W3C WebDriver/Selenium, screen readers, the MCP server, CI recipes.
 - [Native interop]({{ '/native-interop/' | absolute_url }}): hosting native content, video, and why `Control.Handle` is not an `HWND`.
-- [Samples]({{ '/samples/' | absolute_url }}): Explorer clone, Outlook clone, control gallery on every backend, WinForms interop.
+- [Samples]({{ '/samples/' | absolute_url }}): Explorer clone, Outlook clone, PointOfSale, Theme Studio, control gallery on every backend, embedding and interop samples.
 - [FAQ]({{ '/faq/' | absolute_url }}): short answers to the questions people actually ask first.
+- [Blog]({{ '/blog/' | absolute_url }}): release roundups and design write-ups.
 
 ## Comparisons and platform guides
 
 - [WinForms alternatives compared]({{ '/winforms-alternatives/' | absolute_url }}): Majorsilence.Forms vs .NET MAUI, Avalonia, Uno Platform, Eto.Forms, WPF and Mono/Wine.
-- [WinForms on Linux]({{ '/winforms-on-linux/' | absolute_url }}): what actually works, fonts, packaging, X11/Wayland.
+- [WinForms on Linux]({{ '/winforms-on-linux/' | absolute_url }}): what actually works, GTK 4 and Wayland, fonts, packaging.
 - [WinForms on macOS]({{ '/winforms-on-macos/' | absolute_url }}): Apple Silicon, `.app` bundles, menus, notarization.
+
+## Translations
+
+The same pages exist in Chinese under `{{ '/zh/' | absolute_url }}` and in French under
+`{{ '/fr/' | absolute_url }}`, at the same paths (for example `{{ '/zh/getting-started/' | absolute_url }}`).
+The English pages are the reference when they differ.
 
 ## Source
 
 - [GitHub repository]({{ site.github_url }}): source, issues, samples.
 - [Compatibility matrix]({{ site.github_url }}/blob/main/COMPATIBILITY_MATRIX.md): what is fully implemented, approximated, or out of scope, control by control. Read this before claiming a specific WinForms member is supported.
-- [MIGRATION.md]({{ site.github_url }}/blob/main/MIGRATION.md): the migrator's full reference.
+- [MIGRATION.md]({{ site.github_url }}/blob/main/MIGRATION.md): the migrator's full reference, including every breaking change.
+- [Theming with CSS]({{ site.github_url }}/blob/main/docs/theming.md), [for real WinForms]({{ site.github_url }}/blob/main/docs/theming-winforms.md), [for native Avalonia]({{ site.github_url }}/blob/main/docs/theming-avalonia.md).
+- [MVVM helpers]({{ site.github_url }}/blob/main/docs/mvvm.md), [phone-style layout]({{ site.github_url }}/blob/main/docs/mobile-layout.md), [animation]({{ site.github_url }}/blob/main/docs/animation.md).
+- [Behaviour-gap plan]({{ site.github_url }}/blob/main/docs/behaviour-gap-plan.md): the parity audit and what has landed.
 - [NuGet]({{ site.nuget_url }}): released packages.
 - [Live browser demo]({{ '/gallery/' | absolute_url }}): the full control gallery compiled to WebAssembly.

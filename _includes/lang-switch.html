@@ -1,0 +1,40 @@
+{%- comment -%}
+  The language switcher. Lists every enabled language whose translation of THIS page exists,
+  linking to it; the current language is marked. A page that has not been translated into a
+  language yet simply does not offer that language, rather than linking to a 404.
+  Depends on lang / prefix / base_path from lang-vars.html.
+{%- endcomment -%}
+{%- assign enabled_languages = site.languages | where: "enabled", true -%}
+{%- assign switch_count = 0 -%}
+{%- capture switch_options -%}
+  {%- for l in enabled_languages -%}
+    {%- assign alt_url = l.prefix | append: base_path -%}
+    {%- if base_path == "/" and l.prefix != "" -%}{%- assign alt_url = l.prefix | append: "/" -%}{%- endif -%}
+    {%- assign exists = false -%}
+    {%- if l.code == lang -%}
+      {%- assign exists = true -%}
+    {%- else -%}
+      {%- assign hits = site.pages | where: "url", alt_url -%}
+      {%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}
+      {%- unless exists -%}
+        {%- assign hits = site.posts | where: "url", alt_url -%}
+        {%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}
+      {%- endunless -%}
+      {%- comment -%} The home page of a language is an index.html whose url ends in "/". {%- endcomment -%}
+      {%- unless exists -%}
+        {%- assign alt_index = alt_url | append: "index.html" -%}
+        {%- assign hits = site.pages | where: "url", alt_index -%}
+        {%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}
+      {%- endunless -%}
+    {%- endif -%}
+    {%- if exists -%}
+      {%- assign switch_count = switch_count | plus: 1 %}
+  <a class="msf-lang-switch__option{% if l.code == lang %} is-active{% endif %}" href="{{ alt_url | relative_url }}" lang="{{ l.code }}" hreflang="{{ l.code }}"{% if l.code == lang %} aria-current="page"{% endif %}>{{ l.name }}</a>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- comment -%} A switcher with one entry is noise: render it only when this page exists in at least two languages. {%- endcomment -%}
+{%- if switch_count > 1 %}
+<div class="msf-lang-switch" role="group" aria-label="{{ t.ui.language }}">{{ switch_options }}
+</div>
+{%- endif -%}

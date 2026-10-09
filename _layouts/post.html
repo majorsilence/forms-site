@@ -1,11 +1,13 @@
 ---
 layout: default
 ---
+{%- include lang-vars.html -%}
 <article class="msf-prose">
-  <a class="msf-back-link" href="{{ '/blog/' | relative_url }}">&larr; blog</a>
+  <a class="msf-back-link" href="{{ prefix | append: '/blog/' | relative_url }}">&larr; {{ t.ui.back_blog }}</a>
   <p class="msf-prose__meta">
-    {{ page.date | date: "%B %-d, %Y" }}{% if page.read_time %} &middot; {{ page.read_time }}{% endif %}
+    {% include date.html date=page.date %}{% if page.read_time %} &middot; {{ page.read_time }}{% endif %}
   </p>
   <h1 style="font-family: 'Newsreader', serif; font-weight: 500;">{{ page.title }}</h1>
+  {% if lang != site.default_lang %}<p class="msf-translation-note">{{ t.ui.translation_note | strip_newlines | strip }} <a href="{{ base_path | relative_url }}" hreflang="en" lang="en">English</a></p>{% endif %}
   {{ content }}
 </article>

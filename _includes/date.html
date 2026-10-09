@@ -1,0 +1,11 @@
+{%- comment -%}
+  Formats a date in the current language. Usage: {% include date.html date=post.date %}
+  Liquid's `date` filter only knows English month names, so the month comes from
+  site.data.i18n[lang].months and the order from its date_format (%D day, %M month name, %Y year).
+  Depends on `t` from lang-vars.html.
+{%- endcomment -%}
+{%- assign d_month_index = include.date | date: "%-m" | plus: 0 | minus: 1 -%}
+{%- assign d_month = t.months[d_month_index] -%}
+{%- assign d_day = include.date | date: "%-d" -%}
+{%- assign d_year = include.date | date: "%Y" -%}
+{{- t.date_format | replace: "%D", d_day | replace: "%M", d_month | replace: "%Y", d_year -}}

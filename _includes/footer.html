@@ -5,29 +5,30 @@
         <span class="msf-logo-badge msf-logo-badge--sm">MF</span>
         <span class="msf-navbar__name">Majorsilence.Forms</span>
       </div>
-      <p class="msf-footer__blurb">
-        Cross-platform WinForms for .NET. Run your Windows Forms apps on Windows, macOS, Linux,
-        mobile and the browser — without a rewrite.
-      </p>
+      <p class="msf-footer__blurb">{{ t.site.footer_blurb | strip_newlines | strip }}</p>
       <div class="msf-footer__links">
         <a href="{{ site.github_url }}" target="_blank" rel="noopener">GitHub</a>
-        <a href="{{ site.nuget_url }}" target="_blank" rel="noopener">NuGet</a>
-        <a href="{{ site.github_url }}/blob/main/license.md" target="_blank" rel="noopener">MIT license</a>
+        <a href="{{ site.nuget_url }}" target="_blank" rel="noopener">{{ t.ui.nuget }}</a>
+        <a href="{{ site.github_url }}/blob/main/license.md" target="_blank" rel="noopener">{{ t.ui.license }}</a>
       </div>
     </div>
-    {% for group in site.footer_links %}
+    {% for group in t.footer_links %}
     <div class="msf-footer__col">
       <div class="msf-footer__heading">{{ group.heading }}</div>
       <ul class="msf-footer__list">
         {% for item in group.items %}
-        <li><a href="{{ item.url | relative_url }}">{{ item.label }}</a></li>
+        {%- comment -%} `shared: true` marks a URL that has no per-language copy (the WebAssembly
+        gallery is one compiled app), so it is linked without the language prefix. {%- endcomment -%}
+        {% if item.shared %}{% assign target = item.url %}{% else %}{% assign target = prefix | append: item.url %}{% endif %}
+        <li><a href="{{ target | relative_url }}">{{ item.label }}</a></li>
         {% endfor %}
       </ul>
     </div>
     {% endfor %}
   </div>
   <div class="msf-footer__bar">
-    <span class="msf-footer__copyright">MIT licensed &middot; &copy; {{ site.time | date: '%Y' }} Majorsilence.Forms contributors</span>
-    <span class="msf-footer__copyright">An AI-enhanced fork of <a href="https://github.com/modern-forms/Modern.Forms" target="_blank" rel="noopener">Modern.Forms</a></span>
+    {%- assign copyright_year = site.time | date: '%Y' %}
+    <span class="msf-footer__copyright">{{ t.ui.copyright | replace: '%YEAR%', copyright_year }}</span>
+    <span class="msf-footer__copyright">{{ t.ui.fork_of }} <a href="https://github.com/modern-forms/Modern.Forms" target="_blank" rel="noopener">Modern.Forms</a></span>
   </div>
 </footer>

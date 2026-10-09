@@ -1,0 +1,28 @@
+{%- comment -%}
+  Resolves the current page's language into variables every layout and include reads:
+
+    lang        the language code ("en", "zh", ...), from page.lang (set by _config.yml defaults)
+    language    the matching entry of site.languages (code, name, locale, prefix)
+    prefix      the URL prefix for this language ("" for English, "/zh", ...)
+    t           the UI strings for this language (site.data.i18n[lang])
+    base_path   page.url with the language prefix removed — the language-neutral path that every
+                translation of this page shares, so /zh/faq/ and /fr/faq/ both resolve to /faq/
+
+  Liquid's `assign` writes to the outermost scope, so these are visible to whoever included this
+  file — layouts include it once at the top and includes rendered afterwards see the same values.
+  Nested layouts (docs.html, post.html) render before default.html, so each includes it itself.
+{%- endcomment -%}
+{%- assign lang = page.lang | default: site.default_lang -%}
+{%- assign language = site.languages | where: "code", lang | first -%}
+{%- assign prefix = language.prefix | default: "" -%}
+{%- assign t = site.data.i18n[lang] -%}
+{%- if t == nil -%}{%- assign t = site.data.i18n[site.default_lang] -%}{%- endif -%}
+{%- assign base_path = page.url | replace: 'index.html', '' -%}
+{%- if prefix != "" -%}
+  {%- assign prefix_len = prefix | size -%}
+  {%- assign head = base_path | slice: 0, prefix_len -%}
+  {%- if head == prefix -%}
+    {%- assign base_path = base_path | remove_first: prefix -%}
+    {%- if base_path == "" -%}{%- assign base_path = "/" -%}{%- endif -%}
+  {%- endif -%}
+{%- endif -%}

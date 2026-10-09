@@ -19,12 +19,16 @@
     noindex      true to keep a page out of the index and out of sitemap.xml
 {%- endcomment -%}
 
+{%- include lang-vars.html -%}
+{%- assign site_description = t.site.description | default: site.description | strip_newlines | strip -%}
+{%- assign site_tagline = t.site.tagline | default: site.tagline -%}
+
 {%- if page.seo_title -%}
   {%- assign seo_title = page.seo_title -%}
 {%- elsif page.title -%}
   {%- assign seo_title = page.title | append: " · " | append: site.title -%}
 {%- else -%}
-  {%- assign seo_title = site.title | append: " — " | append: site.tagline -%}
+  {%- assign seo_title = site.title | append: " — " | append: site_tagline -%}
 {%- endif -%}
 
 {%- if page.description -%}
@@ -32,7 +36,7 @@
 {%- elsif page.excerpt and page.excerpt != "" -%}
   {%- assign seo_description = page.excerpt | strip_html | strip_newlines | truncate: 160 -%}
 {%- else -%}
-  {%- assign seo_description = site.description -%}
+  {%- assign seo_description = site_description -%}
 {%- endif -%}
 {%- assign seo_description = seo_description | strip_html | strip_newlines | strip -%}
 
@@ -46,6 +50,33 @@
 {%- endif %}
 <meta name="author" content="{{ site.author }}">
 <link rel="canonical" href="{{ canonical }}">
+{%- comment -%}
+  hreflang alternates. Every translation of a page lives at the same path under its language
+  prefix, so each candidate is prefix + base_path; it is only emitted when that page (or post)
+  actually exists in the build, and x-default points at the English page.
+{%- endcomment -%}
+{%- assign enabled_languages = site.languages | where: "enabled", true -%}
+{%- assign alt_count = 0 -%}
+{%- capture hreflang_links -%}
+{%- for l in enabled_languages -%}
+  {%- assign alt_url = l.prefix | append: base_path -%}
+  {%- if base_path == "/" and l.prefix != "" -%}{%- assign alt_url = l.prefix | append: "/" -%}{%- endif -%}
+  {%- assign exists = false -%}
+  {%- if l.code == lang -%}{%- assign exists = true -%}{%- else -%}
+    {%- assign hits = site.pages | where: "url", alt_url -%}{%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}
+    {%- unless exists -%}{%- assign hits = site.posts | where: "url", alt_url -%}{%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}{%- endunless -%}
+    {%- unless exists -%}{%- assign alt_index = alt_url | append: "index.html" -%}{%- assign hits = site.pages | where: "url", alt_index -%}{%- if hits.size > 0 -%}{%- assign exists = true -%}{%- endif -%}{%- endunless -%}
+  {%- endif -%}
+  {%- if exists -%}
+    {%- assign alt_count = alt_count | plus: 1 %}
+<link rel="alternate" hreflang="{{ l.code }}" href="{{ alt_url | absolute_url }}">
+    {%- if l.code == site.default_lang %}
+<link rel="alternate" hreflang="x-default" href="{{ alt_url | absolute_url }}">
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- endcapture -%}
+{%- if alt_count > 1 -%}{{ hreflang_links }}{%- endif %}
 {%- if page.noindex %}
 <meta name="robots" content="noindex, follow">
 {%- else %}
@@ -57,11 +88,11 @@
 <meta property="og:title" content="{{ seo_title | escape }}">
 <meta property="og:description" content="{{ seo_description | escape }}">
 <meta property="og:url" content="{{ canonical }}">
-<meta property="og:locale" content="{{ site.locale }}">
+<meta property="og:locale" content="{{ language.locale | default: site.locale }}">
 <meta property="og:image" content="{{ seo_image }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="{{ page.og_image_alt | default: site.og_image_alt | strip_newlines | strip | escape }}">
+<meta property="og:image:alt" content="{{ page.og_image_alt | default: t.site.og_image_alt | default: site.og_image_alt | strip_newlines | strip | escape }}">
 {%- if page.layout == 'post' %}
 <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
 <meta property="article:author" content="{{ site.author }}">
@@ -86,8 +117,8 @@
       "@id": {{ site.url | append: '/#website' | jsonify }},
       "url": {{ site.url | append: '/' | jsonify }},
       "name": {{ site.title | jsonify }},
-      "description": {{ site.description | strip_newlines | strip | jsonify }},
-      "inLanguage": {{ site.lang | jsonify }},
+      "description": {{ site_description | jsonify }},
+      "inLanguage": {{ lang | jsonify }},
       "publisher": { "@id": {{ site.url | append: '/#organization' | jsonify }} }
     },
     {
@@ -119,18 +150,18 @@
       "runtimePlatform": ".NET 8, .NET 10",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
-      "description": {{ site.description | strip_newlines | strip | jsonify }},
+      "description": {{ site_description | jsonify }},
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "author": { "@id": {{ site.url | append: '/#organization' | jsonify }} }
     }
-    {%- if page.url != '/' %},
+    {%- if base_path != '/' %},
     {
       "@type": "{% if page.layout == 'post' %}BlogPosting{% else %}TechArticle{% endif %}",
       "@id": {{ canonical | append: '#article' | jsonify }},
       "headline": {{ page.title | default: site.title | jsonify }},
       "description": {{ seo_description | jsonify }},
       "url": {{ canonical | jsonify }},
-      "inLanguage": {{ site.lang | jsonify }},
+      "inLanguage": {{ lang | jsonify }},
       "image": {{ seo_image | jsonify }},
       {%- if page.layout == 'post' %}
       "datePublished": {{ page.date | date_to_xmlschema | jsonify }},
@@ -148,8 +179,8 @@
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Home",
-          "item": {{ site.url | append: '/' | jsonify }}
+          "name": {{ t.ui.home | jsonify }},
+          "item": {{ prefix | append: '/' | absolute_url | jsonify }}
         },
         {
           "@type": "ListItem",

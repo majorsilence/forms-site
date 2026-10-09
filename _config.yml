@@ -39,81 +39,74 @@ defaults:
       type: posts
     values:
       layout: post
+      lang: en
   - scope:
       path: ""
     values:
       layout: default
+      lang: en
+  # Translated pages live under their language prefix; the scope sets `lang` so a translation
+  # only has to carry its permalink. Posts set `lang` in their own front matter.
+  - scope:
+      path: "zh"
+    values:
+      lang: zh
+  - scope:
+      path: "fr"
+    values:
+      lang: fr
+  - scope:
+      path: "si"
+    values:
+      lang: si
+  - scope:
+      path: "ta"
+    values:
+      lang: ta
 
-nav_links:
-  - label: home
-    url: /
-  - label: why
-    url: /cross-platform-winforms/
-  - label: getting started
-    url: /getting-started/
-  - label: migrate
-    url: /migration/
-  - label: training
-    url: /training/
-  - label: samples
-    url: /samples/
-  - label: backends
-    url: /backends/
-  - label: automation & testing
-    url: /automation/
-  - label: native interop
-    url: /native-interop/
-  - label: faq
-    url: /faq/
-  - label: blog
-    url: /blog/
-
-# The footer sitemap. Beyond being useful navigation, this is the site's internal-linking
-# backbone: every page links to every other with descriptive anchor text, which is how the
-# keyword landing pages (/cross-platform-winforms/, /winforms-on-linux/, ...) get crawled and
-# get a share of the home page's authority instead of sitting orphaned.
-footer_links:
-  - heading: Start
-    items:
-      - label: Getting started
-        url: /getting-started/
-      - label: Migrate a WinForms app
-        url: /migration/
-      - label: Training guide
-        url: /training/
-      - label: Samples
-        url: /samples/
-      - label: FAQ
-        url: /faq/
-  - heading: Platforms
-    items:
-      - label: Cross-platform WinForms
-        url: /cross-platform-winforms/
-      - label: WinForms on Linux
-        url: /winforms-on-linux/
-      - label: WinForms on macOS
-        url: /winforms-on-macos/
-      - label: Platform backends
-        url: /backends/
-      - label: Live browser demo
-        url: /gallery/
-  - heading: Reference
-    items:
-      - label: WinForms alternatives compared
-        url: /winforms-alternatives/
-      - label: Automation & UI testing
-        url: /automation/
-      - label: Native interop
-        url: /native-interop/
-      - label: Blog
-        url: /blog/
-      - label: RSS feed
-        url: /feed.xml
+# ── Languages ────────────────────────────────────────────────────────────────────
+# Every page exists once per enabled language, at the same path under the language prefix
+# (/getting-started/ → /zh/getting-started/ → /fr/getting-started/). That convention is what
+# lets the layouts build the language switcher and the hreflang alternates without a lookup
+# table: strip the current prefix off page.url, prepend each other language's prefix, and
+# check the result exists. Nav labels, footer labels and the UI strings live in _data/i18n/<code>.yml.
+#
+# To add a language: add it here, add _data/i18n/<code>.yml, translate the pages into
+# /<code>/..., then flip `enabled: true`. A disabled language is simply absent from the switcher,
+# the sitemap alternates and the feeds. See BACKLOG.md for the ones queued (Sinhala, Tamil).
+default_lang: en
+languages:
+  - code: en
+    name: English
+    locale: en_US
+    prefix: ""
+    enabled: true
+  - code: zh
+    name: 中文
+    locale: zh_CN
+    prefix: /zh
+    enabled: true
+  - code: fr
+    name: Français
+    locale: fr_FR
+    prefix: /fr
+    enabled: true
+  - code: si
+    name: සිංහල
+    locale: si_LK
+    prefix: /si
+    enabled: false
+  - code: ta
+    name: தமிழ்
+    locale: ta_IN
+    prefix: /ta
+    enabled: false
 
 exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
+  - BACKLOG.md
   - vendor
   # Working directories the Pages workflow creates in-tree when it builds the browser
   # gallery. It already sequences those steps after the Jekyll build so Jekyll never

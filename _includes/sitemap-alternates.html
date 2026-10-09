@@ -1,0 +1,39 @@
+{%- comment -%}
+  xhtml:link alternates for one sitemap <url>. `include.page` is the page or post; its translations
+  are found by the same prefix + base-path convention lang-vars.html and seo.html use. Emitted
+  only when more than one language has the page, matching the <head> hreflang tags exactly.
+{%- endcomment -%}
+{%- assign sa_lang = include.page.lang | default: site.default_lang -%}
+{%- assign sa_language = site.languages | where: "code", sa_lang | first -%}
+{%- assign sa_prefix = sa_language.prefix | default: "" -%}
+{%- assign sa_base = include.page.url | replace: 'index.html', '' -%}
+{%- if sa_prefix != "" -%}
+  {%- assign sa_len = sa_prefix | size -%}
+  {%- assign sa_head = sa_base | slice: 0, sa_len -%}
+  {%- if sa_head == sa_prefix -%}
+    {%- assign sa_base = sa_base | remove_first: sa_prefix -%}
+    {%- if sa_base == "" -%}{%- assign sa_base = "/" -%}{%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+{%- assign sa_enabled = site.languages | where: "enabled", true -%}
+{%- assign sa_count = 0 -%}
+{%- capture sa_links -%}
+{%- for l in sa_enabled -%}
+  {%- assign sa_alt = l.prefix | append: sa_base -%}
+  {%- if sa_base == "/" and l.prefix != "" -%}{%- assign sa_alt = l.prefix | append: "/" -%}{%- endif -%}
+  {%- assign sa_exists = false -%}
+  {%- if l.code == sa_lang -%}{%- assign sa_exists = true -%}{%- else -%}
+    {%- assign sa_hits = site.pages | where: "url", sa_alt -%}{%- if sa_hits.size > 0 -%}{%- assign sa_exists = true -%}{%- endif -%}
+    {%- unless sa_exists -%}{%- assign sa_hits = site.posts | where: "url", sa_alt -%}{%- if sa_hits.size > 0 -%}{%- assign sa_exists = true -%}{%- endif -%}{%- endunless -%}
+    {%- unless sa_exists -%}{%- assign sa_idx = sa_alt | append: "index.html" -%}{%- assign sa_hits = site.pages | where: "url", sa_idx -%}{%- if sa_hits.size > 0 -%}{%- assign sa_exists = true -%}{%- endif -%}{%- endunless -%}
+  {%- endif -%}
+  {%- if sa_exists -%}
+    {%- assign sa_count = sa_count | plus: 1 %}
+    <xhtml:link rel="alternate" hreflang="{{ l.code }}" href="{{ sa_alt | absolute_url | xml_escape }}"/>
+    {%- if l.code == site.default_lang %}
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ sa_alt | absolute_url | xml_escape }}"/>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- endcapture -%}
+{%- if sa_count > 1 -%}{{ sa_links }}{%- endif -%}

@@ -941,3 +941,147 @@ img {
   text-decoration: none;
   margin-bottom: 32px;
 }
+
+/* ==========================================================================
+   Language switcher (same shape as the theme toggle)
+   ========================================================================== */
+
+.msf-lang-switch {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+}
+
+.msf-lang-switch__option {
+  padding: 7px 12px;
+  color: var(--ink-faint);
+  border-left: 1px solid var(--line);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.msf-lang-switch__option:first-child {
+  border-left: none;
+}
+
+.msf-lang-switch__option:hover {
+  color: var(--ink);
+}
+
+.msf-lang-switch__option.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.msf-translation-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-faint);
+  border-left: 2px solid var(--line);
+  padding-left: 12px;
+  margin: 0 0 24px;
+}
+
+.msf-translation-note a {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Non-Latin scripts
+   The design system's faces carry Latin only. Each translated language names a Noto face
+   first (loaded per-language from _layouts/default.html) and falls back to the OS's own
+   fonts, so Chinese, Sinhala and Tamil text never drops to a tofu box. Code stays monospace.
+   ========================================================================== */
+
+html[lang="zh"] body,
+html[lang="zh"] .msf-navbar__name,
+html[lang="zh"] .msf-hero__title,
+html[lang="zh"] .msf-section__title,
+html[lang="zh"] .msf-card__title,
+html[lang="zh"] .msf-blog-card__title,
+html[lang="zh"] .msf-prose h1,
+html[lang="zh"] .msf-prose h2,
+html[lang="zh"] .msf-prose h3 {
+  font-family: 'IBM Plex Sans', 'Space Grotesk', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+}
+
+html[lang="zh"] .msf-navbar__link,
+html[lang="zh"] .msf-navbar__cta,
+html[lang="zh"] .msf-footer__heading,
+html[lang="zh"] .msf-footer__list,
+html[lang="zh"] .msf-footer__copyright,
+html[lang="zh"] .msf-theme-toggle,
+html[lang="zh"] .msf-lang-switch,
+html[lang="zh"] .msf-section__eyebrow,
+html[lang="zh"] .msf-hero__eyebrow,
+html[lang="zh"] .msf-prose__meta,
+html[lang="zh"] .msf-blog-card__meta,
+html[lang="zh"] .msf-translation-note {
+  font-family: 'IBM Plex Mono', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', monospace;
+}
+
+html[lang="si"] body,
+html[lang="si"] .msf-navbar__name,
+html[lang="si"] .msf-hero__title,
+html[lang="si"] .msf-section__title,
+html[lang="si"] .msf-card__title,
+html[lang="si"] .msf-blog-card__title,
+html[lang="si"] .msf-prose h1,
+html[lang="si"] .msf-prose h2,
+html[lang="si"] .msf-prose h3 {
+  font-family: 'IBM Plex Sans', 'Space Grotesk', 'Noto Sans Sinhala', 'Iskoola Pota', sans-serif;
+}
+
+html[lang="si"] .msf-navbar__link,
+html[lang="si"] .msf-navbar__cta,
+html[lang="si"] .msf-footer__heading,
+html[lang="si"] .msf-footer__list,
+html[lang="si"] .msf-footer__copyright,
+html[lang="si"] .msf-theme-toggle,
+html[lang="si"] .msf-lang-switch,
+html[lang="si"] .msf-section__eyebrow,
+html[lang="si"] .msf-hero__eyebrow,
+html[lang="si"] .msf-prose__meta,
+html[lang="si"] .msf-blog-card__meta,
+html[lang="si"] .msf-translation-note {
+  font-family: 'IBM Plex Mono', 'Noto Sans Sinhala', 'Iskoola Pota', monospace;
+}
+
+html[lang="ta"] body,
+html[lang="ta"] .msf-navbar__name,
+html[lang="ta"] .msf-hero__title,
+html[lang="ta"] .msf-section__title,
+html[lang="ta"] .msf-card__title,
+html[lang="ta"] .msf-blog-card__title,
+html[lang="ta"] .msf-prose h1,
+html[lang="ta"] .msf-prose h2,
+html[lang="ta"] .msf-prose h3 {
+  font-family: 'IBM Plex Sans', 'Space Grotesk', 'Noto Sans Tamil', 'Latha', 'Nirmala UI', sans-serif;
+}
+
+html[lang="ta"] .msf-navbar__link,
+html[lang="ta"] .msf-navbar__cta,
+html[lang="ta"] .msf-footer__heading,
+html[lang="ta"] .msf-footer__list,
+html[lang="ta"] .msf-footer__copyright,
+html[lang="ta"] .msf-theme-toggle,
+html[lang="ta"] .msf-lang-switch,
+html[lang="ta"] .msf-section__eyebrow,
+html[lang="ta"] .msf-hero__eyebrow,
+html[lang="ta"] .msf-prose__meta,
+html[lang="ta"] .msf-blog-card__meta,
+html[lang="ta"] .msf-translation-note {
+  font-family: 'IBM Plex Mono', 'Noto Sans Tamil', 'Latha', 'Nirmala UI', monospace;
+}
+
+/* The language switcher only lists a language that is not already the page's own,
+   plus the current one; on narrow screens let the nav row wrap around it. */
+@media (max-width: 640px) {
+  .msf-lang-switch__option {
+    padding: 7px 9px;
+  }
+}
