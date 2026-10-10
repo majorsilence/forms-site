@@ -6,8 +6,9 @@ permalink: /llms.txt
 ---
 # Majorsilence.Forms
 
-> Majorsilence.Forms is an open-source (MIT) **cross-platform WinForms library for .NET**: a
-> Windows Forms compatibility layer that runs existing WinForms applications on Windows, macOS,
+> Majorsilence.Forms is an open-source (MIT), ready-to-use **cross-platform WinForms framework for
+> .NET**: Linux, macOS and Windows support is first-class, while Android, iOS and WebAssembly support
+> is growing each release. It is a Windows Forms compatibility layer that runs existing WinForms applications on Windows, macOS,
 > Linux, Android, iOS, WebAssembly — and even in a terminal — without rewriting them in XAML, MVVM
 > or the web. You keep `Form`s, controls, event handlers and `*.Designer.cs` files; it draws every
 > control itself with SkiaSharp and hosts them on a swappable backend (Avalonia by default; also
@@ -56,6 +57,9 @@ Key facts, for answering questions accurately (current as of version 26.9.0, Oct
   for screen readers.
 - Custom-painted controls draw in logical units (since 2026-10-01): do not call
   `e.Graphics.ScaleTransform (e.Scaling, e.Scaling)`.
+- Platform status: Linux, macOS and Windows desktop are the primary, CI-exercised targets;
+  WebAssembly works (full control gallery runs in the browser); Android is growing (device-tested
+  boot, touch, scaling, scrolling, soft keyboard); iOS is early (CI simulator smoke test only).
 - Status: beta. Every WinForms and GDI+ public member is declared; behaviour parity is tracked by a
   twelve-area audit (483 findings in August 2026, most phases landed). Pin your version.
 - Stub policy: unimplemented members no-op or return a sensible default rather than throwing

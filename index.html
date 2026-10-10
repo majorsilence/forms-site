@@ -25,14 +25,14 @@ changefreq: weekly
     <h1 class="msf-hero__title">WinForms in. <span class="accent">Cross-platform out.</span></h1>
     <p class="msf-hero__lede">
       <strong>Majorsilence.Forms is a cross-platform WinForms library for .NET</strong> — a Windows
-      Forms compatibility layer that moves legacy <em>and</em> modern WinForms applications onto a
-      modern stack. Keep the <code class="msf-inline-code">Form</code>s, controls, event handlers,
+      Forms framework that is ready to use today, for new apps and for moving legacy <em>and</em>
+      modern WinForms applications onto a modern stack. Keep the <code class="msf-inline-code">Form</code>s, controls, event handlers,
       and <code class="msf-inline-code">*.Designer.cs</code> files you already have —
       <a href="{{ '/winforms-on-linux/' | relative_url }}">run on Linux</a>,
       <a href="{{ '/winforms-on-macos/' | relative_url }}">run on macOS</a>, and run on Windows from
-      one build, with mobile and web within reach through
-      <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a>'s own
-      Android, iOS, and Browser targets or through
+      one build — Linux and macOS are first-class, and Android, iOS and WebAssembly support is
+      growing every release through
+      <a href="https://avaloniaui.net" target="_blank" rel="noopener">Avalonia</a> and
       <a href="https://platform.uno" target="_blank" rel="noopener">Uno Platform</a>. Seven host
       backends share one control model — including a GTK 4 window on Linux, a terminal, and
       WinForms and WPF bridges that let a Windows app migrate one control at a time.
@@ -65,8 +65,8 @@ changefreq: weekly
       <div class="msf-stat__label">Desktop, out of the box</div>
     </div>
     <div class="msf-stat">
-      <div class="msf-stat__value is-accent">iOS &middot; Android &middot; Wasm</div>
-      <div class="msf-stat__label">Reachable via Avalonia or Uno</div>
+      <div class="msf-stat__value is-accent">Android &middot; iOS &middot; Wasm</div>
+      <div class="msf-stat__label">Growing every release</div>
     </div>
     <div class="msf-stat">
       <div class="msf-stat__value is-accent">MIT</div>
@@ -118,6 +118,25 @@ changefreq: weekly
         <h3 class="msf-card__title">Async dialogs, everywhere</h3>
         <p class="msf-card__body">Every modal has an async twin — <code class="msf-inline-code">ShowDialogAsync</code>, <code class="msf-inline-code">MessageBox.ShowAsync</code> — so the same code runs in the browser and on phones, where a blocking loop isn't possible. A bundled analyzer flags the blocking calls before you ship.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="msf-section">
+  <div class="msf-section__inner">
+    <div class="msf-section__eyebrow">platform support</div>
+    <h2 class="msf-section__title">Desktop is solid. Mobile and web are growing.</h2>
+    <p class="msf-section__lede">
+      An honest status per platform. The member-by-member detail lives in the
+      <a href="{{ site.github_url }}/blob/main/COMPATIBILITY_MATRIX.md" target="_blank" rel="noopener">compatibility matrix</a>.
+    </p>
+    <div class="msf-grid">
+      <div class="msf-card"><h3 class="msf-card__title">Linux &mdash; supported</h3><p class="msf-card__body">Avalonia on X11 or Wayland, or a real GTK 4 window, with a WebKitGTK <code class="msf-inline-code">WebBrowser</code>. Exercised in CI on every change. <a href="{{ '/winforms-on-linux/' | relative_url }}">Linux guide</a>.</p></div>
+      <div class="msf-card"><h3 class="msf-card__title">macOS &mdash; supported</h3><p class="msf-card__body">Native <code class="msf-inline-code">NSWindow</code> on Apple Silicon and Intel, Retina rendering, trackpad gestures, <code class="msf-inline-code">WKWebView</code> and Keychain. <a href="{{ '/winforms-on-macos/' | relative_url }}">macOS guide</a>.</p></div>
+      <div class="msf-card"><h3 class="msf-card__title">Windows &mdash; supported</h3><p class="msf-card__body">Run on Avalonia or Uno, or adopt it one control at a time inside an existing WinForms or WPF app, including .NET Framework 4.8.</p></div>
+      <div class="msf-card"><h3 class="msf-card__title">WebAssembly &mdash; working</h3><p class="msf-card__body">The whole control gallery runs <a href="{{ '/gallery/' | relative_url }}">live in your browser</a>, with async dialogs and an ARIA mirror for screen readers.</p></div>
+      <div class="msf-card"><h3 class="msf-card__title">Android &mdash; growing</h3><p class="msf-card__body">Boots, taps, scaling, touch scrolling and the soft keyboard are confirmed on a device. Rotation and full control coverage are still being exercised.</p></div>
+      <div class="msf-card"><h3 class="msf-card__title">iOS &mdash; early</h3><p class="msf-card__body">Compiles and launches in a CI simulator smoke check; not yet run interactively on a device. Expect a shakeout.</p></div>
     </div>
   </div>
 </section>

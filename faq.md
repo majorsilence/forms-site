@@ -22,6 +22,14 @@ keywords:
   - winforms mvvm
 priority: "0.8"
 faq:
+  - question: Is Majorsilence.Forms ready to use, and which platforms are strongest?
+    id: is-majorsilence-forms-ready-to-use
+    answer: >-
+      Yes, it is a beta that ships frequent versioned releases; pin your version. Linux, macOS and
+      Windows desktop are the strongest targets and are exercised in CI on every change. WebAssembly
+      works, with the full control gallery running live in the browser. Android is growing, with
+      boot, touch, scaling, scrolling and the soft keyboard confirmed on a device. iOS is early. The
+      compatibility matrix in the repository lists what is implemented, approximated or out of scope.
   - question: Can WinForms run on Linux?
     id: can-winforms-run-on-linux
     answer: >-
