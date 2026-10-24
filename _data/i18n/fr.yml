@@ -19,6 +19,7 @@ ui:
   blog: Blog
   read_post: Lire l'article
   github: github
+  menu: Menu
   nuget: NuGet
   license: Licence MIT
   theme: Thème
