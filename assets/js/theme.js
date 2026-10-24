@@ -27,6 +27,15 @@
   document.addEventListener("DOMContentLoaded", function () {
     setTheme(getStoredTheme());
 
+    var navbar = document.querySelector(".msf-navbar");
+    var toggle = document.querySelector(".msf-navbar__toggle");
+    if (navbar && toggle) {
+      toggle.addEventListener("click", function () {
+        var open = navbar.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    }
+
     document.querySelectorAll("[data-theme-option]").forEach(function (el) {
       el.addEventListener("click", function () {
         setTheme(el.getAttribute("data-theme-option"));

@@ -3,7 +3,12 @@
     <span class="msf-logo-badge msf-logo-badge--md">MF</span>
     <span class="msf-navbar__name">Majorsilence.Forms</span>
   </a>
-  <div class="msf-navbar__right">
+  <button type="button" class="msf-navbar__toggle" aria-label="{{ t.ui.menu | default: 'Menu' }}" aria-expanded="false" aria-controls="msf-navbar-menu">
+    <span class="msf-navbar__toggle-bar"></span>
+    <span class="msf-navbar__toggle-bar"></span>
+    <span class="msf-navbar__toggle-bar"></span>
+  </button>
+  <div class="msf-navbar__right" id="msf-navbar-menu">
     <div class="msf-navbar__links">
       {% for item in t.nav_links %}
       {% assign target = prefix | append: item.url | remove: 'index.html' %}
