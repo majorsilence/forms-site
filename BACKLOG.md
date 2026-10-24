@@ -15,6 +15,15 @@ native-speaker review. Every page, post, the home page, blog index and feed exis
 
 Review both, starting with the home page, getting started, the FAQ and the four landing pages
 (`cross-platform-winforms`, `winforms-alternatives`, `winforms-on-linux`, `winforms-on-macos`).
+
+First native-speaker feedback (Sinhala, 2026-10-23, on `/si/training/`): the translation was too
+literal and direct, hard for a native reader; it should read like a book written in Sinhala. The
+training page was retranslated the same day in a natural written register (meaning-first sentences,
+English developer terms kept in Latin script with Sinhala particles, coinages such as ස්වයං-ඇඳි,
+ධාරකය, මානසික ආකෘතිය, ස්වදේශීය dropped). The other `/si/` pages, posts and `_data/i18n/si.yml` still
+have the original literal style: once the reviewer confirms the new training page reads well, give
+them the same treatment. Expect the Tamil pages to need the same pass.
+
 Wording the translators flagged as least certain:
 
 - Sinhala: "Touch gestures" was rendered ස්පර්ශ ඉඟි (closer to "touch hints"; අභිනය may be better);
